@@ -12,7 +12,10 @@
     "stops": {"max": 3, "doc": "S1: number of town stops made before dusk"},
     "study_pts": {"max": 3, "doc": "S7: correct study answers and study bonuses (2 or more passes the midterm)"},
     "leads": {"max": 3, "doc": "S7: archive searches done (2 or more finds a way in)"},
-    "haggles": {"max": 3, "doc": "S8: customers Brad haggled successfully (2 or more sets F_FARM_MONEY)"}
+    "haggles": {"max": 3, "doc": "S8: customers Brad haggled successfully (2 or more sets F_FARM_MONEY)"},
+    "clue_count": {"max": 8, "doc": "S9: number of clue bits set, tallied at the start of the dance"},
+    "aff": {"max": 30, "doc": "S9: affection of the locked route, copied from aff_j/s/g/p"},
+    "costume": {"max": 3, "doc": "S9: Brad's costume (1 Scarecrow, 2 Raven, 3 Gord)"}
   },
   "flags": {
     "F_MET_J": "Brad has met Jane",

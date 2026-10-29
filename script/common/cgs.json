@@ -54,5 +54,10 @@
     "scene": "S8",
     "desc": "Lab loading dock: the van's open doors, Mr. Gourd in trench coat and mustache lifting a glowing pumpkin, one very stylish black heel showing under the coat",
     "file": null
+  },
+  "CG-09": {
+    "scene": "S9",
+    "desc": "Great Hall under the full moon: the glowing punch bowl, jack-o'-lanterns aglow, the crowd mid-confession",
+    "file": null
   }
 }

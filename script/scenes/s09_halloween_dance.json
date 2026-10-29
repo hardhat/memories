@@ -1,0 +1,506 @@
+{
+  "id": "s09",
+  "title": "Halloween Dance",
+  "entry": "A_open",
+  "blocks": {
+
+    "tally": [
+      {"op": "set", "var": "clue_count", "n": 0},
+      {"op": "if", "test": {"bit": "CL1"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL2"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL3"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL4"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL5"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL6"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL7"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"bit": "CL8"}, "then": [{"op": "add", "var": "clue_count", "n": 1}]},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "copy", "from": "aff_j", "to": "aff"}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "copy", "from": "aff_s", "to": "aff"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "copy", "from": "aff_g", "to": "aff"}
+          ], "else": [
+            {"op": "copy", "from": "aff_p", "to": "aff"}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 9},
+      {"op": "call", "block": "tally"},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "dance_theme"},
+      {"op": "map", "id": "M14", "spawn": "entrance", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "October 31. The Great Hall is draped in cobwebs, paper bats, and two hundred cups of cheerful punch."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Full moon tonight. The note, the archive, Mr. Gourd. It has all been leading here."},
+      {"op": "say", "who": "narrator", "text": "At the entrance, Brad has one last decision to make: what to wear."},
+      {"op": "choice", "id": "c9_costume", "prompt": "Brad's costume.", "options": [
+        {"text": "Scarecrow", "do": [
+          {"op": "set", "var": "costume", "n": 1},
+          {"op": "say", "who": "narrator", "text": "Straw in his collar, a floppy hat on his head. A crow tries to nest in the hat."},
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "I'm not a bird's apartment. Shoo."}
+        ]},
+        {"text": "Raven", "do": [
+          {"op": "set", "var": "costume", "n": 2},
+          {"op": "say", "who": "narrator", "text": "Black wings. A beak. The Homecoming mascot head, now much cleaner."},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I earned this head. I knocked it off."}
+        ]},
+        {"text": "Gord", "do": [
+          {"op": "set", "var": "costume", "n": 3},
+          {"op": "say", "who": "narrator", "text": "A fake beard, a flannel shirt, and a very serious squint."},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Pumpkins don't wait."}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "The music swells. At the top of the stairs, Jane appears in a formal gown, a necklace at her throat."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Wow."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Close your mouth. It's a dress, not a dragon."},
+      {"op": "map", "id": "M14", "spawn": "dance_floor", "time": "night"},
+      {"op": "tutorial", "id": "mingle", "text": "Walk up to people and press Action. When you're ready, find the crow on the punch table."},
+      {"op": "explore", "objective": "mingle", "triggers": [
+        {"at": "chat_jane", "once": true, "do": [
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Dad lent me Mom's necklace. He cried a little. Don't tell him I told you."},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "You look... I don't have a word. I have several. They're all bad."},
+          {"op": "say", "who": "jane", "expr": "wink", "text": "That's the best compliment I've ever gotten."}
+        ]},
+        {"at": "chat_sandra", "once": true, "do": [
+          {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I'm a goth dressed as a witch. It's a stretch. I'm disturbed by how little I changed."},
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "You look great."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "The tavern regulars bet I won't smile tonight. Don't make me lose money."}
+        ]},
+        {"at": "chat_georgia", "once": true, "do": [
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "I'm a slice of pumpkin pie! Do you love it? I can't sit down!"},
+          {"op": "if", "test": {"var": "F_WARNED_GEORGIA", "cmp": "eq", "n": 1}, "then": [
+            {"op": "say", "who": "georgia", "expr": "smile", "text": "The punch is one to four, like you said. I stirred it with a wooden spoon and a prayer."}
+          ], "else": [
+            {"op": "say", "who": "georgia", "expr": "smile", "text": "The punch is extra glowy tonight! I think that's a good sign!"},
+            {"op": "say", "who": "brad", "expr": "worried", "text": "...That is not a good sign."}
+          ]}
+        ]},
+        {"at": "chat_patricia", "once": true, "do": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 4}, "then": [
+            {"op": "say", "who": "patricia", "expr": "flustered", "text": "Mr. Bart. You know it's me. Please don't acknowledge it. The Dean thinks I'm an alumnus."},
+            {"op": "say", "who": "patricia", "expr": "thinking", "text": "I carry two hundred vials of neutralizer. If the bloom gets out of hand, I'll need you."}
+          ], "else": [
+            {"op": "say", "who": "gourd", "text": "Good evening. I am an alumnus. Gourd. Class of... a long time ago."},
+            {"op": "say", "who": "brad", "expr": "confused", "text": "Mr. Gourd, you're wearing a trench coat to a Halloween dance."},
+            {"op": "say", "who": "gourd", "text": "It's a costume. I am dressed as a man in a trench coat."},
+            {"op": "say", "who": "brad", "expr": "laugh", "text": "It's very convincing."}
+          ]}
+        ]},
+        {"at": "chat_gord", "once": true, "do": [
+          {"op": "say", "who": "narrator", "text": "Gord stands by the wall in his best flannel. A name tag reads: I'M A FARMER."},
+          {"op": "if", "test": {"var": "costume", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "gord", "expr": "neutral", "text": "Is that my beard?"},
+            {"op": "say", "who": "brad", "expr": "smile", "text": "It's a tribute."},
+            {"op": "say", "who": "gord", "expr": "neutral", "text": "It's crooked."}
+          ]},
+          {"op": "say", "who": "gord", "expr": "worried", "text": "Moon's up. The bloom comes at midnight. Don't drink the punch."},
+          {"op": "say", "who": "gord", "expr": "worried", "text": "And Brad. Whatever happens tonight, stay close to the people you care about."}
+        ]},
+        {"at": "crow_perch", "do": [
+          {"op": "goto", "block": "A2_crow"}
+        ]}
+      ]}
+    ],
+
+    "A2_crow": [
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "On the edge of the punch table, the crow waits. Something shiny glints in its beak."},
+      {"op": "say", "who": "narrator", "text": "It drops the object in Brad's palm. A name tag: BRAD BART (LEGACY!)."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "Thank you, Inspector. I forgive you."},
+      {"op": "say", "who": "narrator", "text": "Brad pins the tag on. The crow bobs once and flutters up into the rafters."},
+      {"op": "goto", "block": "A3_dance"}
+    ],
+
+    "A3_dance": [
+      {"op": "say", "who": "narrator", "text": "The band strikes up a slow waltz. Couples drift onto the floor."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "jane", "expr": "smile", "text": "Dance with me. I lead. I've always led. Dad says it's why I'm good with tractors."},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I'll try not to step on you."},
+        {"op": "say", "who": "jane", "expr": "wink", "text": "You will. It'll be adorable."},
+        {"op": "say", "who": "narrator", "text": "They sway. Brad steps on her foot exactly twice. She laughs both times."}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I don't dance. I stand near people who dance."},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "One song?"},
+          {"op": "say", "who": "sandra", "expr": "annoyed", "text": "...One song. If anyone films it, I'll end them."},
+          {"op": "say", "who": "narrator", "text": "She dances like a coat hanger. Halfway through, her mouth twitches."},
+          {"op": "say", "who": "narrator", "text": "In the crowd, someone groans and hands over money."}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "georgia", "expr": "laugh", "text": "Can you dance with a pie? I can't hold you. I'd slide right off!"},
+            {"op": "say", "who": "brad", "expr": "smile", "text": "I'll improvise."},
+            {"op": "say", "who": "narrator", "text": "They manage a sort of sideways pie waltz. Crumbs fall in their wake. Dean Whitlock slips on one."}
+          ], "else": [
+            {"op": "say", "who": "patricia", "expr": "smile", "text": "Mr. Bart. The proper term is wallflower. Shall we be wallflowers together?"},
+            {"op": "say", "who": "narrator", "text": "They stand by the wall in the shadow of a paper bat, watching the dancers sway."},
+            {"op": "say", "who": "patricia", "expr": "thinking", "text": "Twenty-five years ago my mother came home from this dance and never danced again."}
+          ]}
+        ]}
+      ]},
+      {"op": "goto", "block": "B_bloom"}
+    ],
+
+    "B_bloom": [
+      {"op": "sfx", "id": "clock_chime"},
+      {"op": "music", "id": "bloom_theme"},
+      {"op": "say", "who": "narrator", "text": "Nine o'clock. The full moon crests the tall windows of the Great Hall."},
+      {"op": "say", "who": "dean", "text": "A toast! To Ravenwood! And to anyone who can hear me over that humming!"},
+      {"op": "sfx", "id": "pumpkin_hum"},
+      {"op": "say", "who": "narrator", "text": "A hum rises from every direction. The jack-o'-lanterns on the tables flare and begin to glow."},
+      {"op": "say", "who": "narrator", "text": "Three miles away, Patch Seven blooms. The pumpkins crack open and release glowing petals."},
+      {"op": "say", "who": "narrator", "text": "The wind carries them to town."},
+      {"op": "say", "who": "gord", "expr": "worried", "text": "Here it comes."},
+      {"op": "say", "who": "narrator", "text": "Petals drift through the vents. The punch bowl brightens until it is almost too bright to look at."},
+      {"op": "cg", "id": "CG-09"},
+      {"op": "if", "test": {"var": "F_WARNED_GEORGIA", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "narrator", "text": "The glow is soft. Voices rise, but gently. Confessions drift through the room like leaves."},
+        {"op": "say", "who": "student", "text": "I never read the book. I just read the back."},
+        {"op": "say", "who": "dean", "text": "I am mildly afraid of squirrels. Mildly."},
+        {"op": "say", "who": "jane", "expr": "candid", "text": "I sometimes drive Dad's tractor to the donut shop. Sometimes."},
+        {"op": "say", "who": "gord", "expr": "sad", "text": "I miss your father. I only read the first page of his letter."},
+        {"op": "say", "who": "narrator", "text": "People laugh, hug, and dance. It is the kindest chaos Ravenwood has ever seen."}
+      ], "else": [
+        {"op": "say", "who": "student", "text": "I NEVER READ THE BOOK! ANY OF THEM!"},
+        {"op": "say", "who": "dean", "text": "I'M AFRAID OF SQUIRRELS! I HAVE BEEN SINCE 1987! THEY KNOW IT!"},
+        {"op": "say", "who": "narrator", "text": "A freshman in a squirrel costume faints."},
+        {"op": "say", "who": "narrator", "text": "Two rival debate captains shout across the floor: 'I'VE LOVED YOU SINCE REGIONALS!' 'I KNOW!'"},
+        {"op": "say", "who": "narrator", "text": "They kiss."},
+        {"op": "say", "who": "narrator", "text": "The band stops. The drummer: 'We don't actually know how to play. We know three songs. One is a lullaby.'"},
+        {"op": "say", "who": "librarian", "text": "I HAVE LIED ABOUT QUIET HOURS FOR FORTY YEARS! THERE ARE NO QUIET HOURS!"},
+        {"op": "say", "who": "jane", "expr": "candid", "text": "I DRIVE DAD'S TRACTOR TO THE DONUT SHOP! EVERY WEDNESDAY!"},
+        {"op": "say", "who": "sandra", "expr": "mortified", "text": "I LIKE DANCING! THERE! IT'S TERRIBLE!"},
+        {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "THE BLUE ONE WAS NOT BLUEBERRY! IT WAS BLUE CHEESE! AND SOMETHING ELSE!"},
+        {"op": "say", "who": "gord", "expr": "sad", "text": "I MISS YOUR FATHER! HE WROTE ELEVEN PAGES AND I ONLY READ ONE!"}
+      ]},
+      {"op": "say", "who": "brad", "expr": "candid", "text": "I miss my dad! I wish he were here!"},
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "...Okay. That one was true."},
+      {"op": "cg_off"},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "A black shape swoops across the hall. It plucks the mustache off Mr. Gourd's lip and flies away."},
+      {"op": "say", "who": "dean", "text": "Professor Peters?!"},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "YES! IT'S ME! I'VE BEEN BUYING PUMPKINS FOR THREE WEEKS! I WAS TRYING TO PREVENT THIS!"},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "AND I'M SO LONELY!"},
+      {"op": "say", "who": "narrator", "text": "The whole hall gasps. Then, a beat later, applauds."},
+      {"op": "say", "who": "narrator", "text": "In the roar, one person catches Brad's eye."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "call", "block": "C_j"}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "call", "block": "C_s"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "call", "block": "C_g"}
+          ], "else": [
+            {"op": "call", "block": "C_p"}
+          ]}
+        ]}
+      ]},
+      {"op": "goto", "block": "D_close"}
+    ],
+
+    "resolve_confess": [
+      {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 20}, "then": [
+        {"op": "if", "test": {"var": "clue_count", "cmp": "gte", "n": 6}, "then": [
+          {"op": "set", "var": "ending", "n": 1}
+        ], "else": [
+          {"op": "set", "var": "ending", "n": 2}
+        ]}
+      ], "else": [
+        {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 14}, "then": [
+          {"op": "set", "var": "ending", "n": 2}
+        ], "else": [
+          {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 8}, "then": [
+            {"op": "set", "var": "ending", "n": 3}
+          ], "else": [
+            {"op": "set", "var": "ending", "n": 4}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "C_j": [
+      {"op": "say", "who": "jane", "expr": "candid", "text": "Brad. Walk with me. Please. I need air. I need a lot of air."},
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "music", "id": "moon_theme"},
+      {"op": "map", "id": "M04", "spawn": "patch7_edge", "time": "night"},
+      {"op": "fade", "to": "clear", "ms": 400},
+      {"op": "say", "who": "narrator", "text": "Patch Seven in bloom. The pumpkins have opened like flowers. Glowing petals drift in the moonlight."},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "I love this farm. Every muddy inch of it. I'm not leaving."},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "And I want you to stay. For the winter. For Doris. For me."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "I'm sorry. It's the bloom. I can't hold anything back."},
+      {"op": "say", "who": "brad", "expr": "candid", "text": "Don't be sorry. I can't either."},
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+        {"op": "say", "who": "jane", "expr": "serious", "text": "Brad, I adore you. As a friend. I think you're not ready for the other thing. Not yet."},
+        {"op": "set", "var": "ending", "n": 4},
+        {"op": "call", "block": "j_react"}
+      ], "else": [
+        {"op": "choice", "id": "c9_j", "prompt": "Jane waits, holding her breath.", "options": [
+          {"text": "I feel the same", "do": [
+            {"op": "call", "block": "resolve_confess"},
+            {"op": "call", "block": "j_react"}
+          ]},
+          {"text": "Let's stay friends", "do": [
+            {"op": "set", "var": "ending", "n": 3},
+            {"op": "call", "block": "j_react"}
+          ]},
+          {"text": "Not yet. I need to think", "do": [
+            {"op": "set", "var": "ending", "n": 4},
+            {"op": "call", "block": "j_react"}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "j_react": [
+      {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "smile", "text": "I feel the same. I'm staying. For Doris, for the winter, and for you."},
+        {"op": "say", "who": "jane", "expr": "candid", "text": "Then stay."},
+        {"op": "say", "who": "narrator", "text": "Under the glowing petals, Jane kisses him. A pumpkin hums, very softly, in approval."}
+      ], "else": [
+        {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I feel the same. I really do."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Then let's take it slow. Ask me again after the harvest."},
+          {"op": "say", "who": "narrator", "text": "She squeezes his hand. It's a promise made of straw and moonlight."}
+        ], "else": [
+          {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "jane", "expr": "smile", "text": "Friends. Okay. Best friends. With pumpkin privileges."},
+            {"op": "say", "who": "narrator", "text": "She leans on his shoulder. It's warm, and a little bittersweet."}
+          ], "else": [
+            {"op": "say", "who": "jane", "expr": "smile", "text": "Not yet. I understand. The farm's door stays open."},
+            {"op": "say", "who": "jane", "expr": "wink", "text": "So does mine."}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "C_s": [
+      {"op": "say", "who": "narrator", "text": "At the center of the floor, Sandra stands frozen. A ring of Log & Stump regulars has formed around her."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "I think about you constantly."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "Your terrible jokes. Your boots. How you lied for me in the library."},
+      {"op": "say", "who": "narrator", "text": "The tavern regulars burst into cheers. Someone throws a pretzel."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "I am going to destroy this punch. With fire."},
+      {"op": "say", "who": "brad", "expr": "candid", "text": "I can't stop saying things either. It's a terrible night for secrets."},
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+        {"op": "say", "who": "sandra", "expr": "deadpan", "text": "You're a friend. Don't make it weird. I'm fine. I'll be fine."},
+        {"op": "set", "var": "ending", "n": 4},
+        {"op": "call", "block": "s_react"}
+      ], "else": [
+        {"op": "choice", "id": "c9_s", "prompt": "Sandra covers her face with both hands.", "options": [
+          {"text": "Take her to the roof and confess", "do": [
+            {"op": "say", "who": "narrator", "text": "Brad leads her out of the crush, up a narrow stair, onto the roof of the Great Hall."},
+            {"op": "map", "id": "M14", "spawn": "roof", "time": "night"},
+            {"op": "say", "who": "narrator", "text": "The moon is enormous. The hum seems very far away."},
+            {"op": "call", "block": "resolve_confess"},
+            {"op": "call", "block": "s_react"}
+          ]},
+          {"text": "Let's stay friends", "do": [
+            {"op": "set", "var": "ending", "n": 3},
+            {"op": "call", "block": "s_react"}
+          ]},
+          {"text": "Not yet. I need to think", "do": [
+            {"op": "set", "var": "ending", "n": 4},
+            {"op": "call", "block": "s_react"}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "s_react": [
+      {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "smile", "text": "I think about you too. All the time. I'm staying. With you."},
+        {"op": "say", "who": "sandra", "expr": "smile", "text": "That's... the best news I've gotten in my life. Don't tell the regulars."},
+        {"op": "say", "who": "narrator", "text": "She kisses him, once, quickly, as if daring herself. Then she smiles. A real, full smile."}
+      ], "else": [
+        {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I think about you too. A lot."},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Good. Let's go slowly. I'm easily startled."}
+        ], "else": [
+          {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Friends. Fine. The best friends are the ones who don't flinch."}
+          ], "else": [
+            {"op": "say", "who": "sandra", "expr": "neutral", "text": "Not yet. Understood. I can wait. I'm very good at waiting. And at grudges."}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "C_g": [
+      {"op": "say", "who": "narrator", "text": "Georgia seizes Brad's hand and pulls him behind the dessert table, in her enormous pumpkin pie costume."},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "I can't stop talking! I want to bake in a city! A tiny bakery on a big street!"},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "And I want you to come with me. I've wanted that since the cookie."},
+      {"op": "if", "test": {"var": "F_GEORGIA_APPLICATION", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "narrator", "text": "Brad pulls a crumpled envelope from his jacket. The pastry school application."},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "I brought it. In case."},
+        {"op": "say", "who": "georgia", "expr": "surprised", "text": "You brought it?!"}
+      ]},
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+        {"op": "say", "who": "georgia", "expr": "worried", "text": "Oh no. I said too much. You're a lovely friend. Forget I said the other part."},
+        {"op": "set", "var": "ending", "n": 4},
+        {"op": "call", "block": "g_react"}
+      ], "else": [
+        {"op": "choice", "id": "c9_g", "prompt": "Georgia is waiting, wide-eyed, in her pie.", "options": [
+          {"text": "I'll follow you anywhere", "do": [
+            {"op": "call", "block": "resolve_confess"},
+            {"op": "call", "block": "g_react"}
+          ]},
+          {"text": "Let's stay friends", "do": [
+            {"op": "set", "var": "ending", "n": 3},
+            {"op": "call", "block": "g_react"}
+          ]},
+          {"text": "Not yet. I need to think", "do": [
+            {"op": "set", "var": "ending", "n": 4},
+            {"op": "call", "block": "g_react"}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "g_react": [
+      {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "smile", "text": "I'll follow you anywhere. And I'll mail this tonight."},
+        {"op": "say", "who": "georgia", "expr": "laugh", "text": "You absolutely have to eat my first croissant!"},
+        {"op": "say", "who": "narrator", "text": "Georgia hugs him, pie costume and all. It's like being hugged by a very affectionate dessert."}
+      ], "else": [
+        {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I'd like that. Let's plan it. Slowly."},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "A plan! I love plans! I'll bake one."}
+        ], "else": [
+          {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "georgia", "expr": "smile", "text": "Friends. Okay. Friends get free muffins. Friends get all the free muffins."}
+          ], "else": [
+            {"op": "say", "who": "georgia", "expr": "smile", "text": "Not yet. That's fine. I'll hold on to the envelope. For when you're ready."}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "C_p": [
+      {"op": "say", "who": "narrator", "text": "In the confusion, Patricia catches Brad's eye. She turns and walks toward the balcony. Brad follows."},
+      {"op": "map", "id": "M14", "spawn": "balcony", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "The balcony. The roar of the hall falls away. Below, the quad is silver with moonlight."},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "My mother shut down the program after the dance. She blamed herself for twenty-five years."},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "I became a biologist to fix it. I've been terrified ever since."},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "I'm not brave, Mr. Bart. I'm only stubborn."},
+      {"op": "say", "who": "patricia", "expr": "thinking", "text": "You saw through the mustache. I find that unsettling. And pleasant. Mostly unsettling."},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "Do you want to do the right thing? Stop the bloom? End it, once and for all?"},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Let's decide together. In a minute."},
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+        {"op": "say", "who": "patricia", "expr": "serious", "text": "Mr. Bart. I am your professor. The candor has made me say too much. You'll forget it."},
+        {"op": "set", "var": "ending", "n": 4},
+        {"op": "call", "block": "p_react"}
+      ], "else": [
+        {"op": "choice", "id": "c9_p", "prompt": "Patricia waits, hands clasped, very still.", "options": [
+          {"text": "Tell her how you feel", "do": [
+            {"op": "call", "block": "resolve_confess"},
+            {"op": "call", "block": "p_react"}
+          ]},
+          {"text": "Let's stay friends", "do": [
+            {"op": "set", "var": "ending", "n": 3},
+            {"op": "call", "block": "p_react"}
+          ]},
+          {"text": "Not yet. I need to think", "do": [
+            {"op": "set", "var": "ending", "n": 4},
+            {"op": "call", "block": "p_react"}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "p_react": [
+      {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "smile", "text": "Professor. I care about you. A lot. I know the rules. I'm willing to wait."},
+        {"op": "say", "who": "patricia", "expr": "candid", "text": "Ask me again in December. After grades are filed."},
+        {"op": "say", "who": "narrator", "text": "She smiles. It is the most beautiful, terrifying smile Brad has ever seen."}
+      ], "else": [
+        {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Professor. I care about you. I know the rules."},
+          {"op": "say", "who": "patricia", "expr": "smile", "text": "Ask me again in spring. When I've stopped being your professor."}
+        ], "else": [
+          {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "patricia", "expr": "smile", "text": "Thank you, Mr. Bart. For being a friend. I haven't had many."}
+          ], "else": [
+            {"op": "say", "who": "patricia", "expr": "neutral", "text": "Of course. When you know. Or not at all. Either is acceptable."}
+          ]}
+        ]}
+      ]}
+    ],
+
+    "D_close": [
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "music", "id": "bloom_theme"},
+      {"op": "map", "id": "M14", "spawn": "dance_floor", "time": "midnight"},
+      {"op": "fade", "to": "clear", "ms": 400},
+      {"op": "say", "who": "narrator", "text": "Midnight. The moon is at its height. Everyone in the hall glows a little."},
+      {"op": "say", "who": "narrator", "text": "Gord crosses the floor like a man crossing a river."},
+      {"op": "say", "who": "gord", "expr": "worried", "text": "Brad. I wrote the note. I made a promise to your father."},
+      {"op": "say", "who": "gord", "expr": "sad", "text": "I never wanted to lie to you. I wanted to keep you out of it."},
+      {"op": "say", "who": "brad", "expr": "sad", "text": "What was the promise?"},
+      {"op": "say", "who": "gord", "expr": "sad", "text": "Your dad should be the one to tell you. He's coming for Thanksgiving."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "He's coming?"},
+      {"op": "say", "who": "gord", "expr": "smile", "text": "I called him last night. He cried. Then he said he was in a meeting."},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "I have the neutralizer. Two hundred vials. It will end the bloom, and the pumpkins, and tonight."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Your father isn't here. His boots are. It's your call."},
+      {"op": "choice", "id": "c9_cure", "prompt": "The pumpkins hum. The whole hall waits.", "options": [
+        {"text": "Cure the pumpkins", "do": [
+          {"op": "set", "var": "F_CURED", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "End it. Safely. Before someone gets hurt."},
+          {"op": "say", "who": "narrator", "text": "Vials go into the punch bowl and out the window. The hum slows. The glow dims."},
+          {"op": "say", "who": "narrator", "text": "Three miles away, Patch Seven sighs. The hall is quiet. Everyone remembers everything they said."},
+          {"op": "say", "who": "narrator", "text": "While the others look away, Gord quietly pockets a single seed."}
+        ]},
+        {"text": "Let the town be honest tonight", "do": [
+          {"op": "set", "var": "F_CURED", "n": 0},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Let them have tonight. It's one night of truth. It might do some good."},
+          {"op": "say", "who": "patricia", "expr": "thinking", "text": "That is... unscientific."},
+          {"op": "say", "who": "gord", "expr": "smile", "text": "It's right."},
+          {"op": "say", "who": "dean", "text": "Next year's dance will have a warning poster! And a squirrel-free zone!"},
+          {"op": "say", "who": "narrator", "text": "The dance goes on. By half past midnight the glow fades. Mrs. Alder dances with the Dean."},
+          {"op": "say", "who": "narrator", "text": "Nobody ever speaks of it again."}
+        ]}
+      ]},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "In the moonlight, the crow rises from the roof carrying a single pumpkin seed. Brad watches it go."},
+      {"op": "fade", "to": "black", "ms": 600},
+      {"op": "music", "id": "farm_theme"},
+      {"op": "map", "id": "M03", "spawn": "road_start", "time": "midnight"},
+      {"op": "fade", "to": "clear", "ms": 600},
+      {"op": "say", "who": "narrator", "text": "Late. Brad and Gord walk the farm road home under the moon."},
+      {"op": "sfx", "id": "phone_buzz"},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "narrator", "style": "phone", "text": "Jane: Home safe? Dad says you cried. I told him you didn't."}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "narrator", "style": "phone", "text": "Sandra: Made it home. Don't text back. (Please text back.)"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "narrator", "style": "phone", "text": "Georgia: Home safe?? I made forty croissants at 2 AM! Come eat!"}
+          ], "else": [
+            {"op": "say", "who": "narrator", "style": "phone", "text": "Patricia: Mr. Bart. Please get some sleep. You have class tomorrow. -P.P."}
+          ]}
+        ]}
+      ]},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Your father's letter. Eleven pages."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "You read the first."},
+      {"op": "say", "who": "gord", "expr": "smile", "text": "Read the second tonight. Between dances."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "What did it say?"},
+      {"op": "say", "who": "gord", "expr": "smile", "text": "That he's proud. That he's sorry. And that you should wear a hat."},
+      {"op": "if", "test": {"var": "F_CURED", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "gord", "expr": "sad", "text": "The patch is quiet. First time in twenty-five years."}
+      ], "else": [
+        {"op": "say", "who": "gord", "expr": "neutral", "text": "The patch is still glowing. I'll sit up with it."}
+      ]},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "I'm glad I came here, Uncle Gord."},
+      {"op": "say", "who": "gord", "expr": "smile", "text": "Me too, boy."},
+      {"op": "fade", "to": "black", "ms": 1000},
+      {"op": "say", "who": "narrator", "text": "A month later. Thanksgiving. The first snow."},
+      {"op": "set", "var": "scene", "n": 10},
+      {"op": "end"}
+    ]
+
+  }
+}

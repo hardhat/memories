@@ -77,5 +77,11 @@
     "tiles": null,
     "spawns": ["bleachers", "field"],
     "triggers": []
+  },
+  "M14": {
+    "name": "Great Hall",
+    "tiles": null,
+    "spawns": ["entrance", "dance_floor", "punch_table", "balcony", "roof"],
+    "triggers": ["chat_jane", "chat_sandra", "chat_georgia", "chat_patricia", "chat_gord", "crow_perch"]
   }
 }

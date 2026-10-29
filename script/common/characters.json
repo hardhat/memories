@@ -15,6 +15,7 @@
   "dean": {"name": "Dean Whitlock", "portrait": false},
   "tobias": {"name": "Tobias", "portrait": false},
   "gourd": {"name": "Mr. Gourd", "portrait": false},
+  "student": {"name": "Student", "portrait": false},
   "leader": {"name": "Icebreaker Leader", "portrait": false},
   "brad": {
     "name": "Brad",
