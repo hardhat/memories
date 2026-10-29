@@ -1,0 +1,46 @@
+{
+  "_doc": "'have' expressions exist on the current art sheets. 'todo' expressions are listed in art/art-todo.md and may be used in scripts before the art lands (the engine falls back to the first 'have' expression). Brad is always the left portrait; everyone else is on the right.",
+  "narrator": {"name": "", "portrait": false},
+  "brad": {
+    "name": "Brad",
+    "side": "left",
+    "sheet": "art/brad-bart.png",
+    "have": [],
+    "todo": ["neutral", "smile", "laugh", "surprised", "embarrassed", "worried", "determined", "confused", "candid", "sad"]
+  },
+  "gord": {
+    "name": "Gord",
+    "side": "right",
+    "sheet": "art/gord-mcvine.png",
+    "have": ["neutral", "smile", "surprised", "angry"],
+    "todo": ["worried", "sad"]
+  },
+  "jane": {
+    "name": "Jane",
+    "side": "right",
+    "sheet": "art/jane-mcvine.png",
+    "have": ["smile", "wink", "serious", "surprised"],
+    "todo": ["neutral", "worried", "laugh", "candid"]
+  },
+  "sandra": {
+    "name": "Sandra",
+    "side": "right",
+    "sheet": "art/sandra-stump.png",
+    "have": ["neutral", "slight_smile", "annoyed", "surprised"],
+    "todo": ["mortified", "smirk", "deadpan", "smile"]
+  },
+  "georgia": {
+    "name": "Georgia",
+    "side": "right",
+    "sheet": "art/georgia-grove.png",
+    "have": ["neutral", "smile", "surprised", "wink"],
+    "todo": ["laugh", "worried", "embarrassed", "thinking"]
+  },
+  "patricia": {
+    "name": "Patricia",
+    "side": "right",
+    "sheet": "art/prof-patricia-peters.png",
+    "have": ["neutral", "smile", "serious", "thinking"],
+    "todo": ["flustered", "frustrated", "scared", "cold", "candid"]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "_doc": "Map ids from section 4 of script-plan.md. Only maps used by scripted scenes list spawns and triggers. Add entries as new scenes are written. 'tiles' is null until the tile data exists.",
+  "M01": {
+    "name": "Town Square",
+    "tiles": null,
+    "spawns": ["bus_stop"],
+    "triggers": ["noticeboard", "fountain", "main_street_entry"]
+  },
+  "M02": {
+    "name": "Main Street",
+    "tiles": null,
+    "spawns": ["square_entry", "cafe_door", "tavern_door", "college_gate"],
+    "triggers": ["cafe_door", "tavern_door", "college_gate", "farm_road_exit"]
+  },
+  "M03": {
+    "name": "Farm Road",
+    "tiles": null,
+    "spawns": ["road_start"],
+    "triggers": ["farm_sign"]
+  },
+  "M04": {
+    "name": "McVine Farm",
+    "tiles": null,
+    "spawns": ["farm_gate", "barn"],
+    "triggers": []
+  },
+  "M05": {
+    "name": "Farmhouse (kitchen and attic)",
+    "tiles": null,
+    "spawns": ["kitchen_table", "attic"],
+    "triggers": []
+  },
+  "M11": {
+    "name": "Grove Cafe interior",
+    "tiles": null,
+    "spawns": ["door"],
+    "triggers": []
+  }
+}

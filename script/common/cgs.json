@@ -1,0 +1,8 @@
+{
+  "_doc": "Special images. 'file' is null until the art exists. Add entries as scenes are scripted.",
+  "CG-01": {
+    "scene": "S1",
+    "desc": "Attic window at dusk: glowing Patch 7 in the distance, the crow on the sill",
+    "file": null
+  }
+}
