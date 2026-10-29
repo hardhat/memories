@@ -8,6 +8,8 @@
   "announcer": {"name": "Announcer", "portrait": false},
   "judge": {"name": "Judge", "portrait": false},
   "freshman": {"name": "Freshman", "portrait": false},
+  "librarian": {"name": "Mrs. Alder", "portrait": false},
+  "janitor": {"name": "Mr. Pruitt", "portrait": false},
   "leader": {"name": "Icebreaker Leader", "portrait": false},
   "brad": {
     "name": "Brad",

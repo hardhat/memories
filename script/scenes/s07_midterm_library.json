@@ -1,0 +1,404 @@
+{
+  "id": "s07",
+  "title": "Midterm Library",
+  "entry": "A_open",
+  "blocks": {
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 7},
+      {"op": "set", "var": "study_pts", "n": 0},
+      {"op": "set", "var": "leads", "n": 0},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "library_theme"},
+      {"op": "map", "id": "M10", "spawn": "door", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "Sunday night. Midterms start in twelve hours. The library is a battlefield of snacks and panic."},
+      {"op": "say", "who": "narrator", "text": "Students sleep on beanbags. Someone built a fort of encyclopedias. One pair of earplugs is a relic."},
+      {"op": "say", "who": "librarian", "text": "Quiet hours are now."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "When do they end?"},
+      {"op": "say", "who": "librarian", "text": "When I say."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Mrs. Alder, do you have anything on the Pumpkin Research Program?"},
+      {"op": "say", "who": "librarian", "text": "Never heard of it."},
+      {"op": "say", "who": "librarian", "text": "...The archive has been closed since 1999. Quiet hours."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "She said 'archive' like I'd asked about her private life."},
+      {"op": "sfx", "id": "phone_buzz"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Dad: Good luck on your midterms! Study hard! Don't eat anything glowing!"},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Don't eat anything glowing? How does he know about the glowing?"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Brad: Dad, what was the Pumpkin Research Program?"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Dad: Library closes at midnight, right? Better study! Love you!"},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "He did it again. Fine. I'll find out myself."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Brad! I've got seventeen highlighters and a plan! Study group at eleven!"},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I'm not asleep. I'm resting my eyes. Aggressively."},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "Snacks! Snacks for the people!"},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "No eating in the stacks, Ms. Grove. Mr. Bart, nor in the aisles."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Okay. Three hours until midnight. Midterm and mystery. Let's go."},
+      {"op": "goto", "block": "B_slots"}
+    ],
+
+    "B_slots": [
+      {"op": "say", "who": "narrator", "text": "The wall clock reads nine. The library closes at midnight. Brad has three time slots."},
+      {"op": "tutorial", "id": "slots", "text": "Each slot: study, or search for the archive. Study right twice to pass. Search twice to find a way in. You can't do both."},
+      {"op": "choice", "id": "c7_slot1", "prompt": "Slot 1 of 3. Nine o'clock.", "options": [
+        {"text": "Study for the midterm", "do": [{"op": "call", "block": "study_1"}]},
+        {"text": "Search for the archive", "do": [{"op": "call", "block": "inv_1"}]}
+      ]},
+      {"op": "sfx", "id": "clock_chime"},
+      {"op": "choice", "id": "c7_slot2", "prompt": "Slot 2 of 3. Ten o'clock.", "options": [
+        {"text": "Study for the midterm", "do": [{"op": "call", "block": "study_2"}]},
+        {"text": "Search for the archive", "do": [{"op": "call", "block": "inv_2"}]}
+      ]},
+      {"op": "sfx", "id": "clock_chime"},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "A crow flaps through the reading room, chased by Mrs. Alder with a rolled-up newspaper."},
+      {"op": "say", "who": "librarian", "text": "OUT! Quiet hours!"},
+      {"op": "say", "who": "narrator", "text": "The crow drops a flashcard on Brad's table. It reads: Powerhouse of the cell? Back: PUMPKIN."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "Even the crow has been talking to Jane."},
+      {"op": "say", "who": "narrator", "text": "The crow exits through a high window. Mrs. Alder turns to Brad. 'You did not see that.'"},
+      {"op": "choice", "id": "c7_slot3", "prompt": "Slot 3 of 3. Eleven o'clock.", "options": [
+        {"text": "Study for the midterm", "do": [{"op": "call", "block": "study_3"}]},
+        {"text": "Search for the archive", "do": [{"op": "call", "block": "inv_3"}]}
+      ]},
+      {"op": "sfx", "id": "clock_chime"},
+      {"op": "if", "test": {"var": "leads", "cmp": "gte", "n": 2}, "then": [
+        {"op": "say", "who": "narrator", "text": "Brad knows exactly where the archive is, and has a decent idea how to get in."}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "The archive stays a locked door. Not tonight."}
+      ]},
+      {"op": "say", "who": "narrator", "text": "Eleven o'clock. The crowd thins. Someone approaches Brad's table."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "call", "block": "C_j"}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "call", "block": "C_s"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "call", "block": "C_g"}
+          ], "else": [
+            {"op": "call", "block": "C_p"}
+          ]}
+        ]}
+      ]},
+      {"op": "goto", "block": "D_close"}
+    ],
+
+    "study_1": [
+      {"op": "say", "who": "narrator", "text": "Brad opens his biology notes. In the margins, in Jane's handwriting: THIS WILL BE ON THE EXAM."},
+      {"op": "say", "who": "narrator", "text": "Flashcard: What is the powerhouse of the cell?"},
+      {"op": "choice", "id": "c7_q1", "prompt": "The powerhouse of the cell is...", "options": [
+        {"text": "The nucleus", "do": [
+          {"op": "say", "who": "narrator", "text": "Wrong. The nucleus is the brain. Brad underlines the right answer twice."}
+        ]},
+        {"text": "Mitochondria", "do": [
+          {"op": "add", "var": "study_pts", "n": 1},
+          {"op": "say", "who": "narrator", "text": "Correct! Brad feels powerful, and a little smug."}
+        ]},
+        {"text": "A pumpkin", "do": [
+          {"op": "say", "who": "narrator", "text": "Jane's voice echoes in his head: 'A pumpkin.' It is not. It is not a pumpkin."}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "Jane slides a pink highlighter across the table, wearing a conspiratorial grin."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Use the good one. Don't tell the others I have a good one."}
+    ],
+
+    "study_2": [
+      {"op": "say", "who": "narrator", "text": "The midterm has a Local Knowledge section. Ravenwood is thorough about its own legend."},
+      {"op": "say", "who": "narrator", "text": "Flashcard: How many crows appear on the Ravenwood crest?"},
+      {"op": "choice", "id": "c7_q2", "prompt": "The crest shows...", "options": [
+        {"text": "Three crows", "do": [
+          {"op": "say", "who": "narrator", "text": "Wrong. Sandra's voice: 'One. It's smug.' Brad underlines the right answer twice."}
+        ]},
+        {"text": "One crow", "do": [
+          {"op": "add", "var": "study_pts", "n": 1},
+          {"op": "say", "who": "narrator", "text": "Correct! One smug crow. Brad hears Sandra's voice and smiles."}
+        ]},
+        {"text": "Seven crows", "do": [
+          {"op": "say", "who": "narrator", "text": "Wrong. Seven would be a lot of crows. Even for Ravenwood."}
+        ]}
+      ]},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "One crow."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Sandra, you're asleep."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I'm listening. Aggressively."}
+    ],
+
+    "study_3": [
+      {"op": "say", "who": "narrator", "text": "Flashcard: In what year was Ravenwood College founded?"},
+      {"op": "choice", "id": "c7_q3", "prompt": "Ravenwood was founded in...", "options": [
+        {"text": "1887", "do": [
+          {"op": "add", "var": "study_pts", "n": 1},
+          {"op": "say", "who": "narrator", "text": "Correct! The year of the fountain, and the man who loved fountains."}
+        ]},
+        {"text": "1788", "do": [
+          {"op": "say", "who": "narrator", "text": "Wrong. Not even close. Brad underlines the right answer twice."}
+        ]},
+        {"text": "1980", "do": [
+          {"op": "say", "who": "narrator", "text": "Wrong. The college is old. The bunting is from 1980."}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "A brownie lands on the table. Georgia grins at him from behind a trolley."},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "Brain fuel. Eat it before Mrs. Alder sees."},
+      {"op": "say", "who": "librarian", "text": "I see everything, Ms. Grove."}
+    ],
+
+    "inv_1": [
+      {"op": "say", "who": "narrator", "text": "Brad checks the card catalog. Nothing under Pumpkin Research Program."},
+      {"op": "say", "who": "narrator", "text": "He wanders into the back stacks. At the end of a dim hall: a steel door marked ARCHIVE. LOCKED."},
+      {"op": "say", "who": "librarian", "text": "Quiet hours!"},
+      {"op": "say", "who": "narrator", "text": "At the end of the hall, Patricia stands before the archive door, looking at it too long."},
+      {"op": "say", "who": "narrator", "text": "Brad ducks behind a shelf. When he peeks out, she is gone."},
+      {"op": "add", "var": "leads", "n": 1}
+    ],
+
+    "inv_2": [
+      {"op": "say", "who": "narrator", "text": "A clipboard hangs beside the archive door: the sign-out sheet. Brad reads the last entries."},
+      {"op": "say", "who": "narrator", "text": "E. Peters, 1999. And, in fresh ink: P. Peters. Last Thursday."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Patricia was here. After the tart. What was she looking for?"},
+      {"op": "add", "var": "leads", "n": 1}
+    ],
+
+    "inv_3": [
+      {"op": "say", "who": "narrator", "text": "The archive door has two locks. One is ancient. The other is shiny and new."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Someone has been protecting this recently. Someone who didn't want it opened."},
+      {"op": "say", "who": "librarian", "text": "...Quiet hours, young man."},
+      {"op": "say", "who": "librarian", "text": "Some doors are locked for reasons."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "What reasons?"},
+      {"op": "say", "who": "librarian", "text": "Good ones."},
+      {"op": "add", "var": "leads", "n": 1}
+    ],
+
+    "C_j": [
+      {"op": "map", "id": "M10", "spawn": "stacks", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "Jane sets down two thermoses and a color-coded study plan. Brad's name is in a highlighter."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Mitochondria flashcards at eleven. Break at midnight. Panic at one."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Hour one: mitochondria. Hour two: cheese. Hour three: weeping."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "Cheese?"},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Emotional support."},
+      {"op": "if", "test": {"var": "leads", "cmp": "gte", "n": 2}, "then": [
+        {"op": "say", "who": "jane", "expr": "serious", "text": "You've been staring at the archive door all night. I'm not blind."},
+        {"op": "say", "who": "jane", "expr": "worried", "text": "Mr. Pruitt, the janitor, buys pumpkins from Dad. He owes us. He has the key."},
+        {"op": "choice", "id": "c7_j", "prompt": "Jane offers you the key, and the study plan.", "options": [
+          {"text": "Study with Jane", "do": [
+            {"op": "add", "var": "aff_j", "n": 2},
+            {"op": "add", "var": "study_pts", "n": 1},
+            {"op": "say", "who": "brad", "expr": "smile", "text": "The archive can wait. Let's study."},
+            {"op": "say", "who": "jane", "expr": "smile", "text": "You chose cell structure over a secret room. That's romantic, in a way."},
+            {"op": "say", "who": "narrator", "text": "They quiz each other until midnight. Brad understands mitochondria better than he ever has."}
+          ]},
+          {"text": "Sneak into the archive", "do": [
+            {"op": "add", "var": "aff_j", "n": 1},
+            {"op": "set", "var": "F_ARCHIVE_OPEN", "n": 1},
+            {"op": "say", "who": "jane", "expr": "wink", "text": "I'll cover you. Ten minutes. Go."},
+            {"op": "say", "who": "janitor", "text": "Ten minutes. And you didn't get it from me."},
+            {"op": "call", "block": "archive_scene"},
+            {"op": "say", "who": "jane", "expr": "serious", "text": "Find anything?"},
+            {"op": "say", "who": "brad", "expr": "worried", "text": "Yes. Not tonight, though. I need to think."},
+            {"op": "say", "who": "jane", "expr": "smile", "text": "I won't ask. When you're ready."}
+          ]}
+        ]}
+      ], "else": [
+        {"op": "add", "var": "aff_j", "n": 2},
+        {"op": "add", "var": "study_pts", "n": 1},
+        {"op": "say", "who": "narrator", "text": "They quiz each other until midnight. Jane's handwriting is cheerfully terrifying."},
+        {"op": "say", "who": "jane", "expr": "wink", "text": "You're better at this than you think. Brad Bart, the unlikely biologist."}
+      ]}
+    ],
+
+    "C_s": [
+      {"op": "map", "id": "M10", "spawn": "stacks", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "Sandra drags her beanbag next to Brad's table and sits upside down."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I made a list of things I hate about exams. Seven pages. Want to read it?"},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Sure."},
+      {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Item one: exams. Items two through forty: also exams."},
+      {"op": "if", "test": {"var": "leads", "cmp": "gte", "n": 2}, "then": [
+        {"op": "say", "who": "sandra", "expr": "smirk", "text": "You've been circling the archive like a moth. I've been watching."},
+        {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "I've wanted to open that door for three years."},
+        {"op": "say", "who": "narrator", "text": "She pulls a bobby pin from her hair and tilts her head at the lock."},
+        {"op": "choice", "id": "c7_s", "prompt": "Sandra is already kneeling at the lock.", "options": [
+          {"text": "Go in with her", "do": [
+            {"op": "add", "var": "aff_s", "n": 2},
+            {"op": "set", "var": "F_ARCHIVE_OPEN", "n": 1},
+            {"op": "say", "who": "narrator", "text": "Click. Click. A very satisfying click. The old lock gives way."},
+            {"op": "say", "who": "sandra", "expr": "smirk", "text": "Ladies first."},
+            {"op": "call", "block": "archive_scene"},
+            {"op": "say", "who": "sandra", "expr": "neutral", "text": "The 'Halloween dance incident'. It's in my grandfather's ledger too."},
+            {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Now we both know. You're stuck with me."}
+          ]},
+          {"text": "Obey the No Entry sign", "do": [
+            {"op": "add", "var": "aff_s", "n": 1},
+            {"op": "add", "var": "study_pts", "n": 1},
+            {"op": "say", "who": "brad", "expr": "worried", "text": "The sign says No Entry. Maybe we shouldn't."},
+            {"op": "say", "who": "sandra", "expr": "smirk", "text": "Coward. Fine. I'll go alone. You study."},
+            {"op": "say", "who": "narrator", "text": "Ten minutes later, Sandra reappears, dusty and pleased."},
+            {"op": "say", "who": "sandra", "expr": "neutral", "text": "Last page of the binder. 'PROGRAM TERMINATED. Cause: Halloween dance incident.'"},
+            {"op": "setbit", "bit": "CL7"},
+            {"op": "say", "who": "brad", "expr": "surprised", "text": "The dance. Thank you for telling me."},
+            {"op": "say", "who": "sandra", "expr": "smirk", "text": "You owe me a coffee. Black. Like my soul."}
+          ]}
+        ]}
+      ], "else": [
+        {"op": "add", "var": "aff_s", "n": 1},
+        {"op": "add", "var": "study_pts", "n": 1},
+        {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Quiz time. What year was the fountain built? Don't say 'when the man fell in.'"},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "1887?"},
+        {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Correct. You're learning. It's disturbing."},
+        {"op": "say", "who": "narrator", "text": "Sandra drills him until midnight. It's the best study session of his life."}
+      ]}
+    ],
+
+    "C_g": [
+      {"op": "map", "id": "M10", "spawn": "stacks", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "A snack trolley rolls up. On it: brownies, chips, and a plate labeled FOCUS FUDGE (UNTESTED)."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Brain food! For you! And for me!"},
+      {"op": "say", "who": "georgia", "expr": "thinking", "text": "Oh! Weirdest thing. A gentleman came into the cafe. Trench coat, huge sunglasses, a very fake mustache."},
+      {"op": "say", "who": "georgia", "expr": "thinking", "text": "He bought twenty pumpkin pies and asked if any were from the back patch."},
+      {"op": "say", "who": "georgia", "expr": "thinking", "text": "Exact change. Tipped in pumpkin seeds."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "A man in a fake mustache, buying back-patch pumpkins?"},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "Very polite! A bit damp."},
+      {"op": "choice", "id": "c7_g", "prompt": "Georgia holds out the brownies.", "options": [
+        {"text": "Share snacks, study later", "do": [
+          {"op": "add", "var": "aff_g", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I'll eat. Then I'll study."},
+          {"op": "say", "who": "narrator", "text": "They eat, laugh, and gossip. Georgia nudges the trolley and it rolls down the hall."},
+          {"op": "if", "test": {"var": "leads", "cmp": "gte", "n": 2}, "then": [
+            {"op": "sfx", "id": "crash"},
+            {"op": "say", "who": "narrator", "text": "The trolley slams against the archive door. The old lock cracks. The door swings open."},
+            {"op": "say", "who": "georgia", "expr": "surprised", "text": "Oops! I only wanted my trolley back!"},
+            {"op": "set", "var": "F_ARCHIVE_OPEN", "n": 1},
+            {"op": "call", "block": "archive_scene"},
+            {"op": "say", "who": "georgia", "expr": "worried", "text": "Is that Gord? When he was young? He looks sad even then."}
+          ]}
+        ]},
+        {"text": "Push her to focus", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "add", "var": "study_pts", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Georgia, I have a midterm in nine hours. Let's focus."},
+          {"op": "say", "who": "georgia", "expr": "worried", "text": "Fine. Focus. I'll eat a sad rice cake."},
+          {"op": "say", "who": "narrator", "text": "They study. Georgia tries very hard to be quiet, and mostly fails."}
+        ]}
+      ]}
+    ],
+
+    "C_p": [
+      {"op": "map", "id": "M10", "spawn": "stacks", "time": "night"},
+      {"op": "if", "test": {"var": "leads", "cmp": "gte", "n": 2}, "then": [
+        {"op": "say", "who": "narrator", "text": "At the end of the dim hall, the archive door is ajar. A line of light shows beneath it."},
+        {"op": "say", "who": "brad", "expr": "worried", "text": "Someone left it open."},
+        {"op": "set", "var": "F_ARCHIVE_OPEN", "n": 1},
+        {"op": "call", "block": "archive_scene"},
+        {"op": "sfx", "id": "footsteps"},
+        {"op": "say", "who": "patricia", "expr": "scared", "text": "Mr. Bart."},
+        {"op": "if", "test": {"var": "F_EXPLOITED_CANDOR", "cmp": "eq", "n": 1}, "then": [
+          {"op": "say", "who": "patricia", "expr": "cold", "text": "I trusted you with a half hour of honesty. You used it. And now I find you here."}
+        ], "else": [
+          {"op": "say", "who": "patricia", "expr": "serious", "text": "I'm not angry. I'm... frightened. What are you doing in my mother's archive?"}
+        ]},
+        {"op": "choice", "id": "c7_p", "prompt": "Patricia blocks the doorway.", "options": [
+          {"text": "Tell her everything", "do": [
+            {"op": "add", "var": "aff_p", "n": 2},
+            {"op": "say", "who": "brad", "expr": "determined", "text": "The note. The soil. Gord's promise. The binder. I want to understand."},
+            {"op": "say", "who": "patricia", "expr": "candid", "text": "My mother told me once: some honesty is a kindness. Some is a flood."},
+            {"op": "say", "who": "patricia", "expr": "thinking", "text": "She resigned the week after the dance. She never spoke of it again."},
+            {"op": "say", "who": "patricia", "expr": "smile", "text": "Thank you for telling me. I think we're on the same side."}
+          ]},
+          {"text": "Lie: I got lost", "do": [
+            {"op": "set", "var": "F_LIED_TO_PATRICIA", "n": 1},
+            {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I got lost. Looking for the bathroom."},
+            {"op": "say", "who": "patricia", "expr": "cold", "text": "In a locked archive. At midnight. With a flashlight. Lost."},
+            {"op": "say", "who": "patricia", "expr": "cold", "text": "I won't press. But I know when I'm being lied to, Mr. Bart."}
+          ]},
+          {"text": "Show her the note", "do": [
+            {"op": "add", "var": "aff_p", "n": 1},
+            {"op": "say", "who": "brad", "expr": "worried", "text": "Someone left this in my jacket at Homecoming."},
+            {"op": "say", "who": "patricia", "expr": "scared", "text": "...That is Gordon's hand."},
+            {"op": "say", "who": "patricia", "expr": "thinking", "text": "So he is trying to tell you. And he can't. I understand better than you think."}
+          ]}
+        ]},
+        {"op": "say", "who": "patricia", "expr": "neutral", "text": "Mr. Bart. Go home. Sleep. You have a midterm in eight hours."}
+      ], "else": [
+        {"op": "add", "var": "aff_p", "n": 1},
+        {"op": "add", "var": "study_pts", "n": 1},
+        {"op": "say", "who": "narrator", "text": "Patricia pauses at his table. She sits across from him, clipboard on her knee."},
+        {"op": "say", "who": "patricia", "expr": "smile", "text": "A study tip. The exam rewards understanding, not memorization. Mostly."},
+        {"op": "say", "who": "patricia", "expr": "neutral", "text": "Ask me one question about the cell. I'll tell you if it's on the test."},
+        {"op": "say", "who": "narrator", "text": "It's the most useful hour of Brad's semester."}
+      ]}
+    ],
+
+    "archive_scene": [
+      {"op": "fade", "to": "black", "ms": 300},
+      {"op": "music", "id": "archive_theme"},
+      {"op": "map", "id": "M10", "spawn": "archive", "time": "night"},
+      {"op": "fade", "to": "clear", "ms": 300},
+      {"op": "say", "who": "narrator", "text": "The archive is a narrow room of steel shelves and dust. Brad's flashlight sweeps the boxes."},
+      {"op": "say", "who": "narrator", "text": "One box is marked in faded block capitals: PUMPKIN RESEARCH PROGRAM."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "That's it."},
+      {"op": "say", "who": "narrator", "text": "Inside: a binder, a ledger, and a stack of photographs."},
+      {"op": "say", "who": "narrator", "text": "The first photo: a young, bearded Gord hugging a very large pumpkin."},
+      {"op": "say", "who": "narrator", "text": "The second: Brad's father, in the same boots, scowling at a pumpkin."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "Dad looks exactly like I do when I'm hauling pumpkins."},
+      {"op": "say", "who": "narrator", "text": "The binder is titled: PROJECT HONEST HARVEST. Director: Dr. E. Peters. Researchers: G. McVine, D. Bart."},
+      {"op": "say", "who": "narrator", "text": "In the margin, in handwriting Brad knows from birthday cards: I HATE PUMPKINS. -D."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "That's Dad."},
+      {"op": "say", "who": "narrator", "text": "The observation log reads: 'Subjects exhibit uncontrolled candor after ingestion. Duration: ten minutes.'"},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Ten minutes. Gord said ten in his day."},
+      {"op": "say", "who": "narrator", "text": "The last page is a typed memo, stamped SEALED."},
+      {"op": "cg", "id": "CG-07"},
+      {"op": "say", "who": "narrator", "text": "PROGRAM TERMINATED. Cause: Halloween dance incident. All samples sealed. Sample 7 retained by Dr. E. Peters."},
+      {"op": "say", "who": "narrator", "text": "Compound blooms under a Halloween full moon. Recommend permanent destruction."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "The dance. The bloom. A Halloween full moon."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "This year, Halloween is a full moon."},
+      {"op": "say", "who": "narrator", "text": "Taped inside the cover is one more photo: three young people laughing, arms around each other."},
+      {"op": "setbit", "bit": "CL7"},
+      {"op": "cg_off"},
+      {"op": "say", "who": "brad", "expr": "sad", "text": "They were friends. Then something happened at a dance, and they pretended it never existed."},
+      {"op": "fade", "to": "black", "ms": 300},
+      {"op": "music", "id": "library_theme"},
+      {"op": "map", "id": "M10", "spawn": "stacks", "time": "night"},
+      {"op": "fade", "to": "clear", "ms": 300}
+    ],
+
+    "D_close": [
+      {"op": "fade", "to": "black", "ms": 500},
+      {"op": "music", "id": "lecture_theme"},
+      {"op": "map", "id": "M07", "spawn": "seats", "time": "morning"},
+      {"op": "fade", "to": "clear", "ms": 500},
+      {"op": "say", "who": "narrator", "text": "Monday morning. The midterm. Brad sits in the lecture hall with a pencil and four hours of sleep."},
+      {"op": "if", "test": {"var": "study_pts", "cmp": "gte", "n": 2}, "then": [
+        {"op": "set", "var": "MIDTERM_PASS", "n": 1},
+        {"op": "say", "who": "narrator", "text": "The questions are fair. The Local Knowledge section is a gift. Brad finishes with minutes to spare."},
+        {"op": "say", "who": "narrator", "text": "A week later, the result: B+. Under it, in neat handwriting: Good work, Mr. Bart. -P. Peters."}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "The questions are hard. The Local Knowledge section is cruel. Brad guesses, a lot."},
+        {"op": "say", "who": "narrator", "text": "A week later, the result: D-. Under it, in neat handwriting: See me. -P. Peters."}
+      ]},
+      {"op": "if", "test": {"var": "F_LIED_TO_PATRICIA", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "narrator", "text": "Beneath that, in smaller letters: Honesty also counts."}
+      ]},
+      {"op": "if", "test": {"bit": "CL7"}, "then": [
+        {"op": "say", "who": "brad", "expr": "determined", "text": "The dance. A Halloween full moon. Gord's promise. This is all going to come together on Halloween."}
+      ], "else": [
+        {"op": "say", "who": "brad", "expr": "worried", "text": "Still nothing about the dance. But something big is coming. I can feel it."}
+      ]},
+      {"op": "map", "id": "M06", "spawn": "quad", "time": "afternoon"},
+      {"op": "say", "who": "narrator", "text": "A week later, the quad. Everyone compares grades like survivors of a small, intellectual war."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "jane", "expr": "smile", "text": "Pizza at the farm tonight. Pass or fail. That's the rule."}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "I survived. You survived. Coffee. Black. On you."}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "georgia", "expr": "laugh", "text": "Celebration cupcakes! Or consolation cupcakes! Same cupcakes!"}
+          ], "else": [
+            {"op": "say", "who": "patricia", "expr": "neutral", "text": "Mr. Bart. Your result is on the board. Try not to look so worried."}
+          ]}
+        ]}
+      ]},
+      {"op": "sfx", "id": "phone_buzz"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Gord: SATURDAY. TOWN MARKET. YOU'RE SELLING. BRING CHARM."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Charm. I have charm. I think."},
+      {"op": "fade", "to": "black", "ms": 800},
+      {"op": "set", "var": "scene", "n": 8},
+      {"op": "end"}
+    ]
+
+  }
+}

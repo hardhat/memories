@@ -270,7 +270,7 @@ That is 4 routes x 3 endings plus one shared Farm ending (13 total). The cost is
 - Midterm panic: a library full of snacks, flashcards, and one pair of earplugs. The library's famously unreliable quiet hours.
 
 **Act B: Shared middle (study vs investigate)**
-- The player has **three time slots** before the library closes. Each slot is either **Study** (a mini-quiz of 3 questions drawn from game lore; correct answers set `MIDTERM_PASS`) or **Investigate** (leads to the archive). Studying every slot means no clue. Investigating every slot means a failed midterm (epilogue consequence).
+- The player has **three time slots** before the library closes. Each slot is either **Study** (one lore quiz question; a correct answer adds 1 to `study_pts`) or **Investigate** (adds 1 to `leads`). Two or more `study_pts` sets `MIDTERM_PASS`; two or more `leads` finds a way into the archive. Three slots cannot satisfy both, so the player must choose (route beats can add a study point). A failed midterm only changes the grade text.
 - The archive door is locked. How it opens depends on the route.
 
 **Act C: Route beats**
