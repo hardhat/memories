@@ -11,7 +11,8 @@
     "scene": {"max": 10, "doc": "Current scene number"},
     "stops": {"max": 3, "doc": "S1: number of town stops made before dusk"},
     "study_pts": {"max": 3, "doc": "S7: correct study answers and study bonuses (2 or more passes the midterm)"},
-    "leads": {"max": 3, "doc": "S7: archive searches done (2 or more finds a way in)"}
+    "leads": {"max": 3, "doc": "S7: archive searches done (2 or more finds a way in)"},
+    "haggles": {"max": 3, "doc": "S8: customers Brad haggled successfully (2 or more sets F_FARM_MONEY)"}
   },
   "flags": {
     "F_MET_J": "Brad has met Jane",
@@ -38,6 +39,7 @@
     "F_LIED_TO_PATRICIA": "S7: lied to Patricia in the archive",
     "F_ARCHIVE_OPEN": "S7: Brad entered the archive himself",
     "F_WARNED_GEORGIA": "S6/S8: warned Georgia about Patch 7 pumpkins",
+    "F_FARM_MONEY": "S8: Brad's haggling earned the farm a good market day",
     "MIDTERM_PASS": "S7: passed the midterm",
     "F_CURED": "S9: chose to cure the pumpkins"
   },

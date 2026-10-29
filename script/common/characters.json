@@ -10,6 +10,11 @@
   "freshman": {"name": "Freshman", "portrait": false},
   "librarian": {"name": "Mrs. Alder", "portrait": false},
   "janitor": {"name": "Mr. Pruitt", "portrait": false},
+  "bigmel": {"name": "Big Mel", "portrait": false},
+  "hollis": {"name": "Mrs. Hollis", "portrait": false},
+  "dean": {"name": "Dean Whitlock", "portrait": false},
+  "tobias": {"name": "Tobias", "portrait": false},
+  "gourd": {"name": "Mr. Gourd", "portrait": false},
   "leader": {"name": "Icebreaker Leader", "portrait": false},
   "brad": {
     "name": "Brad",

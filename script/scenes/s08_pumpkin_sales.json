@@ -1,0 +1,366 @@
+{
+  "id": "s08",
+  "title": "Pumpkin Sales",
+  "entry": "A_open",
+  "blocks": {
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 8},
+      {"op": "set", "var": "haggles", "n": 0},
+      {"op": "set", "var": "stops", "n": 0},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "market_theme"},
+      {"op": "map", "id": "M01", "spawn": "market_stand", "time": "morning"},
+      {"op": "say", "who": "narrator", "text": "Saturday. Market day. Town Square is a maze of stalls: honey, raven hats, and fake pumpkins."},
+      {"op": "say", "who": "narrator", "text": "The McVine stand holds a pile of pumpkins and a hand-painted sign: McVINE PUMPKINS. HAND-TALKED."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Uncle Gord, I'm not a salesman. I'm a student with a flag."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Smile. Say the price. Don't blink."},
+      {"op": "say", "who": "bigmel", "text": "McVine! Bringing the new kid? He looks like he'd haggle with a sneeze."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Mel."},
+      {"op": "say", "who": "bigmel", "text": "My pumpkins are small and sane. Yours hum."},
+      {"op": "sfx", "id": "pumpkin_hum"},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "They don't hum."},
+      {"op": "say", "who": "gord", "expr": "worried", "text": "...Quietly."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Three customers today. Charm, guilt, or bluff. Pick right."},
+      {"op": "tutorial", "id": "haggle", "text": "Walk up to each customer and press Action. Choose to haggle with charm, guilt, or a bluff."},
+      {"op": "explore", "objective": "haggle",
+        "clock": {"var": "stops", "max": 3, "on_max": [
+          {"op": "goto", "block": "A2_tally"}
+        ]},
+        "triggers": [
+          {"at": "customer_hollis", "once": true, "do": [{"op": "call", "block": "haggle_hollis"}]},
+          {"at": "customer_dean", "once": true, "do": [{"op": "call", "block": "haggle_dean"}]},
+          {"at": "customer_tobias", "once": true, "do": [{"op": "call", "block": "haggle_tobias"}]}
+        ]}
+    ],
+
+    "haggle_hollis": [
+      {"op": "say", "who": "narrator", "text": "Mrs. Hollis, a tiny retiree with a knitting bag, eyes a big pumpkin. She likes polite young men."},
+      {"op": "say", "who": "hollis", "text": "Dear, thirty dollars? I only have twenty."},
+      {"op": "choice", "id": "c8_hollis", "prompt": "How do you haggle with Mrs. Hollis?", "options": [
+        {"text": "Charm", "do": [
+          {"op": "add", "var": "haggles", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "For you, Mrs. Hollis? Twenty is perfect. This one asked for you by name."},
+          {"op": "say", "who": "hollis", "text": "Oh, aren't you sweet! Here's twenty-five!"}
+        ]},
+        {"text": "Guilt", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "Think of the pumpkin's feelings."},
+          {"op": "say", "who": "hollis", "text": "Young man, I've buried three husbands. Don't guilt me. Fifteen."}
+        ]},
+        {"text": "Bluff", "do": [
+          {"op": "say", "who": "brad", "expr": "determined", "text": "It's a rare heirloom!"},
+          {"op": "say", "who": "hollis", "text": "I knew Gord's grandmother. It's a pumpkin. Fifteen."}
+        ]}
+      ]},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "haggle_dean": [
+      {"op": "say", "who": "narrator", "text": "A pompous man in a bow tie examines a pumpkin through a monocle. His name tag reads: DEAN WHITLOCK."},
+      {"op": "say", "who": "dean", "text": "I require a pumpkin of distinction. Something that says: authority."},
+      {"op": "sfx", "id": "squirrel"},
+      {"op": "say", "who": "narrator", "text": "A squirrel pops up on the next stall. The Dean freezes. He does not breathe."},
+      {"op": "say", "who": "dean", "text": "Do not look at it. Do not make eye contact. It is looking at me."},
+      {"op": "choice", "id": "c8_dean", "prompt": "How do you haggle with Dean Whitlock?", "options": [
+        {"text": "Charm", "do": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You look like a man of taste, Dean."},
+          {"op": "say", "who": "dean", "text": "I do not require your affection, young man. Ten dollars."}
+        ]},
+        {"text": "Guilt", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "A farm family is counting on you."},
+          {"op": "say", "who": "dean", "text": "I feel nothing. Ten dollars."}
+        ]},
+        {"text": "Bluff", "do": [
+          {"op": "add", "var": "haggles", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "An heirloom Ravenwood variety. Only three exist. The other two are in the Smithsonian."},
+          {"op": "say", "who": "dean", "text": "Three! I'll take it! Do you have a certificate? Fifty dollars!"}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "The Dean walks off with his pumpkin, glancing over his shoulder at the squirrel the entire way."},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "haggle_tobias": [
+      {"op": "say", "who": "narrator", "text": "A young father with twin toddlers in a wagon eyes the pumpkins. The twins stare at the biggest."},
+      {"op": "say", "who": "tobias", "text": "We're just looking. I'll give you... fifteen. For the small one."},
+      {"op": "choice", "id": "c8_tobias", "prompt": "How do you haggle with Tobias?", "options": [
+        {"text": "Charm", "do": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Great kids. They'll go far."},
+          {"op": "say", "who": "tobias", "text": "I'm exhausted. Fifteen."}
+        ]},
+        {"text": "Guilt", "do": [
+          {"op": "add", "var": "haggles", "n": 1},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "The twins would love the big one. It would be a shame if they went home with a small, sad pumpkin."},
+          {"op": "say", "who": "tobias", "text": "...Ugh. Fine. FINE. Full price."}
+        ]},
+        {"text": "Bluff", "do": [
+          {"op": "say", "who": "brad", "expr": "determined", "text": "A rare heirloom."},
+          {"op": "say", "who": "tobias", "text": "I have a master's in horticulture. Fifteen."}
+        ]}
+      ]},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "A2_tally": [
+      {"op": "if", "test": {"var": "haggles", "cmp": "gte", "n": 2}, "then": [
+        {"op": "set", "var": "F_FARM_MONEY", "n": 1},
+        {"op": "say", "who": "gord", "expr": "smile", "text": "Not bad, boy. Not bad at all."},
+        {"op": "say", "who": "bigmel", "text": "Dang. That kid's got a gift."}
+      ], "else": [
+        {"op": "say", "who": "gord", "expr": "neutral", "text": "Thin. We'll make it up. Somehow."},
+        {"op": "say", "who": "bigmel", "text": "Ha! Sold at a discount!"}
+      ]},
+      {"op": "goto", "block": "B_gourd"}
+    ],
+
+    "B_gourd": [
+      {"op": "music", "id": "mystery_theme"},
+      {"op": "say", "who": "narrator", "text": "A tall figure approaches. Trench coat buttoned to the chin. Saucer sunglasses. A glued-on mustache."},
+      {"op": "say", "who": "gourd", "text": "Good day. I would like forty pumpkins. For carving. Which I enjoy. As a man."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Forty?"},
+      {"op": "say", "who": "gourd", "text": "Yes. The large variety. From the back field. Patch... what number? Seven."},
+      {"op": "say", "who": "narrator", "text": "Gord stands very still. He studies the stranger for a long moment. Then he nods."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Full price."},
+      {"op": "say", "who": "gourd", "text": "Done."},
+      {"op": "say", "who": "bigmel", "text": "FULL price? Nobody pays full price! He didn't even haggle!"},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Sir, your name? For the receipt."},
+      {"op": "say", "who": "gourd", "text": "Mr. Gourd. G-O-U-R-D. Like the vegetable."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "It's a fruit."},
+      {"op": "say", "who": "gourd", "text": "...Like the fruit."},
+      {"op": "say", "who": "narrator", "text": "He pays in cash, exact change. And tips in pumpkin seeds."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Exact change. Pumpkin seeds. That's the man from Georgia's cafe."},
+      {"op": "say", "who": "narrator", "text": "A white van pulls up. A faculty parking permit hangs in the windshield."},
+      {"op": "say", "who": "narrator", "text": "Gord loads forty glowing pumpkins himself."},
+      {"op": "say", "who": "narrator", "text": "Gord shakes Mr. Gourd's hand. For a very long time."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Uncle Gord. Do you know that man?"},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Regular."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "He's never been here."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Regular in spirit."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Brad! Twelve pumpkins, please! Back patch! For the Halloween dance punch!"},
+      {"op": "if", "test": {"var": "F_WARNED_GEORGIA", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "georgia", "expr": "smile", "text": "And I'm mixing them one to four with regular pumpkins, like you said. Thank you again!"},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "That's much safer. Thanks, Georgia."}
+      ], "else": [
+        {"op": "say", "who": "brad", "expr": "worried", "text": "Georgia. Two hundred cups. A full moon. A dance. Those pumpkins hold the thirty minutes."},
+        {"op": "choice", "id": "c8_georgia", "prompt": "Georgia is already counting out the money.", "options": [
+          {"text": "Warn her not to use them", "do": [
+            {"op": "set", "var": "F_WARNED_GEORGIA", "n": 1},
+            {"op": "say", "who": "brad", "expr": "determined", "text": "Georgia. Dilute them. Mix in regular pumpkins. Please. Two hundred people at once is a lot of honesty."},
+            {"op": "say", "who": "georgia", "expr": "worried", "text": "...Oh. I hadn't thought about the crowd."},
+            {"op": "say", "who": "georgia", "expr": "thinking", "text": "One to four. I'll dilute. Thank you for telling me."}
+          ]},
+          {"text": "Let her make the punch", "do": [
+            {"op": "say", "who": "brad", "expr": "embarrassed", "text": "...Never mind. It'll be great."},
+            {"op": "say", "who": "georgia", "expr": "laugh", "text": "It'll be the best punch Ravenwood has ever tasted!"},
+            {"op": "say", "who": "narrator", "text": "She hugs a twelve-pumpkin wheelbarrow and rolls away, humming. The pumpkins hum back."}
+          ]}
+        ]}
+      ]},
+      {"op": "sfx", "id": "van_engine"},
+      {"op": "say", "who": "narrator", "text": "The van starts. It pulls away from the curb, heading for the college."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Uncle Gord, I need ten minutes."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Take twenty."},
+      {"op": "tutorial", "id": "chase", "text": "Follow the van. Walk toward the college gate and press Action at anything in the way."},
+      {"op": "map", "id": "M02", "spawn": "square_entry", "time": "midday"},
+      {"op": "explore", "objective": "chase", "triggers": [
+        {"at": "chase_cart", "once": true, "do": [
+          {"op": "sfx", "id": "crash"},
+          {"op": "say", "who": "narrator", "text": "A vendor's cart of knitted raven hats tips over. Brad dives, rolls, and comes up wearing three of them."},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I'll pay for those!"}
+        ]},
+        {"at": "chase_crowd", "once": true, "do": [
+          {"op": "say", "who": "narrator", "text": "Students block the street. Brad squeezes through, apologizing to nine people and a goat."},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "The van's getting away!"}
+        ]},
+        {"at": "college_gate", "do": [
+          {"op": "goto", "block": "B_dock"}
+        ]}
+      ]}
+    ],
+
+    "B_dock": [
+      {"op": "fade", "to": "black", "ms": 300},
+      {"op": "music", "id": "mystery_theme"},
+      {"op": "map", "id": "M08", "spawn": "loading_dock", "time": "midday"},
+      {"op": "fade", "to": "clear", "ms": 300},
+      {"op": "say", "who": "narrator", "text": "The loading dock behind the science building. The van's back doors are open. Crates line the dock."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Staying quiet. Staying low. I'm a dock plant."},
+      {"op": "cg", "id": "CG-08"},
+      {"op": "say", "who": "narrator", "text": "Mr. Gourd lifts a glowing pumpkin from the van. The coat swings open. Beneath it: one stylish black heel."},
+      {"op": "say", "who": "gourd", "text": "Come along, you horrible thing."},
+      {"op": "say", "who": "narrator", "text": "Mr. Gourd carries the pumpkin through a door marked SCIENCE BUILDING: LABORATORY ENTRANCE."},
+      {"op": "setbit", "bit": "CL8"},
+      {"op": "cg_off"},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "The pumpkins go to the lab. Whoever Mr. Gourd is, he's connected to the college."},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "On the dock rail, a crow watches Brad. It looks like it knows exactly who's under that mustache."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 4}, "then": [
+        {"op": "call", "block": "C_p"}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "Brad slips away before Mr. Gourd returns. He has a stand to run, and a few new questions."},
+        {"op": "fade", "to": "black", "ms": 300},
+        {"op": "map", "id": "M01", "spawn": "market_stand", "time": "afternoon"},
+        {"op": "fade", "to": "clear", "ms": 300},
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+          {"op": "call", "block": "C_j"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+            {"op": "call", "block": "C_s"}
+          ], "else": [
+            {"op": "call", "block": "C_g"}
+          ]}
+        ]}
+      ]},
+      {"op": "goto", "block": "D_close"}
+    ],
+
+    "C_j": [
+      {"op": "say", "who": "jane", "expr": "wink", "text": "There you are! Dad says you chased a mustache across town."},
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I wore three raven hats. It's a long story."},
+      {"op": "say", "who": "bigmel", "text": "McVine girl! A duel! Whoever sells the next pumpkin wins!"},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "You're on, Mel."},
+      {"op": "say", "who": "narrator", "text": "Mrs. Hollis returns, hopeful. Jane steps forward. Big Mel gets a sudden nervous twitch."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Rule one. Never say the price first. Rule two. Never smile first."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Rule three. Never lose to a man named Mel."},
+      {"op": "say", "who": "narrator", "text": "In under a minute, Mrs. Hollis pays forty dollars for a pumpkin and thanks Jane for the privilege."},
+      {"op": "say", "who": "bigmel", "text": "I need a lie-down."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "That was the greatest thing I've ever seen."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "Dad's counted every dollar since the tractor broke. Yet he sold forty Patch Seven pumpkins at full price."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "That's not Dad. And if Patch Seven goes, we lose a third of our income."},
+      {"op": "choice", "id": "c8_j", "prompt": "Jane is worried about the farm.", "options": [
+        {"text": "Offer to help with a plan", "do": [
+          {"op": "add", "var": "aff_j", "n": 2},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Then we find another way. A haunted hayride. Cider. Pumpkin tours. Doris could have a fan club."},
+          {"op": "say", "who": "jane", "expr": "laugh", "text": "Doris would love a fan club."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "...Thank you. For saying 'we'."}
+        ]},
+        {"text": "Joke: Charge to see Doris", "do": [
+          {"op": "add", "var": "aff_j", "n": 1},
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "We could charge admission to see Doris. Five dollars. Two for children."},
+          {"op": "say", "who": "jane", "expr": "laugh", "text": "Ha! She'd work the crowd."},
+          {"op": "say", "who": "narrator", "text": "Jane laughs, but her eyes are still on the empty crates where the forty pumpkins were."}
+        ]}
+      ]}
+    ],
+
+    "C_s": [
+      {"op": "say", "who": "narrator", "text": "Beside the McVine stand, Sandra runs the Log & Stump's ale stall, glaring at anyone who comes close."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Sit. I have news. My regulars know everything."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "A white van with a faculty permit, Lot C, leaves the college at dawn on Saturdays."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "The janitor measured the footprints near the loading dock. Size seven. A heel."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "A man in heels?"},
+      {"op": "say", "who": "sandra", "expr": "smirk", "text": "Or a person in a man's mustache."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "I'd like to know who. I'd like it very much."},
+      {"op": "choice", "id": "c8_s", "prompt": "Sandra stares at the college in the distance.", "options": [
+        {"text": "Set up a stakeout with her", "do": [
+          {"op": "add", "var": "aff_s", "n": 2},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Let's watch the dock tonight. Together."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "A stakeout. With snacks. I'll bring the thermos."},
+          {"op": "fade", "to": "black", "ms": 300},
+          {"op": "map", "id": "M08", "spawn": "loading_dock", "time": "night"},
+          {"op": "fade", "to": "clear", "ms": 300},
+          {"op": "say", "who": "narrator", "text": "Night. Behind the dumpster, Brad and Sandra whisper over a thermos of black coffee."},
+          {"op": "say", "who": "sandra", "expr": "neutral", "text": "Movement. Trench coat. Gait: careful. Shoes: expensive."},
+          {"op": "say", "who": "narrator", "text": "A figure carries a pumpkin inside. A gust of wind lifts the collar, but the face stays in shadow."},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "I can't see a thing."},
+          {"op": "say", "who": "sandra", "expr": "neutral", "text": "I can see a size seven. Now we know. Probably."},
+          {"op": "say", "who": "narrator", "text": "Sandra's elbow brushes Brad's. She doesn't move it."}
+        ]},
+        {"text": "Leave it to her", "do": [
+          {"op": "add", "var": "aff_s", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You're the best detective in town. I trust you."},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Flattery. It works, a little."},
+          {"op": "say", "who": "sandra", "expr": "neutral", "text": "I'll find out. And I'll tell you first."}
+        ]}
+      ]}
+    ],
+
+    "C_g": [
+      {"op": "say", "who": "narrator", "text": "At the Grove Cafe stall, Georgia is test-driving her Halloween punch from a bubbling pumpkin bowl."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Brad! Taste-test!"},
+      {"op": "say", "who": "narrator", "text": "A line of shoppers forms. Each takes a cup. Each pauses mid-sip."},
+      {"op": "if", "test": {"var": "F_WARNED_GEORGIA", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "narrator", "text": "The punch glows faintly. A man blinks and says, 'I haven't called my mother in three weeks.'"},
+        {"op": "say", "who": "narrator", "text": "Then he shrugs and walks off."},
+        {"op": "say", "who": "georgia", "expr": "worried", "text": "That's... milder than I thought. The dilution is working."}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "The punch glows bright. A woman says, 'I've used my neighbor's wifi for six years!'"},
+        {"op": "say", "who": "narrator", "text": "A man weeps. Two strangers hug."},
+        {"op": "say", "who": "georgia", "expr": "worried", "text": "That's... a lot of honesty. For a test cup."}
+      ]},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Brad. I think I'm making a very dangerous punch."},
+      {"op": "choice", "id": "c8_g", "prompt": "Georgia looks at Brad, uncertain.", "options": [
+        {"text": "Help her adjust the recipe", "do": [
+          {"op": "add", "var": "aff_g", "n": 2},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Let's fix it together. Less pumpkin. More cider. A lot more ginger."},
+          {"op": "say", "who": "narrator", "text": "They spend an hour tweaking quantities. The punch gets less glowy and more delicious."},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "This is the first time anyone's helped me bake instead of eating the mistakes."}
+        ]},
+        {"text": "Insist she stop", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "Georgia. Don't serve it. It isn't safe."},
+          {"op": "say", "who": "georgia", "expr": "worried", "text": "But I promised. The committee's counting on me."},
+          {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "...You're right. I know you're right. It still hurts."}
+        ]}
+      ]}
+    ],
+
+    "C_p": [
+      {"op": "say", "who": "narrator", "text": "Mr. Gourd leaves the lab again, wiping his hands. A gust opens the coat and Brad sees the shoes."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Black. Pointed toe. Low heel. I've seen those shoes in the lecture hall."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Professor Peters?"},
+      {"op": "say", "who": "gourd", "text": "I am Mr. Gourd."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Your mustache is on crooked."},
+      {"op": "say", "who": "narrator", "text": "A long pause. The man in the trench coat sighs and peels off the mustache."},
+      {"op": "say", "who": "patricia", "expr": "flustered", "text": "Mr. Bart. This is... a theatrical production."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "With forty pumpkins?"},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "I am neutralizing them. Every one. Before the full moon. Halloween is eight days away."},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "My neutralizer treats forty a week. Patch Seven has hundreds. I cannot keep up."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Georgia is making two hundred cups of punch for the dance. From Patch Seven pumpkins."},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "...That is exactly what happened last time."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Gord shook your hand for a full minute. Does he know?"},
+      {"op": "say", "who": "patricia", "expr": "thinking", "text": "He always did. He plays along. We are not on speaking terms. We are on cooperating terms."},
+      {"op": "choice", "id": "c8_p", "prompt": "Patricia holds a mustache and a secret.", "options": [
+        {"text": "Offer to help her", "do": [
+          {"op": "add", "var": "aff_p", "n": 2},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "I'll help. I'll carry pumpkins. I'll do whatever you need."},
+          {"op": "say", "who": "patricia", "expr": "smile", "text": "You're the first person to offer. In twenty-five years."},
+          {"op": "say", "who": "patricia", "expr": "neutral", "text": "Bring gloves. And do not mention the mustache to anyone."}
+        ]},
+        {"text": "Tell her you'll tell the others", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "People should know. Jane. Sandra. Georgia."},
+          {"op": "say", "who": "patricia", "expr": "cold", "text": "If everyone knows, there will be panic. That is how it went wrong the last time."},
+          {"op": "say", "who": "patricia", "expr": "scared", "text": "Please. I'm asking you. Not to."}
+        ]},
+        {"text": "Ask for a deal", "do": [
+          {"op": "add", "var": "aff_p", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "I'll keep quiet. In exchange, you tell me everything. Before Halloween."},
+          {"op": "say", "who": "patricia", "expr": "thinking", "text": "...A fair trade. I'll tell you what I can. In time."}
+        ]}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Mr. Bart. The mustache goes back on. We were never here."}
+    ],
+
+    "D_close": [
+      {"op": "fade", "to": "black", "ms": 500},
+      {"op": "music", "id": "farmhouse_theme"},
+      {"op": "map", "id": "M01", "spawn": "market_stand", "time": "dusk"},
+      {"op": "fade", "to": "clear", "ms": 500},
+      {"op": "say", "who": "narrator", "text": "Dusk. The market empties. Gord counts the day's money at the stand."},
+      {"op": "if", "test": {"var": "F_FARM_MONEY", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "gord", "expr": "smile", "text": "A good day. Better than the last three combined. You've got a salesman's tongue, boy."}
+      ], "else": [
+        {"op": "say", "who": "gord", "expr": "neutral", "text": "A thin day. We'll manage."}
+      ]},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Uncle Gord. You sold forty Patch Seven pumpkins to a man in a mustache."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "He pays on time."},
+      {"op": "say", "who": "gord", "expr": "worried", "text": "One week. Then the moon."},
+      {"op": "say", "who": "narrator", "text": "Everyone in Brad's life seems to be holding their breath."},
+      {"op": "say", "who": "narrator", "text": "Across town at the loading dock, the crow perches on the rail, watching the lab windows glow orange."},
+      {"op": "fade", "to": "black", "ms": 800},
+      {"op": "set", "var": "scene", "n": 9},
+      {"op": "end"}
+    ]
+
+  }
+}
