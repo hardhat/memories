@@ -9,5 +9,10 @@
     "scene": "S2",
     "desc": "Lecture hall: Brad with a fire extinguisher in a cloud of foam, Patricia peering over her glasses, the crow in the window with his name tag",
     "file": null
+  },
+  "CG-03": {
+    "scene": "S3",
+    "desc": "Science lab drowned in glowing orange foam, four silhouettes in goggles standing in it",
+    "file": null
   }
 }

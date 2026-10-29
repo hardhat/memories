@@ -1,0 +1,342 @@
+{
+  "id": "s03",
+  "title": "Lab Accident",
+  "entry": "A_open",
+  "blocks": {
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 3},
+      {"op": "set", "var": "stops", "n": 0},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "lab_theme"},
+      {"op": "map", "id": "M08", "spawn": "door", "time": "afternoon"},
+      {"op": "say", "who": "narrator", "text": "Wednesday afternoon. Intro Biology Lab, third floor. The room smells of bleach and cinnamon."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "I scraped the boots. Mostly. The back field comes with you wherever you go."},
+      {"op": "map", "id": "M08", "spawn": "bench", "time": "afternoon"},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Safety briefing! Goggles on. No touching. No eating. No dating the lab equipment."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Dating?"},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Last year a boy proposed to a centrifuge. It said no."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I have the bench. Don't touch anything I haven't named."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Is that a lab rule?"},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "It's my rule. The school's rules are worse."},
+      {"op": "if", "test": {"var": "F_SANDRA_SECRET", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "You kept my hiding spot. I owe you. Don't make me say that twice."}
+      ]},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "Hi again! I'm at bench six! I brought snacks for science!"},
+      {"op": "say", "who": "jane", "expr": "serious", "text": "Georgia. No snacks in the lab."},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "It's a pumpkin muffin. Baking is just chemistry with better lighting."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Confiscated."},
+      {"op": "say", "who": "narrator", "text": "The muffins are steaming. They should not still be steaming."},
+      {"op": "sfx", "id": "door_open"},
+      {"op": "say", "who": "narrator", "text": "Professor Peters enters, hugging a stack of papers. She sits at the lab computer and glares at it."},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "Login. LOGIN. I know the password. It's an excellent password."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Professor, try the sticky note."},
+      {"op": "say", "who": "patricia", "expr": "flustered", "text": "That is my security feature."},
+      {"op": "say", "who": "narrator", "text": "The sticky note on the monitor reads: PASSWORD: ravens123."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Bulletproof."},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Today's demonstration. Sample 7. A sealed jar from the old archive."},
+      {"op": "say", "who": "patricia", "expr": "smile", "text": "Decorative gourd extract. Inert. Boring. Twenty minutes, and then you're all free to go."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "Then why does the label say DO NOT OPEN?"},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "That's... a joke. From a previous lecturer."},
+      {"op": "say", "who": "georgia", "expr": "thinking", "text": "It smells like pumpkin spice."},
+      {"op": "say", "who": "patricia", "expr": "thinking", "text": "Everything smells like pumpkin spice in this town."},
+      {"op": "goto", "block": "B_accident"}
+    ],
+
+    "B_accident": [
+      {"op": "say", "who": "narrator", "text": "Patricia unscrews the lid. A pinch of orange powder goes into a dish of distilled water."},
+      {"op": "say", "who": "narrator", "text": "Nothing happens. Several people sigh with relief."},
+      {"op": "say", "who": "narrator", "text": "Brad leans in for a better look. A clump of dried mud drops off his boot into the dish."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Oops."},
+      {"op": "sfx", "id": "fizz"},
+      {"op": "say", "who": "narrator", "text": "The water hisses. It turns bright orange. Then it begins to glow."},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "It's supposed to be inert!"},
+      {"op": "say", "who": "sandra", "expr": "surprised", "text": "Everyone back."},
+      {"op": "sfx", "id": "foam_surge"},
+      {"op": "say", "who": "narrator", "text": "Foam climbs out of the dish, over the bench, and across the floor."},
+      {"op": "sfx", "id": "alarm"},
+      {"op": "say", "who": "narrator", "text": "The alarm shrieks. The sprinklers burst on. Glowing foam meets water. There is more foam."},
+      {"op": "say", "who": "georgia", "expr": "surprised", "text": "Tradition!"},
+      {"op": "cg", "id": "CG-03"},
+      {"op": "say", "who": "narrator", "text": "In ten seconds the lab is drowned in glowing orange foam. Four goggled silhouettes stand in it."},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "Ravens! A raven did this!"},
+      {"op": "say", "who": "jane", "expr": "laugh", "text": "Professor, we're on the third floor. The windows are closed."},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "They're very resourceful."},
+      {"op": "say", "who": "sandra", "expr": "smirk", "text": "I'm calling it. Raven."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "I think it smells delicious!"},
+      {"op": "say", "who": "narrator", "text": "Everyone laughs, nervously. Outside, a crow lands a moment too late, and caws in disappointment."},
+      {"op": "cg_off"},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "Mr. Bart. You were closest to the dish."},
+      {"op": "choice", "id": "c3_confess", "prompt": "Everyone is looking at Brad. His boots are dripping with foam.", "options": [
+        {"text": "Confess: it might be my boots", "do": [
+          {"op": "set", "var": "F_CONFESSED_LAB", "n": 1},
+          {"op": "add", "var": "aff_p", "n": 1},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I think it was my boots. I had mud on them. From the farm."},
+          {"op": "say", "who": "patricia", "expr": "scared", "text": "From which farm?"},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "McVine's. In the back field."},
+          {"op": "say", "who": "patricia", "expr": "thinking", "text": "...Gord McVine's."},
+          {"op": "say", "who": "patricia", "expr": "serious", "text": "Thank you for telling me, Mr. Bart. Please don't repeat it."},
+          {"op": "say", "who": "georgia", "expr": "surprised", "text": "Your boots did that?!"},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "Nice boots."}
+        ]},
+        {"text": "Stay quiet", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "Um. I didn't touch anything."},
+          {"op": "say", "who": "patricia", "expr": "flustered", "text": "No. Of course not. Raven."},
+          {"op": "say", "who": "narrator", "text": "Jane's eyes drop to Brad's boots. They narrow."},
+          {"op": "say", "who": "jane", "expr": "serious", "text": "Interesting."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "Very."}
+        ]}
+      ]},
+      {"op": "setbit", "bit": "CL1"},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Cleanup. Everyone. Mr. Bart, as my lab assistant, you will lead."},
+      {"op": "tutorial", "id": "cleanup", "text": "Walk to someone at their bench and press Action. You have time to help two people."},
+      {"op": "explore", "objective": "cleanup",
+        "clock": {"var": "stops", "max": 2, "on_max": [
+          {"op": "say", "who": "patricia", "expr": "neutral", "text": "That's enough for today. Out, all of you. And please, don't discuss this."},
+          {"op": "goto", "block": "D_lock"}
+        ]},
+        "triggers": [
+          {"at": "bench_patricia", "once": true, "do": [{"op": "call", "block": "stop_p"}]},
+          {"at": "bench_jane", "once": true, "do": [{"op": "call", "block": "stop_j"}]},
+          {"at": "bench_sandra", "once": true, "do": [{"op": "call", "block": "stop_s"}]},
+          {"at": "bench_georgia", "once": true, "do": [{"op": "call", "block": "stop_g"}]}
+        ]}
+    ],
+
+    "stop_p": [
+      {"op": "say", "who": "narrator", "text": "The lights go down. The foam glows softly, like a very large aquarium."},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "Sample 7 was supposed to be inert. It has been sealed longer than you've been alive."},
+      {"op": "if", "test": {"var": "F_CONFESSED_LAB", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "patricia", "expr": "smile", "text": "You told me about your boots. Few people confess. It was unexpectedly refreshing."}
+      ], "else": [
+        {"op": "say", "who": "patricia", "expr": "thinking", "text": "You look like you're holding something back, Mr. Bart. I won't pry."}
+      ]},
+      {"op": "if", "test": {"var": "F_VAGUE_ABOUT_DAD", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "patricia", "expr": "serious", "text": "You were not forthcoming about your father, either. I'm making a note."}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "This stays between us. If the department hears about it, they'll seal the lab. And everything in it."},
+      {"op": "choice", "id": "c3_p", "prompt": "Patricia asks Brad for a promise.", "options": [
+        {"text": "I promise", "do": [
+          {"op": "add", "var": "aff_p", "n": 2},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "I promise. It's between us."},
+          {"op": "say", "who": "patricia", "expr": "smile", "text": "Thank you. I'm not usually good at trusting people. Or machines."}
+        ]},
+        {"text": "I can't promise that", "do": [
+          {"op": "add", "var": "aff_p", "n": 1},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "I can't promise that. Something is wrong here. I think people should know."},
+          {"op": "say", "who": "patricia", "expr": "serious", "text": "That is... honest. I won't ask you to lie. But please, be careful who you tell."}
+        ]}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Good night, Mr. Bart. Mind the foam."},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "stop_j": [
+      {"op": "say", "who": "narrator", "text": "Jane scoops foam into a jar and screws on the lid."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Is that allowed?"},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "It's TA tax. I want to compare it to our farm soil."},
+      {"op": "say", "who": "jane", "expr": "serious", "text": "Sometimes our soil glows too. Dad says it's the moon."},
+      {"op": "if", "test": {"var": "F_CONFESSED_LAB", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "jane", "expr": "serious", "text": "And it was our soil that set this off. On your boots."}
+      ], "else": [
+        {"op": "say", "who": "jane", "expr": "serious", "text": "You didn't say it, but it was your boots, wasn't it?"},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "...Possibly."}
+      ]},
+      {"op": "say", "who": "jane", "expr": "serious", "text": "The glow is in the back patch. Patch Seven. Dad numbers them. He tells me never to go there."},
+      {"op": "choice", "id": "c3_j", "prompt": "Brad remembers the orange light from his attic window.", "options": [
+        {"text": "Tell her about the glow", "do": [
+          {"op": "add", "var": "aff_j", "n": 2},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "I saw it. My first night. A glow in the far field. It pulsed."},
+          {"op": "say", "who": "jane", "expr": "surprised", "text": "You saw it? Nobody sees it. Dad says it's my imagination."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Thank you for believing me. I thought I was losing it."}
+        ]},
+        {"text": "Keep it to himself", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "I'm sure it's nothing."},
+          {"op": "say", "who": "jane", "expr": "serious", "text": "...Sure. Nothing."},
+          {"op": "say", "who": "narrator", "text": "Jane doesn't look convinced. She pockets the jar."}
+        ]}
+      ]},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "stop_s": [
+      {"op": "say", "who": "sandra", "expr": "smirk", "text": "Don't mind me. Documenting."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "You took photos of the entire accident?"},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "Evidence. Also, it's a good photo."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "The tavern has a framed photo behind the bar. The Great Foam Incident. Twenty-five years ago."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "The lab flooded orange before?"},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "My grandfather took it. Nobody talks about it. That's why it's interesting."},
+      {"op": "choice", "id": "c3_s", "prompt": "Sandra waits for Brad's answer.", "options": [
+        {"text": "Ask to see the photo", "do": [
+          {"op": "add", "var": "aff_s", "n": 2},
+          {"op": "set", "var": "F_SANDRA_PHOTO", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "I'd like to see it. Soon."},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "You've got good instincts. I'll find a time."},
+          {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Bring an appetite. Our food is worse than the foam."}
+        ]},
+        {"text": "Tell her to delete the photos", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "Maybe delete those? Before they get Professor Peters in trouble."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "No."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "But I like that you asked."}
+        ]}
+      ]},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "stop_g": [
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "I have foam in my hair! Smell it!"},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "I'd rather not smell your hair."},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "It smells exactly like pumpkin spice! Like a candle, but from space!"},
+      {"op": "if", "test": {"var": "F_TOOK_COOKIE", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "surprised", "text": "It smells like your cookie. The one that tingled."},
+        {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Gord's pumpkins taste like that sometimes. I assumed it was good soil!"}
+      ]},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "I want to bottle some. For a dessert. A very bold dessert."},
+      {"op": "choice", "id": "c3_g", "prompt": "Georgia holds up an empty jar, hopefully.", "options": [
+        {"text": "Talk her out of it", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "That foam nearly burned down the lab. Maybe not food."},
+          {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "You're right. I'm not a sensible baker. Thank you for being one."}
+        ]},
+        {"text": "Let her keep a swab", "do": [
+          {"op": "add", "var": "aff_g", "n": 2},
+          {"op": "set", "var": "F_GEORGIA_SAMPLE", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "A tiny swab. Just for sniffing."},
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "You're the best! It'll be an experiment! Totally harmless!"},
+          {"op": "say", "who": "narrator", "text": "She tucks the swab into a jar and hides it in her bag. Nothing could possibly go wrong."}
+        ]}
+      ]},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "D_lock": [
+      {"op": "fade", "to": "black", "ms": 500},
+      {"op": "music", "id": "quad_night"},
+      {"op": "map", "id": "M06", "spawn": "lamp_path", "time": "dusk"},
+      {"op": "fade", "to": "clear", "ms": 500},
+      {"op": "set", "var": "stops", "n": 0},
+      {"op": "say", "who": "narrator", "text": "Dusk on the quad. The lamps flicker on. Posters on every post: HOMECOMING! BONFIRE! PARADE!"},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "I'm going to ask someone to Homecoming. Calmly. With dignity."},
+      {"op": "say", "who": "narrator", "text": "Jane, Sandra, Georgia, and Patricia are each crossing the quad under a different lamp."},
+      {"op": "tutorial", "id": "invite", "text": "Walk up to the person you want to ask. This choice matters."},
+      {"op": "explore", "objective": "invite",
+        "clock": {"var": "stops", "max": 1, "on_max": [
+          {"op": "goto", "block": "E_close"}
+        ]},
+        "triggers": [
+          {"at": "invite_jane", "once": true, "do": [{"op": "call", "block": "invite_j"}]},
+          {"at": "invite_sandra", "once": true, "do": [{"op": "call", "block": "invite_s"}]},
+          {"at": "invite_georgia", "once": true, "do": [{"op": "call", "block": "invite_g"}]},
+          {"at": "invite_patricia", "once": true, "do": [{"op": "call", "block": "invite_p"}]}
+        ]}
+    ],
+
+    "invite_j": [
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Jane! Hi. Homecoming. Are you... going? With... anyone? With me?"},
+      {"op": "if", "test": {"var": "aff_j", "cmp": "gte", "n": 3}, "then": [
+        {"op": "say", "who": "jane", "expr": "smile", "text": "You're asking me?"},
+        {"op": "say", "who": "jane", "expr": "wink", "text": "I'm driving the pumpkin float. I need a co-pilot. And you have the boots."},
+        {"op": "say", "who": "jane", "expr": "smile", "text": "Yes. I'd like that."},
+        {"op": "set", "var": "route", "n": 1}
+      ], "else": [
+        {"op": "say", "who": "jane", "expr": "worried", "text": "I'd love to, but Dad has me on float duty. I'm sorry, Brad. Rain check?"},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Of course! No problem! Rain check!"},
+        {"op": "pick_max", "options": [
+          {"var": "aff_s", "route": 2},
+          {"var": "aff_g", "route": 3}
+        ]},
+        {"op": "call", "block": "fallback_ask"}
+      ]}
+    ],
+
+    "invite_s": [
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Sandra. Homecoming. I thought... maybe... you'd want to go. With me."},
+      {"op": "if", "test": {"var": "aff_s", "cmp": "gte", "n": 3}, "then": [
+        {"op": "say", "who": "sandra", "expr": "mortified", "text": "I hate Homecoming."},
+        {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "I hate bonfires. I hate marching bands."},
+        {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "I hate you less than all of them. Yes."},
+        {"op": "set", "var": "route", "n": 2}
+      ], "else": [
+        {"op": "say", "who": "sandra", "expr": "deadpan", "text": "No. The tavern's busy that night. And I hate marching bands."},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Okay! Great! Marching bands. Understood."},
+        {"op": "pick_max", "options": [
+          {"var": "aff_j", "route": 1},
+          {"var": "aff_g", "route": 3}
+        ]},
+        {"op": "call", "block": "fallback_ask"}
+      ]}
+    ],
+
+    "invite_g": [
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Georgia! Homecoming! I was wondering. Do you want to go with me?"},
+      {"op": "if", "test": {"var": "aff_g", "cmp": "gte", "n": 3}, "then": [
+        {"op": "say", "who": "georgia", "expr": "surprised", "text": "Wait. You're asking me? Like, on a date?"},
+        {"op": "say", "who": "georgia", "expr": "laugh", "text": "Yes! Yes! Can I bring muffins? It's a joke! Mostly!"},
+        {"op": "set", "var": "route", "n": 3}
+      ], "else": [
+        {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Oh! I'd love to, but I'm running the cafe booth all day. I'm so sorry!"},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "No, it's fine! Muffins first! Always muffins first!"},
+        {"op": "pick_max", "options": [
+          {"var": "aff_j", "route": 1},
+          {"var": "aff_s", "route": 2}
+        ]},
+        {"op": "call", "block": "fallback_ask"}
+      ]}
+    ],
+
+    "invite_p": [
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Professor Peters. About Homecoming. I thought... would you like to go? With me?"},
+      {"op": "if", "test": {"var": "aff_p", "cmp": "gte", "n": 3}, "then": [
+        {"op": "say", "who": "patricia", "expr": "flustered", "text": "Mr. Bart. That would be a conflict of interest."},
+        {"op": "say", "who": "patricia", "expr": "flustered", "text": "I am a chaperone. I will be at the bonfire. You may walk me there."},
+        {"op": "say", "who": "patricia", "expr": "thinking", "text": "It is not a date. It is... a walk. Between colleagues. Of a sort."},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "A walk. Not a date. Understood."},
+        {"op": "say", "who": "patricia", "expr": "smile", "text": "Good. Eight o'clock. Wear something fireproof."},
+        {"op": "set", "var": "route", "n": 4}
+      ], "else": [
+        {"op": "say", "who": "patricia", "expr": "flustered", "text": "Mr. Bart. I am your professor. I'm flattered, and a little mortified."},
+        {"op": "say", "who": "patricia", "expr": "serious", "text": "Please ask someone your own age."},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Of course. I'm so sorry. I'll pretend this never happened."},
+        {"op": "say", "who": "patricia", "expr": "neutral", "text": "That would be best. By ravens, I imagine."},
+        {"op": "pick_max", "options": [
+          {"var": "aff_j", "route": 1},
+          {"var": "aff_s", "route": 2},
+          {"var": "aff_g", "route": 3}
+        ]},
+        {"op": "call", "block": "fallback_ask"}
+      ]}
+    ],
+
+    "fallback_ask": [
+      {"op": "say", "who": "narrator", "text": "Brad slumps against a lamppost. Then he hears footsteps behind him."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "jane", "expr": "smile", "text": "Hey. Sorry. I changed my mind. Homecoming. Want to be my float co-pilot?"},
+        {"op": "say", "who": "brad", "expr": "surprised", "text": "Wait, what about float duty?"},
+        {"op": "say", "who": "jane", "expr": "wink", "text": "Float duty is a co-pilot. Dad can get over it."}
+      ]},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+        {"op": "say", "who": "sandra", "expr": "annoyed", "text": "Brad. Don't make this weird."},
+        {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "I hate Homecoming. I hate bonfires. Come with me anyway."},
+        {"op": "say", "who": "brad", "expr": "surprised", "text": "You said the tavern was busy."},
+        {"op": "say", "who": "sandra", "expr": "smirk", "text": "I lied. I'm very good at it."}
+      ]},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+        {"op": "say", "who": "georgia", "expr": "surprised", "text": "Brad! Wait! I thought about it. I was being silly."},
+        {"op": "say", "who": "georgia", "expr": "smile", "text": "Come with me! I need a taste-tester who tells the truth!"},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "I'd love to."}
+      ]}
+    ],
+
+    "E_close": [
+      {"op": "say", "who": "narrator", "text": "Later, Brad stands alone under a lamp. Across the quad, the lab windows glow faint orange."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Glowing pumpkins. A professor with a secret. A raven problem."},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "On a far lamppost the crow sits with something shiny in its beak. A name tag. It doesn't give it back."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "Homecoming. Whatever happens. I'm ready."},
+      {"op": "fade", "to": "black", "ms": 800},
+      {"op": "set", "var": "scene", "n": 4},
+      {"op": "end"}
+    ]
+
+  }
+}

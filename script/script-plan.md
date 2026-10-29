@@ -46,7 +46,7 @@ Budget guide: ~90-110 text boxes per scene at ~5 s each, plus about 1.5 min of w
 
 ### Route Structure
 - **Scenes 1-3 (Meet phase):** All four heroines appear. Choices decide who Brad spends the "focus time" with, and the route beats below are the four possible focus interactions. Each stop has its own beat for every route so no one is missed.
-- **End of Scene 3 (lock-in):** Brad invites someone to Homecoming. If `aff` for that person is at least 3 they accept and `route` is set. If not, the highest-affection heroine asks Brad instead. A route is always assigned.
+- **End of Scene 3 (lock-in):** Brad walks up to whoever he wants to invite to Homecoming. If that person's `aff` is at least 3 she accepts and `route` is set. If not, she declines and `pick_max` picks the higher-affection of the **other** heroines among Jane, Sandra and Georgia, who then asks Brad instead (Patricia never asks, because she is his professor). A route is always assigned.
 - **Scenes 4-9 (Route phase):** Only the locked route's Act C plays. The other heroines still cameo in shared acts (A, B, D) so the town stays populated.
 
 ### Choice Types (aim for 3-4 per scene, at least 1 that matters beyond the scene)
@@ -421,6 +421,7 @@ Each scene file holds named blocks: `A_open`, `B_shared`, `C_route_j|s|g|p`, `D_
 - `say` (who, expr, text; `style: "phone"` for text messages), `show`/`hide`, `walk`, `cg`/`cg_off`
 - `map` (id, spawn, time: afternoon/dusk/night), `explore` (objective, optional `clock` that ends the explore after N stops, `triggers` with `at`/`once`/`do`)
 - `choice` (id, prompt, up to 3 options each with `do`), `if` (var + `cmp` eq/ne/gte/lt + `n`, or a clue `bit`), `add`/`set`/`setbit`
+- `pick_max` (options: list of `{var, route}`; sets `route` to the entry with the highest value, first wins ties), used for the S3 lock-in fallback
 - `call` (run a block and return), `goto` (jump), `end`, `music`, `sfx`, `fade`, `wait`, `tutorial`
 
 **Validation:** `python script/tools/validate.py` checks every scene against `common/*.json` (speakers, expressions, variables, blocks, maps, CGs, text-box fit of 3 lines x 36 characters, at most 3 choices) and prints a rough playtime estimate. Run it after every script edit.

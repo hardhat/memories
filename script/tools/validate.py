@@ -21,7 +21,7 @@ SECONDS_PER_MAP = 10
 
 OPS = {
     "say", "map", "explore", "tutorial", "music", "sfx", "fade", "wait", "cg", "cg_off",
-    "choice", "add", "set", "setbit", "if", "call", "goto", "end", "show", "hide", "walk",
+    "choice", "add", "set", "setbit", "if", "call", "goto", "end", "show", "hide", "walk", "pick_max",
 }
 CMPS = {"eq", "ne", "gte", "lt"}
 
@@ -123,6 +123,14 @@ class Checker:
         elif name == "setbit":
             if op.get("bit") not in self.bits:
                 self.err(where, f"unknown clue bit {op.get('bit')}")
+        elif name == "pick_max":
+            opts = op.get("options", [])
+            if not opts:
+                self.err(where, "pick_max needs options")
+            for opt in opts:
+                self.check_var(where, opt.get("var"))
+                if opt.get("route") not in (1, 2, 3, 4):
+                    self.err(where, "pick_max route must be 1-4")
         elif name == "if":
             self.check_test(where, op.get("test", {}))
             self.check_ops(f"{where}.then", op.get("then", []))

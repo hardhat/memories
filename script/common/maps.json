@@ -33,8 +33,14 @@
   "M06": {
     "name": "Campus Quad",
     "tiles": null,
-    "spawns": ["gate", "quad", "bell_tower"],
-    "triggers": ["library_door", "student_centre_door", "lecture_hall_door", "fountain", "bookstore"]
+    "spawns": ["gate", "quad", "bell_tower", "lamp_path"],
+    "triggers": ["library_door", "student_centre_door", "lecture_hall_door", "fountain", "bookstore", "invite_jane", "invite_sandra", "invite_georgia", "invite_patricia"]
+  },
+  "M08": {
+    "name": "Science Lab",
+    "tiles": null,
+    "spawns": ["door", "bench", "loading_dock"],
+    "triggers": ["bench_patricia", "bench_jane", "bench_sandra", "bench_georgia"]
   },
   "M07": {
     "name": "Lecture Hall",
