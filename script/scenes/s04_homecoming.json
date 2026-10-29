@@ -1,0 +1,325 @@
+{
+  "id": "s04",
+  "title": "Homecoming",
+  "entry": "A_open",
+  "blocks": {
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 4},
+      {"op": "set", "var": "stops", "n": 0},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "parade_theme"},
+      {"op": "map", "id": "M01", "spawn": "parade_start", "time": "morning"},
+      {"op": "say", "who": "narrator", "text": "First Saturday of October. Homecoming. Orange-and-black bunting everywhere."},
+      {"op": "say", "who": "narrator", "text": "Someone has tied a ribbon on every crow."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "I've been handed a flag. No instructions. Just 'wave with feeling'."},
+      {"op": "say", "who": "narrator", "text": "The McVine tractor idles at the front, towing a float. A giant papier-mache Doris."},
+      {"op": "say", "who": "narrator", "text": "The banner reads: PUMPKINS. WE'RE VERY COMMITTED."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Hat's too tight."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "You look festive, Uncle Gord."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "I look like a man dressed by his daughter."},
+      {"op": "say", "who": "narrator", "text": "Nearby, the Ravenwood Raven mascot paces, whispering. 'Don't lose the head. Don't lose the head.'"},
+      {"op": "tutorial", "id": "alumni", "text": "Walk along the parade line and greet the alumni. Press Action to talk."},
+      {"op": "explore", "objective": "alumni",
+        "clock": {"var": "stops", "max": 3, "on_max": [
+          {"op": "goto", "block": "A2_dad"}
+        ]},
+        "triggers": [
+          {"at": "alum_chet", "once": true, "do": [{"op": "call", "block": "stop_chet"}]},
+          {"at": "alum_marge", "once": true, "do": [{"op": "call", "block": "stop_marge"}]},
+          {"at": "alum_hal", "once": true, "do": [{"op": "call", "block": "stop_hal"}]}
+        ]}
+    ],
+
+    "stop_chet": [
+      {"op": "say", "who": "alum_chet", "text": "Daniel Bart's boy! Spitting image! Your father was the greatest quarterback Ravenwood ever had!"},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "He never told me he played football."},
+      {"op": "say", "who": "alum_chet", "text": "Threw a ball clear over the chapel! Hit a crow! That crow never forgave him."},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "stop_marge": [
+      {"op": "say", "who": "alum_marge", "text": "You're Daniel's son! Quarterback? Nonsense. Your father was the raven mascot."},
+      {"op": "say", "who": "alum_marge", "text": "Three years running, best costume."},
+      {"op": "say", "who": "alum_marge", "text": "He never once took off the head. We didn't see his face until graduation."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "That... doesn't sound like Dad."},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "stop_hal": [
+      {"op": "say", "who": "alum_hal", "text": "Bart's boy. Those his boots? He wore those to the lab every day. Smelled like pumpkin."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Lab? The others said football. And a mascot."},
+      {"op": "say", "who": "alum_hal", "text": "Your father never attended a single game."},
+      {"op": "say", "who": "alum_hal", "text": "He was in the science building. Doing... whatever they did."},
+      {"op": "say", "who": "alum_hal", "text": "Ask him. He'll tell you what he told us. Which was nothing."},
+      {"op": "add", "var": "stops", "n": 1}
+    ],
+
+    "A2_dad": [
+      {"op": "say", "who": "alum_chet", "text": "Quarterback!"},
+      {"op": "say", "who": "alum_marge", "text": "Mascot!"},
+      {"op": "say", "who": "alum_hal", "text": "Lab rat!"},
+      {"op": "say", "who": "narrator", "text": "The three alumni stare at each other like people who each remember a different party."},
+      {"op": "choice", "id": "c4_dad", "prompt": "Brad is holding the flag and a lot of questions.", "options": [
+        {"text": "Believe the quarterback story", "do": [
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "Quarterback! That's amazing. I always knew he had an arm."},
+          {"op": "say", "who": "alum_chet", "text": "That's the spirit! Over the chapel!"},
+          {"op": "say", "who": "alum_marge", "text": "Mascot."},
+          {"op": "say", "who": "alum_hal", "text": "Lab."}
+        ]},
+        {"text": "Ask which story is true", "do": [
+          {"op": "set", "var": "F_ASKS_ABOUT_DAD", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Okay. Which one of you is right?"},
+          {"op": "say", "who": "narrator", "text": "All three freeze. They glance at one another, like people who once signed something."},
+          {"op": "say", "who": "alum_marge", "text": "Ask your father."},
+          {"op": "say", "who": "alum_hal", "text": "He'll tell you what he told us."},
+          {"op": "say", "who": "alum_chet", "text": "...Quarterback."}
+        ]}
+      ]},
+      {"op": "sfx", "id": "marching_band"},
+      {"op": "say", "who": "announcer", "text": "The Homecoming Parade is starting! Floats, line up!"},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "call", "block": "parade_j"}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "Brad walks the route waving his flag with feeling. Nothing explodes. Mostly."}
+      ]},
+      {"op": "goto", "block": "B_game"}
+    ],
+
+    "parade_j": [
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Brad! Up here! Dad's gotta wave at the crowd. I'm the driver. You're my co-pilot."},
+      {"op": "say", "who": "narrator", "text": "Gord stands stiffly at the back of the float, waving like a statue."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Want to steer? Hands at ten and two. Just keep it straight."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "I've never driven a tractor. Or a float. Or a Doris."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "You'll be fine. Doris isn't a back seat driver."},
+      {"op": "sfx", "id": "tractor"},
+      {"op": "say", "who": "narrator", "text": "Brad steers. The tractor wobbles. The float sways."},
+      {"op": "say", "who": "narrator", "text": "A paper pumpkin rolls off. The crowd cheers, assuming it's choreography."},
+      {"op": "say", "who": "judge", "text": "Best Float goes to McVine Pumpkin Farm! For unmatched commitment to wobbling!"},
+      {"op": "say", "who": "jane", "expr": "laugh", "text": "We never win! Dad's been entering for twenty years!"},
+      {"op": "say", "who": "gord", "expr": "surprised", "text": "...We won?"}
+    ],
+
+    "B_game": [
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "music", "id": "game_theme"},
+      {"op": "map", "id": "M13", "spawn": "bleachers", "time": "afternoon"},
+      {"op": "fade", "to": "clear", "ms": 400},
+      {"op": "say", "who": "narrator", "text": "The football game is a long, slow event with a lot of people yelling at an orange ball."},
+      {"op": "say", "who": "announcer", "text": "Halftime! Time for the Pumpkin Toss! We need a volunteer from the crowd!"},
+      {"op": "say", "who": "narrator", "text": "On the sideline, Gord, in hat and tie, points straight at Brad."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Him."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Me?! Why me?"},
+      {"op": "say", "who": "announcer", "text": "Legacy student Brad Bart, everyone! Son of a Ravenwood legend! Whichever legend that was!"},
+      {"op": "map", "id": "M13", "spawn": "field", "time": "afternoon"},
+      {"op": "say", "who": "narrator", "text": "Brad is handed a small pumpkin. The target is a bucket forty feet away."},
+      {"op": "say", "who": "brad", "expr": "determined", "text": "I hauled forty pumpkins last week. I can toss one."},
+      {"op": "sfx", "id": "whoosh"},
+      {"op": "say", "who": "narrator", "text": "The pumpkin sails past the bucket. Past the goalpost."},
+      {"op": "say", "who": "narrator", "text": "It hits the raven mascot square in the head."},
+      {"op": "sfx", "id": "pumpkin_thud"},
+      {"op": "say", "who": "narrator", "text": "The mascot's head pops off and rolls across the field."},
+      {"op": "say", "who": "freshman", "text": "I'm so sorry! I'm so sorry! I quit!"},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "The real crow lands on the fallen head and looks directly at Brad."},
+      {"op": "say", "who": "announcer", "text": "A Ravenwood record! Distance: forty-one feet. Accuracy: the mascot!"},
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I meant to do that."},
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "map", "id": "M06", "spawn": "bonfire", "time": "dusk"},
+      {"op": "music", "id": "bonfire_theme"},
+      {"op": "fade", "to": "clear", "ms": 400},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "call", "block": "C_j"}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "call", "block": "C_s"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "call", "block": "C_g"}
+          ], "else": [
+            {"op": "call", "block": "C_p"}
+          ]}
+        ]}
+      ]},
+      {"op": "goto", "block": "D_close"}
+    ],
+
+    "C_j": [
+      {"op": "say", "who": "narrator", "text": "Dusk at the bonfire. The Best Float trophy, a small gold pumpkin, sits between Brad and Jane on a hay bale."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "We never win anything. Dad is going to put it on the mantel and talk to it."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "I think he already named it."},
+      {"op": "say", "who": "jane", "expr": "laugh", "text": "Gordon the Second. It's probably true."},
+      {"op": "say", "who": "jane", "expr": "serious", "text": "Brad. Can I tell you something? I don't know if I want the farm."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "Everyone assumes I'll take over. Dad, the town, the pumpkins. And lately the soil feels wrong."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "I don't know whether I'm staying because I love it, or because I never asked myself."},
+      {"op": "choice", "id": "c4_j", "prompt": "Jane watches the fire, not Brad.", "options": [
+        {"text": "Do what you want", "do": [
+          {"op": "add", "var": "aff_j", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Whatever you choose, make it yours. Not your dad's, not the pumpkins'."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Nobody's said that to me. Not once."}
+        ]},
+        {"text": "You'll do great either way", "do": [
+          {"op": "add", "var": "aff_j", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You'll be great either way. The farm's lucky to have you. So is anyone else."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "That's nice. Thank you."}
+        ]},
+        {"text": "Joke: Pumpkins assume a lot", "do": [
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "Pumpkins assume a lot. It's their whole thing."},
+          {"op": "say", "who": "jane", "expr": "laugh", "text": "Ha! They're so full of themselves."},
+          {"op": "say", "who": "narrator", "text": "She laughs, but her eyes say she wanted a real answer."}
+        ]}
+      ]},
+      {"op": "cg", "id": "CG-04a"},
+      {"op": "say", "who": "narrator", "text": "Jane rests her head on Brad's shoulder. The bonfire roars. The gold pumpkin gleams."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Thanks for coming with me today."},
+      {"op": "cg_off"}
+    ],
+
+    "C_s": [
+      {"op": "fade", "to": "black", "ms": 300},
+      {"op": "music", "id": "tavern_theme"},
+      {"op": "map", "id": "M12", "spawn": "bar", "time": "dusk"},
+      {"op": "fade", "to": "clear", "ms": 300},
+      {"op": "say", "who": "narrator", "text": "The Log and Stump is almost empty. In the corner, Sandra sits alone with black coffee."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Homecoming is a pagan ritual of fire and mediocre football."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I'm observing from a safe distance."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "You said you'd come with me."},
+      {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "I did. I'm here. You're here. This is the date."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "It's a great date. The ambiance is very you."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "Come here. I owe you a photo."},
+      {"op": "say", "who": "narrator", "text": "Behind the bar hangs a framed photo. Three young people stand before a faded banner."},
+      {"op": "say", "who": "narrator", "text": "The banner reads: PUMPKIN RESEARCH PROGRAM."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "That's my dad. He looks just like me."},
+      {"op": "say", "who": "narrator", "text": "Beside him is a bearded young man, who has to be Gord. The third is a woman with glasses and a clipboard."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "My grandfather wrote on the back. 'Dr. E. Peters.' That's all I know."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Peters. Like Professor Peters?"},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I said nothing."},
+      {"op": "setbit", "bit": "CL3"},
+      {"op": "choice", "id": "c4_s", "prompt": "Sandra turns away from the photo. She knows more than she's saying.", "options": [
+        {"text": "Press her for answers", "do": [
+          {"op": "say", "who": "brad", "expr": "determined", "text": "You know something. What did your grandfather say?"},
+          {"op": "say", "who": "sandra", "expr": "annoyed", "text": "Tavern rule. What's said at the bar stays at the bar."},
+          {"op": "say", "who": "sandra", "expr": "neutral", "text": "Don't push me. I'll tell you when I'm ready."}
+        ]},
+        {"text": "Stay quiet with her", "do": [
+          {"op": "add", "var": "aff_s", "n": 2},
+          {"op": "say", "who": "narrator", "text": "Brad says nothing. He sits down across from her. The silence stretches. Then, softly:"},
+          {"op": "say", "who": "sandra", "expr": "neutral", "text": "My grandfather said it ended badly. And that nobody who was there will talk about it."},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "You didn't push. I like that. Come on. I'll show you the best seat in town."}
+        ]}
+      ]},
+      {"op": "map", "id": "M12", "spawn": "roof", "time": "dusk"},
+      {"op": "cg", "id": "CG-04b"},
+      {"op": "say", "who": "narrator", "text": "From the tavern roof, the bonfire glows across the rooftops. Sandra sits beside Brad, hood down."},
+      {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Best seat in town. No marching band. No mascot. Just fire from far away."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "I like Homecoming better from here."},
+      {"op": "cg_off"}
+    ],
+
+    "C_g": [
+      {"op": "map", "id": "M06", "spawn": "quad", "time": "afternoon"},
+      {"op": "say", "who": "narrator", "text": "After the game, the Grove Cafe booth is mobbed. And the Raven mascot has quit."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Brad! You're tall! You're the same size! The costume is yours!"},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Georgia, I just knocked the last raven's head off."},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "Which is why you owe the raven. And me. Mostly me."},
+      {"op": "say", "who": "narrator", "text": "Brad pulls on the raven costume. The head smells of old cider. He can barely see."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "I can't see anything. Is it supposed to be this dark?"},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Perfect! People love a raven! Just flap!"},
+      {"op": "say", "who": "narrator", "text": "A small child hugs Brad's leg. 'The raven smells like cider.' 'That's me,' says Brad, in a muffled voice."},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "The real crow lands on the booth and salutes with one wing. Georgia is laughing too hard to speak."},
+      {"op": "fade", "to": "black", "ms": 300},
+      {"op": "map", "id": "M06", "spawn": "bonfire", "time": "dusk"},
+      {"op": "fade", "to": "clear", "ms": 300},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "We sold two hundred muffins. A record. Thanks, Raven Brad."},
+      {"op": "say", "who": "georgia", "expr": "neutral", "text": "Can you stay with me a bit? My shift's over. I don't want to go home yet."},
+      {"op": "choice", "id": "c4_g", "prompt": "Brad is still wearing the raven head.", "options": [
+        {"text": "Take off the head", "do": [
+          {"op": "add", "var": "aff_g", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Okay. Hold on. Let me take this off."},
+          {"op": "say", "who": "georgia", "expr": "neutral", "text": "Everyone calls me the cafe girl. And I love the cafe. But sometimes I think I'm only a pastry."},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You're way more than a pastry. You noticed I was lost on the first day, and you made me feel at home."},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "...Thanks. I didn't know it showed."}
+        ]},
+        {"text": "Stay in costume", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Caw. This raven thinks you are an excellent baker."},
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "Stop! You're ruining my serious moment!"},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "It's okay. I needed a laugh more than a talk."}
+        ]}
+      ]},
+      {"op": "cg", "id": "CG-04c"},
+      {"op": "say", "who": "narrator", "text": "Georgia leans back on the grass, the raven head in her lap. The bonfire crackles."},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "I'm planning something big for next week. A dessert. Top secret. You'll be the first taster."},
+      {"op": "cg_off"}
+    ],
+
+    "C_p": [
+      {"op": "map", "id": "M06", "spawn": "reception_tent", "time": "dusk"},
+      {"op": "say", "who": "narrator", "text": "At the reception tent, Patricia waits with a lanyard, a clipboard, and great duty."},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Mr. Bart. Punctual. Remember. This is a walk, not a date."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "A walk to the bonfire, between colleagues."},
+      {"op": "say", "who": "patricia", "expr": "smile", "text": "Precisely. Hold this clipboard. You look responsible."},
+      {"op": "say", "who": "alum_hal", "text": "Patricia Peters! Dr. Peters's daughter! Your mother's program, did anyone ever explain what happened?"},
+      {"op": "say", "who": "patricia", "expr": "cold", "text": "Mr. Hal. The punch is that way."},
+      {"op": "say", "who": "alum_hal", "text": "I only meant..."},
+      {"op": "say", "who": "patricia", "expr": "cold", "text": "The. Punch. Is. That. Way."},
+      {"op": "say", "who": "narrator", "text": "Hal retreats. Patricia exhales. For a moment she looks tired."},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "My mother's work was decades ago. People remember it badly. Or too well."},
+      {"op": "say", "who": "patricia", "expr": "thinking", "text": "Mr. Bart. Be careful which stories you chase."},
+      {"op": "choice", "id": "c4_p", "prompt": "Patricia returns to her clipboard, but she is clearly listening.", "options": [
+        {"text": "Ask what she means", "do": [
+          {"op": "add", "var": "aff_p", "n": 1},
+          {"op": "say", "who": "brad", "expr": "confused", "text": "What do you mean? Which stories?"},
+          {"op": "say", "who": "patricia", "expr": "serious", "text": "The kind that go wrong. I can't say more. Not yet."}
+        ]},
+        {"text": "Respect her duty, drop it", "do": [
+          {"op": "add", "var": "aff_p", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You're on duty. I'll walk you to the bonfire. Nothing else."},
+          {"op": "say", "who": "patricia", "expr": "smile", "text": "You noticed. Most people push. Thank you, Mr. Bart."}
+        ]}
+      ]},
+      {"op": "map", "id": "M06", "spawn": "bonfire", "time": "dusk"},
+      {"op": "cg", "id": "CG-04d"},
+      {"op": "say", "who": "narrator", "text": "They stand at the edge of the firelight. Patricia's glasses catch the flames."},
+      {"op": "say", "who": "patricia", "expr": "smile", "text": "It is, in its way, a lovely evening."},
+      {"op": "cg_off"}
+    ],
+
+    "D_close": [
+      {"op": "map", "id": "M06", "spawn": "bonfire", "time": "night"},
+      {"op": "say", "who": "narrator", "text": "Night. The bonfire towers over the quad. Students cheer, sing, and burn marshmallows."},
+      {"op": "if", "test": {"var": "route", "cmp": "ne", "n": 2}, "then": [
+        {"op": "if", "test": {"var": "F_SANDRA_PHOTO", "cmp": "eq", "n": 1}, "then": [
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "Here. I took a picture of the tavern photo for you. Don't say I never gave you anything."},
+          {"op": "say", "who": "narrator", "text": "On her phone: three young people before a banner. One has Brad's face."},
+          {"op": "say", "who": "brad", "expr": "surprised", "text": "That's my dad. And that's Gord."},
+          {"op": "say", "who": "sandra", "expr": "neutral", "text": "The back says 'Dr. E. Peters'. I'm saying nothing."},
+          {"op": "setbit", "bit": "CL3"}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "Brad reaches into his jacket pocket for his phone. His fingers find a folded paper."},
+      {"op": "say", "who": "narrator", "text": "In block capitals: THE SOIL REMEMBERS. ASK YOUR FATHER ABOUT THE DANCE."},
+      {"op": "say", "who": "narrator", "text": "Beneath it is a tiny doodle of a pumpkin."},
+      {"op": "setbit", "bit": "CL2"},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Who put this in my pocket? Everyone's been within arm's reach today."},
+      {"op": "if", "test": {"var": "F_ASKS_ABOUT_DAD", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "determined", "text": "The alumni all told me different stories. And now a dance. They're all hiding something."}
+      ], "else": [
+        {"op": "say", "who": "brad", "expr": "confused", "text": "Dad's stories were always about football. Never a dance."}
+      ]},
+      {"op": "sfx", "id": "phone_buzz"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Brad: Dad, what dance? Someone left me a note."},
+      {"op": "sfx", "id": "phone_buzz"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Dad: What dance? Gotta run! Love you! Eat your vegetables! (Not pumpkin.)"},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "He's definitely hiding something. Everyone is."},
+      {"op": "say", "who": "narrator", "text": "Across the fire, Gord is watching Brad. Caught, he turns very fast to inspect a pumpkin."},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "On a fence rail, the crow sits holding a name tag. It looks very innocent."},
+      {"op": "fade", "to": "black", "ms": 800},
+      {"op": "set", "var": "scene", "n": 5},
+      {"op": "end"}
+    ]
+
+  }
+}

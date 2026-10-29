@@ -3,8 +3,8 @@
   "M01": {
     "name": "Town Square",
     "tiles": null,
-    "spawns": ["bus_stop"],
-    "triggers": ["noticeboard", "fountain", "main_street_entry"]
+    "spawns": ["bus_stop", "parade_start"],
+    "triggers": ["noticeboard", "fountain", "main_street_entry", "alum_chet", "alum_marge", "alum_hal"]
   },
   "M02": {
     "name": "Main Street",
@@ -33,7 +33,7 @@
   "M06": {
     "name": "Campus Quad",
     "tiles": null,
-    "spawns": ["gate", "quad", "bell_tower", "lamp_path"],
+    "spawns": ["gate", "quad", "bell_tower", "lamp_path", "bonfire", "reception_tent"],
     "triggers": ["library_door", "student_centre_door", "lecture_hall_door", "fountain", "bookstore", "invite_jane", "invite_sandra", "invite_georgia", "invite_patricia"]
   },
   "M08": {
@@ -64,6 +64,18 @@
     "name": "Grove Cafe interior",
     "tiles": null,
     "spawns": ["door"],
+    "triggers": []
+  },
+  "M12": {
+    "name": "Log and Stump Tavern",
+    "tiles": null,
+    "spawns": ["door", "bar", "roof"],
+    "triggers": []
+  },
+  "M13": {
+    "name": "Football Field",
+    "tiles": null,
+    "spawns": ["bleachers", "field"],
     "triggers": []
   }
 }

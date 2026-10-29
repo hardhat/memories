@@ -2,6 +2,12 @@
   "_doc": "'have' expressions exist on the current art sheets. 'todo' expressions are listed in art/art-todo.md and may be used in scripts before the art lands (the engine falls back to the first 'have' expression). Brad is always the left portrait; everyone else is on the right.",
   "narrator": {"name": "", "portrait": false},
   "guide": {"name": "Tour Guide", "portrait": false},
+  "alum_chet": {"name": "Chet", "portrait": false},
+  "alum_marge": {"name": "Marge", "portrait": false},
+  "alum_hal": {"name": "Hal", "portrait": false},
+  "announcer": {"name": "Announcer", "portrait": false},
+  "judge": {"name": "Judge", "portrait": false},
+  "freshman": {"name": "Freshman", "portrait": false},
   "leader": {"name": "Icebreaker Leader", "portrait": false},
   "brad": {
     "name": "Brad",

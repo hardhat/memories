@@ -14,5 +14,25 @@
     "scene": "S3",
     "desc": "Science lab drowned in glowing orange foam, four silhouettes in goggles standing in it",
     "file": null
+  },
+  "CG-04a": {
+    "scene": "S4",
+    "desc": "Bonfire, Jane leaning her head on Brad's shoulder, Best Float trophy on a hay bale",
+    "file": null
+  },
+  "CG-04b": {
+    "scene": "S4",
+    "desc": "Tavern rooftop: Sandra and Brad side by side, bonfire glowing across the rooftops",
+    "file": null
+  },
+  "CG-04c": {
+    "scene": "S4",
+    "desc": "Bonfire: Georgia and Brad, the raven mascot head in her lap",
+    "file": null
+  },
+  "CG-04d": {
+    "scene": "S4",
+    "desc": "Patricia in silhouette against the bonfire, glasses catching the flames, Brad beside her at a respectful distance",
+    "file": null
   }
 }
