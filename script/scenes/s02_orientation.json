@@ -1,0 +1,318 @@
+{
+  "id": "s02",
+  "title": "Orientation",
+  "entry": "A_open",
+  "blocks": {
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 2},
+      {"op": "set", "var": "stops", "n": 0},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "campus_theme"},
+      {"op": "map", "id": "M06", "spawn": "gate", "time": "morning"},
+      {"op": "say", "who": "narrator", "text": "Monday morning. Brad has been up since six. He now has strong opinions about pumpkins."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "I hauled forty pumpkins before breakfast. I can't feel my arms."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "That's the farm lifestyle. Welcome. Coffee?"},
+      {"op": "say", "who": "narrator", "text": "Jane hands over a coffee and a campus map. The map is marked up in three colors of pen."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Dad made me your orientation buddy. Don't look so thrilled."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "I'm thrilled. I'm just also asleep."},
+      {"op": "if", "test": {"var": "F_REFUSED_HELP", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "jane", "expr": "wink", "text": "How's your pride after Doris? Still in the haystack?"},
+        {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I'm told there's still some in my hair."}
+      ], "else": [
+        {"op": "say", "who": "jane", "expr": "smile", "text": "Doris says hi. She thinks you're a good pusher."},
+        {"op": "say", "who": "brad", "expr": "laugh", "text": "Please tell her I'm flattered."}
+      ]},
+      {"op": "say", "who": "guide", "text": "Freshmen! Gather round! Name tags, please! We lose one student a year to anonymity!"},
+      {"op": "say", "who": "narrator", "text": "A tour guide pins a name tag on Brad's shirt. It reads: BRAD BART (LEGACY!)"},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Legacy? What does that mean?"},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "It means your dad's name is on a plaque somewhere. A plaque nobody reads."},
+      {"op": "say", "who": "guide", "text": "On your left, the Founder's Fountain! Built in 1887 by a man who really loved fountains."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "He founded it by falling in."},
+      {"op": "say", "who": "guide", "text": "No heckling, please."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Citation needed."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "I've done this tour three times. Want my shortcut? Or you can stay for the fountain facts."},
+      {"op": "choice", "id": "c2_tour", "prompt": "Jane is already looking at a gap in the hedge.", "options": [
+        {"text": "Take Jane's shortcut", "do": [
+          {"op": "add", "var": "aff_j", "n": 2},
+          {"op": "set", "var": "F_SKIPPED_TOUR", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Lead the way."},
+          {"op": "map", "id": "M06", "spawn": "bell_tower", "time": "morning"},
+          {"op": "say", "who": "narrator", "text": "Behind a hedge, through a gate, up a spiral stair. The bell tower, quiet and empty."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Everyone thinks it's locked. It isn't. It's just shy."},
+          {"op": "say", "who": "narrator", "text": "The whole valley is spread below. The college, the town, and a far corner of orange fields."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "That's our farm. See the little barn? I used to come up here to find it."},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "It looks peaceful from up here."},
+          {"op": "say", "who": "jane", "expr": "serious", "text": "It's peaceful from everywhere. That's the problem. Don't tell anyone about this spot."},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Your secret's safe with me."},
+          {"op": "sfx", "id": "caw"},
+          {"op": "say", "who": "narrator", "text": "A crow lands on the tower bell. It looks at Brad. Then at Jane. Then at the secret."},
+          {"op": "say", "who": "jane", "expr": "wink", "text": "...Fine. Brad, the crow. The crow, Brad. We're all in this together."}
+        ]},
+        {"text": "Stay on the tour", "do": [
+          {"op": "add", "var": "aff_j", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "I'll stay. I should learn the fountain facts."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Brave. Stay and heckle with me."},
+          {"op": "say", "who": "guide", "text": "Everyone gets an Orientation Bingo card! Fill a row, win a tote bag!"},
+          {"op": "say", "who": "jane", "expr": "wink", "text": "Nobody's ever gotten bingo. I think the tote bag is a myth."},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Challenge accepted."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "I like you. You're an optimist. It's like watching a puppy try stairs."}
+        ]}
+      ]},
+      {"op": "map", "id": "M06", "spawn": "quad", "time": "morning"},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "I have to check in with the TA office. You've got a Bingo card. Pick your stops."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "There's time for two before the welcome speech. Lecture hall at noon. Don't be late."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Got it. Thanks, Jane."},
+      {"op": "goto", "block": "B_quad"}
+    ],
+
+    "B_quad": [
+      {"op": "tutorial", "id": "bingo", "text": "Orientation Bingo: walk to a door and press Action. You have time for two stops."},
+      {"op": "explore", "objective": "bingo",
+        "clock": {"var": "stops", "max": 2, "on_max": [
+          {"op": "say", "who": "narrator", "text": "The campus bell strikes noon. The welcome speech is starting."},
+          {"op": "goto", "block": "D_speech"}
+        ]},
+        "triggers": [
+          {"at": "library_door", "once": true, "do": [{"op": "call", "block": "stop_s"}]},
+          {"at": "student_centre_door", "once": true, "do": [{"op": "call", "block": "stop_g"}]},
+          {"at": "lecture_hall_door", "once": true, "do": [{"op": "call", "block": "stop_p"}]},
+          {"at": "fountain", "once": true, "do": [
+            {"op": "say", "who": "narrator", "text": "Bingo square: FOUNDER'S FOUNTAIN. Someone has tossed a pumpkin seed in. Again."},
+            {"op": "say", "who": "brad", "expr": "confused", "text": "Why are there pumpkin seeds in every fountain?"}
+          ]},
+          {"at": "bookstore", "once": true, "do": [
+            {"op": "say", "who": "narrator", "text": "Bingo square: BOOKSTORE. A sign reads: TEXTBOOKS SOLD OUT. ASK ABOUT RAVEN STICKERS."},
+            {"op": "say", "who": "brad", "expr": "smile", "text": "I'll take the raven sticker. It seems like the college's whole personality."}
+          ]}
+        ]}
+    ],
+
+    "stop_s": [
+      {"op": "map", "id": "M10", "spawn": "door", "time": "morning"},
+      {"op": "music", "id": "library_theme"},
+      {"op": "say", "who": "narrator", "text": "The library is hushed and enormous. Somewhere, a stack of books has been left looking guilty."},
+      {"op": "say", "who": "leader", "text": "Icebreaker time! Find someone who has a pet! Find someone who has FEELINGS!"},
+      {"op": "say", "who": "narrator", "text": "A hand shoots out from between two shelves and drags Brad into the stacks."},
+      {"op": "map", "id": "M10", "spawn": "stacks", "time": "morning"},
+      {"op": "if", "test": {"var": "F_MET_S", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "sandra", "expr": "annoyed", "text": "Porch boy. Quiet. Sit."},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "Closed to optimism. Good to see you again."}
+      ], "else": [
+        {"op": "say", "who": "sandra", "expr": "annoyed", "text": "You. Quiet. Sit."},
+        {"op": "say", "who": "brad", "expr": "worried", "text": "Do I know you?"},
+        {"op": "say", "who": "sandra", "expr": "neutral", "text": "Sandra Stump. My family owns the Log and Stump. Now sit."}
+      ]},
+      {"op": "say", "who": "leader", "text": "Anyone back there? Anyone who wants a free lanyard?"},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "I'm hiding from the icebreaker. I'm not good at feelings in groups."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Why are you teaching me how to hide?"},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "You're a witness now. A test. Question one: when is quiet hour in this library?"},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "...All of them?"},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "Wrong. Whichever hour Mrs. Alder is awake for. Question two: how many crows on the college crest?"},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Three?"},
+      {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "One. It's smug. You'll see."},
+      {"op": "sfx", "id": "footsteps"},
+      {"op": "say", "who": "leader", "text": "Is someone in the stacks? Hello?"},
+      {"op": "choice", "id": "c2_sandra", "prompt": "The icebreaker leader is getting close.", "options": [
+        {"text": "Keep her secret", "do": [
+          {"op": "add", "var": "aff_s", "n": 2},
+          {"op": "set", "var": "F_SANDRA_SECRET", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Nobody here but us books."},
+          {"op": "say", "who": "leader", "text": "Hm. Sounds like a book. Carry on."},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "...You lied for me. Strangers don't usually do that."},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "We're not strangers. We took a trivia test."}
+        ]},
+        {"text": "Tell the leader", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "She's over here!"},
+          {"op": "say", "who": "leader", "text": "Found you! You've won the Honest Citizen Award! Here's a ribbon!"},
+          {"op": "say", "who": "narrator", "text": "Brad is handed a ribbon that reads: HONEST CITIZEN. Sandra is handed a lanyard."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "Nice. Very noble. I'll remember this."},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I'm very sorry. I panicked."}
+        ]}
+      ]},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "You're the Bart kid. Staying at McVine's. News travels. The tavern has ears."},
+      {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "You made Gord smile at dinner. Nobody's done that since 1998."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Word really does travel."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "Intro Bio, Section B. I checked the roster. We're lab partners."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Try not to explode anything."},
+      {"op": "set", "var": "F_MET_S", "n": 1},
+      {"op": "set", "var": "F_S2_S", "n": 1},
+      {"op": "add", "var": "stops", "n": 1},
+      {"op": "music", "id": "campus_theme"},
+      {"op": "map", "id": "M06", "spawn": "quad", "time": "morning"}
+    ],
+
+    "stop_g": [
+      {"op": "map", "id": "M09", "spawn": "coffee_cart", "time": "morning"},
+      {"op": "say", "who": "narrator", "text": "In the student centre, a coffee cart has a line. Behind it, a blonde girl is on her own."},
+      {"op": "if", "test": {"var": "F_MET_G", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "georgia", "expr": "surprised", "text": "Brad! You came back! I'm covering the welcome cart. Dale called in sick."},
+        {"op": "say", "who": "georgia", "expr": "smile", "text": "He ate one of my muffins. He's fine. He's been fine for two days. In bed."}
+      ], "else": [
+        {"op": "say", "who": "georgia", "expr": "surprised", "text": "Oh! A new face! I know all the faces. Can you take orders? Dale called in sick."},
+        {"op": "say", "who": "georgia", "expr": "smile", "text": "I'm Georgia, Grove Cafe. He ate one of my muffins. He's fine. In bed. For two days."}
+      ]},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Hi, I'm Brad. Sure, I can take orders."},
+      {"op": "if", "test": {"var": "F_TOOK_COOKIE", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "georgia", "expr": "wink", "text": "Any feelings since the cookie? Just curious."},
+        {"op": "say", "who": "brad", "expr": "confused", "text": "Why would I have feelings?"},
+        {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "No reason! Cart! Orders! Go!"}
+      ]},
+      {"op": "say", "who": "narrator", "text": "For ten minutes Brad takes orders, steams milk, and learns the cart has a mind of its own."},
+      {"op": "sfx", "id": "steam_hiss"},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Don't mind Gertrude. She hisses when she likes you."},
+      {"op": "say", "who": "brad", "expr": "laugh", "text": "Gertrude's the machine?"},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "Everything has a name. Even the muffin. Please, taste-test it."},
+      {"op": "say", "who": "narrator", "text": "The muffin is orange. It smells of cinnamon and a faint hint of the sea."},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "It's pumpkin, cinnamon, and a little anchovy. Be honest."},
+      {"op": "choice", "id": "c2_muffin", "prompt": "Georgia watches, hopeful, as Brad takes a bite.", "options": [
+        {"text": "Honest: It's weird, but good", "do": [
+          {"op": "add", "var": "aff_g", "n": 2},
+          {"op": "say", "who": "brad", "expr": "confused", "text": "It's... weird. But I want a second bite. Why do I want a second bite?"},
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "That's the best review I've ever gotten! Weird but wanting more!"},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "Everyone else just says 'It's great.' You told me the truth."}
+        ]},
+        {"text": "Kind lie: It's delicious!", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "It's delicious! Really!"},
+          {"op": "say", "who": "georgia", "expr": "thinking", "text": "You blinked three times. I saw it."},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Okay, it's a lot. But I admire the courage."},
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "I'll take courage! Thanks for being kind."}
+        ]}
+      ]},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "You're good at this. Come by the cafe sometime. Free coffee for cart staff."},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "Also, fair warning. Professor Peters's speeches are legendary. Last year the sprinklers went off."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Why would sprinklers go off?"},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "Nobody knows. It's tradition."},
+      {"op": "set", "var": "F_MET_G", "n": 1},
+      {"op": "set", "var": "F_S2_G", "n": 1},
+      {"op": "add", "var": "stops", "n": 1},
+      {"op": "map", "id": "M06", "spawn": "quad", "time": "morning"}
+    ],
+
+    "stop_p": [
+      {"op": "map", "id": "M07", "spawn": "door", "time": "morning"},
+      {"op": "say", "who": "narrator", "text": "The lecture hall is empty except for one professor and one very large projector."},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "You are not a projector. You are a box. A box that listens."},
+      {"op": "sfx", "id": "projector_whir"},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "Display. DISPLAY. I am the professor. I outrank you."},
+      {"op": "say", "who": "narrator", "text": "The projector blinks. It smells faintly of toast."},
+      {"op": "call", "block": "p_bart"},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Take a seat. Row one. Not near the projector. It knows."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "It knows what?"},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "Everything."},
+      {"op": "set", "var": "F_S2_P", "n": 1},
+      {"op": "add", "var": "stops", "n": 1},
+      {"op": "map", "id": "M06", "spawn": "quad", "time": "morning"}
+    ],
+
+    "p_bart": [
+      {"op": "if", "test": {"var": "F_MET_P", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "patricia", "expr": "flustered", "text": "Mr. Bart. We met at the gate. We do not speak of the gate."},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "What gate?"},
+        {"op": "say", "who": "patricia", "expr": "smile", "text": "Exactly."}
+      ], "else": [
+        {"op": "say", "who": "patricia", "expr": "neutral", "text": "I don't believe we've met. Patricia Peters, Biology. And you are?"},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "Brad Bart. I'm a freshman."}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "...Bart."},
+      {"op": "if", "test": {"var": "F_DADS_BOOTS", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "narrator", "text": "Her eyes drop to Brad's boots. They linger."},
+        {"op": "say", "who": "patricia", "expr": "thinking", "text": "Those boots look familiar."}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "thinking", "text": "Any relation to a Daniel Bart? He attended Ravenwood. Years ago."},
+      {"op": "choice", "id": "c2_dad", "prompt": "Patricia is watching Brad closely.", "options": [
+        {"text": "Yes, he's my dad", "do": [
+          {"op": "add", "var": "aff_p", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Yes. He's my dad. He told me a lot of stories about this place."},
+          {"op": "say", "who": "patricia", "expr": "serious", "text": "I'm sure he did. He was... memorable."},
+          {"op": "say", "who": "patricia", "expr": "thinking", "text": "Be careful which of those stories you believe."}
+        ]},
+        {"text": "Stay vague", "do": [
+          {"op": "set", "var": "F_VAGUE_ABOUT_DAD", "n": 1},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Bart's a pretty common name."},
+          {"op": "say", "who": "patricia", "expr": "thinking", "text": "Is it? I've never met another one."},
+          {"op": "say", "who": "patricia", "expr": "serious", "text": "No matter. You may keep your secrets, Mr. Bart. I certainly keep mine."}
+        ]}
+      ]},
+      {"op": "set", "var": "F_MET_P", "n": 1}
+    ],
+
+    "D_speech": [
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "music", "id": "lecture_theme"},
+      {"op": "map", "id": "M07", "spawn": "seats", "time": "noon"},
+      {"op": "fade", "to": "clear", "ms": 400},
+      {"op": "say", "who": "narrator", "text": "The lecture hall fills with freshmen, name tags, and the smell of nervous coffee."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "Brad! Over here! I saved you a seat. Sort of. I put my bag on it."},
+      {"op": "if", "test": {"var": "F_MET_G", "cmp": "eq", "n": 0}, "then": [
+        {"op": "say", "who": "georgia", "expr": "surprised", "text": "Is this seat taken? Oh! New face! I know all the faces. I'm Georgia."},
+        {"op": "say", "who": "brad", "expr": "smile", "text": "Brad. Nice to meet you."},
+        {"op": "set", "var": "F_MET_G", "n": 1}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "Georgia slides in beside Jane, carrying two lattes. She waves with her elbow."}
+      ]},
+      {"op": "if", "test": {"var": "F_MET_S", "cmp": "eq", "n": 0}, "then": [
+        {"op": "say", "who": "sandra", "expr": "annoyed", "text": "You're in my row. Sandra Stump. Don't talk to me."},
+        {"op": "say", "who": "brad", "expr": "confused", "text": "I'm Brad. I didn't know it was your row."},
+        {"op": "say", "who": "sandra", "expr": "neutral", "text": "All rows are my row if I'm in them."},
+        {"op": "set", "var": "F_MET_S", "n": 1}
+      ], "else": [
+        {"op": "say", "who": "narrator", "text": "Sandra sits at the back, slouched, hood up. She raises two fingers. It might be a wave."}
+      ]},
+      {"op": "if", "test": {"var": "F_S2_P", "cmp": "eq", "n": 0}, "then": [
+        {"op": "say", "who": "narrator", "text": "At the podium, Patricia glances at the seats and spots Brad."},
+        {"op": "call", "block": "p_bart"}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "smile", "text": "Welcome to Ravenwood College. Founded 1887. Home to scholarship and many, many crows."},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "First slide, please."},
+      {"op": "sfx", "id": "projector_whir"},
+      {"op": "say", "who": "narrator", "text": "The screen shows a picture of a raven. Upside down."},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "That is not the right slide. That is... a raven. Next slide."},
+      {"op": "sfx", "id": "projector_buzz"},
+      {"op": "say", "who": "narrator", "text": "The projector hums. Then it sputters. Then, a small orange flame appears."},
+      {"op": "say", "who": "georgia", "expr": "surprised", "text": "It's tradition! I told you!"},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "Nobody panic. This is a controlled... Oh, it's on fire."},
+      {"op": "choice", "id": "c2_fire", "prompt": "The projector is on fire. Everyone is looking at Brad.", "options": [
+        {"text": "Grab the fire extinguisher", "do": [
+          {"op": "add", "var": "aff_p", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "I've got it!"},
+          {"op": "say", "who": "narrator", "text": "Brad sprints down the aisle and rips the extinguisher off the wall."}
+        ]},
+        {"text": "Throw Georgia's latte", "do": [
+          {"op": "say", "who": "brad", "expr": "worried", "text": "Sorry, Georgia!"},
+          {"op": "say", "who": "georgia", "expr": "surprised", "text": "That was a seasonal blend!"},
+          {"op": "sfx", "id": "whoosh"},
+          {"op": "say", "who": "narrator", "text": "The flames grow. Coffee, it turns out, is only a suggestion. Brad grabs the extinguisher."}
+        ]},
+        {"text": "Shout \"Fire!\"", "do": [
+          {"op": "say", "who": "brad", "expr": "surprised", "text": "FIRE!"},
+          {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Thank you. We hadn't noticed."},
+          {"op": "say", "who": "narrator", "text": "Embarrassed, Brad snatches the extinguisher off the wall."}
+        ]}
+      ]},
+      {"op": "sfx", "id": "extinguisher"},
+      {"op": "cg", "id": "CG-02"},
+      {"op": "say", "who": "narrator", "text": "A cloud of foam fills the hall. When it clears, the fire is out and Brad is white head to toe."},
+      {"op": "say", "who": "patricia", "expr": "serious", "text": "Remarkable. A raven did it."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "A raven started the fire?"},
+      {"op": "say", "who": "patricia", "expr": "frustrated", "text": "Obviously. There's one in the window."},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "The crow looks at Brad. It leans in, plucks his name tag from his shirt, and flies out the window."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "Hey! That was my name tag!"},
+      {"op": "say", "who": "narrator", "text": "It reads BRAD BART (LEGACY!). It is gone."},
+      {"op": "cg_off"},
+      {"op": "say", "who": "jane", "expr": "laugh", "text": "Best orientation ever! I'm going to remember this when I'm eighty!"},
+      {"op": "say", "who": "sandra", "expr": "smirk", "text": "Not bad. For a hero."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "I'm going to put this on a cake!"},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Mr. Bart. You will assist in my lab on Wednesday. As a reward."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "That's a reward?"},
+      {"op": "say", "who": "patricia", "expr": "smile", "text": "It's a reward with chemicals. Class dismissed. Nobody mention the fire in the evaluations."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "My name tag said LEGACY. Somewhere out there, a crow knows my business."},
+      {"op": "fade", "to": "black", "ms": 800},
+      {"op": "set", "var": "scene", "n": 3},
+      {"op": "end"}
+    ]
+
+  }
+}

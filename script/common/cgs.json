@@ -4,5 +4,10 @@
     "scene": "S1",
     "desc": "Attic window at dusk: glowing Patch 7 in the distance, the crow on the sill",
     "file": null
+  },
+  "CG-02": {
+    "scene": "S2",
+    "desc": "Lecture hall: Brad with a fire extinguisher in a cloud of foam, Patricia peering over her glasses, the crow in the window with his name tag",
+    "file": null
   }
 }

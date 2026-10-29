@@ -30,6 +30,30 @@
     "spawns": ["kitchen_table", "attic"],
     "triggers": []
   },
+  "M06": {
+    "name": "Campus Quad",
+    "tiles": null,
+    "spawns": ["gate", "quad", "bell_tower"],
+    "triggers": ["library_door", "student_centre_door", "lecture_hall_door", "fountain", "bookstore"]
+  },
+  "M07": {
+    "name": "Lecture Hall",
+    "tiles": null,
+    "spawns": ["door", "seats"],
+    "triggers": []
+  },
+  "M09": {
+    "name": "Student Centre",
+    "tiles": null,
+    "spawns": ["door", "coffee_cart"],
+    "triggers": []
+  },
+  "M10": {
+    "name": "Library",
+    "tiles": null,
+    "spawns": ["door", "stacks"],
+    "triggers": []
+  },
   "M11": {
     "name": "Grove Cafe interior",
     "tiles": null,
