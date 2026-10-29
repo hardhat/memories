@@ -1,0 +1,301 @@
+{
+  "id": "s05",
+  "title": "Cafe Dessert",
+  "entry": "A_open",
+  "blocks": {
+
+    "A_open": [
+      {"op": "set", "var": "scene", "n": 5},
+      {"op": "fade", "to": "clear"},
+      {"op": "music", "id": "cafe_theme"},
+      {"op": "map", "id": "M02", "spawn": "cafe_door", "time": "evening"},
+      {"op": "say", "who": "narrator", "text": "Thursday evening. Main Street. The Grove Cafe's sign says CLOSED. The lights inside say otherwise."},
+      {"op": "sfx", "id": "phone_buzz"},
+      {"op": "say", "who": "narrator", "style": "phone", "text": "Georgia: PRIVATE TASTING. TONIGHT. 7. COME HUNGRY. BRING NOTHING EXCEPT YOUR OPINION."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "She capitalizes like she's chewing."},
+      {"op": "explore", "objective": "cafe_door", "triggers": [
+        {"at": "cafe_door", "do": [
+          {"op": "goto", "block": "A2_tasting"}
+        ]}
+      ]}
+    ],
+
+    "A2_tasting": [
+      {"op": "map", "id": "M11", "spawn": "table", "time": "evening"},
+      {"op": "say", "who": "narrator", "text": "Chairs are up on the tables. Candles flicker. One table in the middle is set for a tasting."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Brad! You came! Georgia's been vibrating since noon."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "She bribed me with a lifetime supply of black coffee. I'm weak."},
+      {"op": "say", "who": "narrator", "text": "In a corner booth, Professor Peters grades labs under a desk lamp. Thursday is her cafe night."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "Welcome, welcome, welcome! First, the control group! My failed experiments, in order of regret!"},
+      {"op": "say", "who": "narrator", "text": "Three plates: a Sardine Danish, a Pumpkin Tuna Melt, and something blue."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "What's the blue one?"},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "We don't talk about the blue one."},
+      {"op": "choice", "id": "c5_menu", "prompt": "Georgia looks at Brad hopefully.", "options": [
+        {"text": "Try the Pumpkin Tuna Melt", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "say", "who": "narrator", "text": "Brad takes a bite. He chews. He chews some more. His eyes water."},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "It's a pumpkin. And a tuna. Nobody asked them if they wanted to meet."},
+          {"op": "say", "who": "sandra", "expr": "smirk", "text": "Respect."},
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "Nobody's ever finished one before!"}
+        ]},
+        {"text": "Skip to the main event", "do": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I'm saving my appetite for the star."},
+          {"op": "say", "who": "sandra", "expr": "deadpan", "text": "Coward."},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "Smart coward. The Surprise is much better."}
+        ]},
+        {"text": "Ask about the blue one", "do": [
+          {"op": "say", "who": "brad", "expr": "confused", "text": "I need to know about the blue one."},
+          {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "It was a blueberry situation. It's been in the fridge since September."},
+          {"op": "say", "who": "georgia", "expr": "worried", "text": "It has a name now. It's Gerald. We don't open the fridge."}
+        ]}
+      ]},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "And now, behold! The Pumpkin Surprise!"},
+      {"op": "say", "who": "narrator", "text": "A small tart sits on a plate. It glows faintly, like a very small, very edible lighthouse."},
+      {"op": "say", "who": "brad", "expr": "confused", "text": "Georgia. Is it supposed to glow?"},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "It's pumpkin from Gord's special crop. The back patch. He only sells those to me."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "Dad sold you Patch Seven pumpkins? He's never sold those to anyone."},
+      {"op": "say", "who": "georgia", "expr": "wink", "text": "I asked nicely. And I brought pie."},
+      {"op": "if", "test": {"var": "F_GEORGIA_SAMPLE", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Also, a dash of the lab foam. A tiny dash! For science!"},
+        {"op": "say", "who": "jane", "expr": "serious", "text": "You what."},
+        {"op": "say", "who": "sandra", "expr": "annoyed", "text": "She what."},
+        {"op": "say", "who": "georgia", "expr": "laugh", "text": "It's an experiment! It's fine!"}
+      ]},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "Brad, you're the guest of honor. First bite is yours."},
+      {"op": "goto", "block": "B_bite"}
+    ],
+
+    "B_bite": [
+      {"op": "say", "who": "narrator", "text": "Brad takes a bite. The tart is warm, sweet, and a little tingly. It tastes like autumn."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "It's good! It's really..."},
+      {"op": "say", "who": "narrator", "text": "Brad's smile freezes. His eyes widen. He sets down his fork."},
+      {"op": "say", "who": "brad", "expr": "candid", "text": "I'm terrified I'm going to fail my father's legacy."},
+      {"op": "say", "who": "brad", "expr": "candid", "text": "Everyone here knows who he was. I don't. What if I'm not him? What if I'm just me?"},
+      {"op": "say", "who": "narrator", "text": "The cafe goes silent. A candle pops."},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "Oh, Brad."},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "...Same. About the tavern."},
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Why did I say that out loud?"},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "That's the pumpkins. It's not the dessert. It's the pumpkins."},
+      {"op": "say", "who": "narrator", "text": "One by one the others take a bite. Each goes very still."},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "I salted Dad's coffee on purpose. Twice. He didn't notice."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "I cry at dog food commercials. Never when anyone's looking. Always when nobody is."},
+      {"op": "say", "who": "georgia", "expr": "laugh", "text": "I put anchovy in the muffin because I lost a bet to my brother!"},
+      {"op": "cg", "id": "CG-05"},
+      {"op": "say", "who": "narrator", "text": "Four people around a glowing tart, laughing, wincing, and telling the truth."},
+      {"op": "say", "who": "narrator", "text": "It is the most honest dinner party in Ravenwood history."},
+      {"op": "cg_off"},
+      {"op": "say", "who": "georgia", "expr": "thinking", "text": "I noticed in August. Dale ate a muffin. He quit his job and told his mother he loves his barber."},
+      {"op": "say", "who": "georgia", "expr": "thinking", "text": "Then he napped."},
+      {"op": "if", "test": {"var": "F_TOOK_COOKIE", "cmp": "eq", "n": 1}, "then": [
+        {"op": "say", "who": "brad", "expr": "surprised", "text": "The cookie! The meatloaf! That was this!"},
+        {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "I'm so sorry! I thought you'd forget!"}
+      ]},
+      {"op": "setbit", "bit": "CL4"},
+      {"op": "say", "who": "georgia", "expr": "worried", "text": "It lasts about thirty minutes. Then you go back to normal. But everyone remembers."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "So the pumpkins make people honest. Because of the soil?"},
+      {"op": "say", "who": "jane", "expr": "serious", "text": "The glow. The hum. Dad's secret. Is this what he's hiding?"},
+      {"op": "say", "who": "narrator", "text": "In the corner booth, Patricia has stopped grading. She is staring at the tart's glow."},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "Ms. Grove. Where exactly did those pumpkins come from?"},
+      {"op": "say", "who": "georgia", "expr": "smile", "text": "Gord's back patch. Number seven!"},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "...I see."},
+      {"op": "if", "test": {"var": "route", "cmp": "ne", "n": 4}, "then": [
+        {"op": "say", "who": "patricia", "expr": "serious", "text": "Good evening, everyone. Do not eat any more of that. Especially in public."},
+        {"op": "sfx", "id": "door_bell"},
+        {"op": "say", "who": "narrator", "text": "Patricia gathers her papers and leaves so fast she forgets her tea."}
+      ], "else": [
+        {"op": "say", "who": "patricia", "expr": "thinking", "text": "I'll stay. For purposes of... observation."}
+      ]},
+      {"op": "say", "who": "narrator", "text": "The group drifts apart in the candlelight. Brad finds himself alone with one person."},
+      {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+        {"op": "call", "block": "C_j"}
+      ], "else": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 2}, "then": [
+          {"op": "call", "block": "C_s"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "call", "block": "C_g"}
+          ], "else": [
+            {"op": "call", "block": "C_p"}
+          ]}
+        ]}
+      ]},
+      {"op": "goto", "block": "D_close"}
+    ],
+
+    "C_j": [
+      {"op": "map", "id": "M11", "spawn": "table", "time": "evening"},
+      {"op": "say", "who": "narrator", "text": "Jane sits at a window table with a thermos and a study guide. The tart glows beside her."},
+      {"op": "say", "who": "jane", "expr": "wink", "text": "Quiz me. Cell structure. Go."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "What's the powerhouse of the cell?"},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "A pumpkin. Honestly? I haven't studied. I've watched you carry things badly since day one."},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "It's my favorite part of the week."},
+      {"op": "say", "who": "brad", "expr": "embarrassed", "text": "I'm... flattered?"},
+      {"op": "say", "who": "jane", "expr": "worried", "text": "I can't stop. Also, I'm worried about Dad. He's hiding something about the pumpkins."},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "And I'm tired of being the responsible one. I want dessert for dinner. And to dance badly."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "It's the tart. For thirty minutes, you can't lie."},
+      {"op": "say", "who": "jane", "expr": "candid", "text": "...Then ask me anything. I can't stop myself."},
+      {"op": "choice", "id": "c5_j", "prompt": "Jane has no filter. Brad has a choice.", "options": [
+        {"text": "Ask what Gord is hiding", "do": [
+          {"op": "set", "var": "F_EXPLOITED_CANDOR", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "What exactly is your dad hiding?"},
+          {"op": "say", "who": "jane", "expr": "candid", "text": "He goes out to Patch Seven at night with a lantern. And talks to it."},
+          {"op": "say", "who": "jane", "expr": "candid", "text": "There's a padlocked shed by the back field. I don't have the key. I've tried six times."},
+          {"op": "say", "who": "jane", "expr": "worried", "text": "...I wish you hadn't asked. I couldn't say no."}
+        ]},
+        {"text": "You don't have to carry it alone", "do": [
+          {"op": "add", "var": "aff_j", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You don't have to carry it alone. Whatever's going on, we'll find out together."},
+          {"op": "say", "who": "jane", "expr": "candid", "text": "...I didn't know I needed someone to say that."},
+          {"op": "say", "who": "jane", "expr": "smile", "text": "Thank you. For not using it against me."}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "They sit in silence, watching the candle burn down while the glow on the tart fades."}
+    ],
+
+    "C_s": [
+      {"op": "map", "id": "M11", "spawn": "counter", "time": "evening"},
+      {"op": "say", "who": "narrator", "text": "Sandra sits at the counter with a paper cup of black coffee. Her tart glows, half eaten."},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I'm going to say things now. It's unavoidable. Do not write them down."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "You're the only person who doesn't flinch at my face. I assume it's a medical condition."},
+      {"op": "say", "who": "brad", "expr": "smile", "text": "Your face is fine. It's the lipstick that's intimidating."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "That's... the nicest thing anyone's said about my lipstick."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "I like having you around."},
+      {"op": "say", "who": "narrator", "text": "She freezes. The coffee cup crumples in her fist. Coffee drips onto the counter."},
+      {"op": "say", "who": "sandra", "expr": "mortified", "text": "That was not supposed to come out. That is a thing I think. Silently. In my head."},
+      {"op": "choice", "id": "c5_s", "prompt": "Sandra stares at the ruined cup, not at Brad.", "options": [
+        {"text": "Tease her", "do": [
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "You like having me around? Really? Say it again!"},
+          {"op": "say", "who": "sandra", "expr": "annoyed", "text": "No. It was a coffee-induced hallucination."},
+          {"op": "say", "who": "sandra", "expr": "annoyed", "text": "Please don't make me regret this."}
+        ]},
+        {"text": "Say it back", "do": [
+          {"op": "add", "var": "aff_s", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "I like having you around too."},
+          {"op": "say", "who": "sandra", "expr": "mortified", "text": "...Fine. That was less terrible than I feared."},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "We're both being honest. Don't ruin it."}
+        ]},
+        {"text": "Change the subject for her", "do": [
+          {"op": "add", "var": "aff_s", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "So. Tavern trivia night. Do you win a lot?"},
+          {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "...Thank you. I always win. Ask me about the rules and I'll talk for an hour."},
+          {"op": "say", "who": "narrator", "text": "Sandra talks about trivia night for ten minutes. She glows, and not only because of the tart."}
+        ]}
+      ]},
+      {"op": "say", "who": "sandra", "expr": "neutral", "text": "Tavern closes soon. I'll walk you out. Not because it's late. Because I like the walk."}
+    ],
+
+    "C_g": [
+      {"op": "map", "id": "M11", "spawn": "counter", "time": "evening"},
+      {"op": "say", "who": "narrator", "text": "The others have gone. Georgia stands behind the counter, polishing the same spot on the same cup."},
+      {"op": "say", "who": "narrator", "text": "From under the register she takes a crumpled envelope."},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Pastry school application. I keep it next to the tip jar. Where I can't see it, but I know it's there."},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "I'm afraid I'll be the cafe girl forever. I want to bake in a city. A tiny bakery on a big street."},
+      {"op": "say", "who": "georgia", "expr": "worried", "text": "I never sent it. My family needs me. Everyone needs me. Nobody asks what I need."},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Why can't I stop?"},
+      {"op": "choice", "id": "c5_g", "prompt": "Georgia is telling the truth. All of it.", "options": [
+        {"text": "Ask if she likes him", "do": [
+          {"op": "set", "var": "F_EXPLOITED_CANDOR", "n": 1},
+          {"op": "say", "who": "brad", "expr": "embarrassed", "text": "Georgia. Do you... like me? Like me, like me?"},
+          {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Yes. Obviously. Since the cookie."},
+          {"op": "say", "who": "georgia", "expr": "worried", "text": "...You asked while I couldn't lie. That's not fair."}
+        ]},
+        {"text": "Reassure her", "do": [
+          {"op": "add", "var": "aff_g", "n": 2},
+          {"op": "set", "var": "F_GEORGIA_APPLICATION", "n": 1},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "You deserve to ask for what you want. Send the application."},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "You asked what I need. Nobody does that. Thank you."},
+          {"op": "say", "who": "narrator", "text": "She presses the envelope into his hand. 'Hold this for me. Until I'm brave enough.'"}
+        ]},
+        {"text": "Make a joke", "do": [
+          {"op": "add", "var": "aff_g", "n": 1},
+          {"op": "say", "who": "brad", "expr": "laugh", "text": "You can't leave. Who'd put anchovy in the muffins?"},
+          {"op": "say", "who": "georgia", "expr": "laugh", "text": "Ha! Nobody else has the courage!"},
+          {"op": "say", "who": "georgia", "expr": "smile", "text": "Thanks. I needed to laugh more than I needed advice."}
+        ]}
+      ]},
+      {"op": "say", "who": "narrator", "text": "Georgia blows out a candle. Then another. The glow on the tart is fading."}
+    ],
+
+    "C_p": [
+      {"op": "map", "id": "M11", "spawn": "booth_corner", "time": "evening"},
+      {"op": "say", "who": "narrator", "text": "In the corner booth, Patricia has abandoned her grading and studies the tart with suspicion."},
+      {"op": "say", "who": "patricia", "expr": "thinking", "text": "One bite. For the sake of science."},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Professor, maybe you shouldn't..."},
+      {"op": "say", "who": "narrator", "text": "She takes a bite. She sets down her fork very carefully."},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "I blame ravens for everything because the alternative is that I'm responsible."},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "I haven't slept since Wednesday. The lab was my mother's. I am afraid of it."},
+      {"op": "say", "who": "patricia", "expr": "candid", "text": "Your father was my mother's best student. She loved him like a son."},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "I'm lonely at faculty parties. There. Nobody tell."},
+      {"op": "say", "who": "patricia", "expr": "scared", "text": "Mr. Bart. Whatever I say for the next half hour. Please. Be kind."},
+      {"op": "choice", "id": "c5_p", "prompt": "Patricia can't hold anything back.", "options": [
+        {"text": "Ask about the program", "do": [
+          {"op": "set", "var": "F_EXPLOITED_CANDOR", "n": 1},
+          {"op": "say", "who": "brad", "expr": "determined", "text": "What happened to the program?"},
+          {"op": "say", "who": "patricia", "expr": "candid", "text": "My mother never told me. But she stopped serving punch at faculty parties. For life."},
+          {"op": "say", "who": "patricia", "expr": "candid", "text": "Whatever happened, it involved a dance, and a punch bowl, and something she regretted."},
+          {"op": "say", "who": "patricia", "expr": "cold", "text": "...You asked while I couldn't refuse. I won't forget that."}
+        ]},
+        {"text": "Change the subject", "do": [
+          {"op": "add", "var": "aff_p", "n": 2},
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Tell me your favorite lab disaster. I'm told there are many."},
+          {"op": "say", "who": "patricia", "expr": "candid", "text": "You... didn't ask. You gave me the room to keep it. Thank you."},
+          {"op": "say", "who": "patricia", "expr": "smile", "text": "The best was a Bunsen burner, a banana, and a very ambitious sophomore."}
+        ]}
+      ]},
+      {"op": "say", "who": "patricia", "expr": "neutral", "text": "Mr. Bart. I'll walk myself to my car. Strictly because it's dark. Not as a date."}
+    ],
+
+    "D_close": [
+      {"op": "say", "who": "narrator", "text": "Thirty minutes later the glow fades. The candles burn low. Nobody quite looks at anybody."},
+      {"op": "say", "who": "jane", "expr": "smile", "text": "So! How about this weather?"},
+      {"op": "say", "who": "sandra", "expr": "deadpan", "text": "I said nothing. Nobody said anything. The tart is a liar."},
+      {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Thank you all for coming to the tasting! Please leave a kind review!"},
+      {"op": "if", "test": {"var": "F_EXPLOITED_CANDOR", "cmp": "eq", "n": 1}, "then": [
+        {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 1}, "then": [
+          {"op": "say", "who": "jane", "expr": "serious", "text": "Brad. Next time, if I can't say no, you shouldn't ask. Okay?"}
+        ], "else": [
+          {"op": "if", "test": {"var": "route", "cmp": "eq", "n": 3}, "then": [
+            {"op": "say", "who": "georgia", "expr": "embarrassed", "text": "Please forget what I said. We'll both pretend."}
+          ], "else": [
+            {"op": "say", "who": "patricia", "expr": "cold", "text": "Mr. Bart. I'd appreciate it if tonight went unmentioned in class."}
+          ]}
+        ]}
+      ]},
+      {"op": "say", "who": "brad", "expr": "worried", "text": "Everyone agrees not to ask why the pumpkins did that."},
+      {"op": "sfx", "id": "caw"},
+      {"op": "say", "who": "narrator", "text": "A tap at the window. The crow, outside in the dark, taps the glass twice."},
+      {"op": "fade", "to": "black", "ms": 500},
+      {"op": "music", "id": "farm_theme"},
+      {"op": "map", "id": "M04", "spawn": "farm_gate", "time": "night"},
+      {"op": "fade", "to": "clear", "ms": 500},
+      {"op": "say", "who": "narrator", "text": "Brad walks the farm road home. A lantern glows on the porch. Gord sits rocking, not looking up."},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "You smell like Georgia's tart."},
+      {"op": "say", "who": "brad", "expr": "surprised", "text": "You know about the tart?"},
+      {"op": "say", "who": "gord", "expr": "worried", "text": "She's the only one I sold the back-patch pumpkins to. I regret it a little more each day."},
+      {"op": "choice", "id": "c5_gord", "prompt": "Gord stares into the dark field.", "options": [
+        {"text": "Tell him what the tart did", "do": [
+          {"op": "add", "var": "trust_gord", "n": 1},
+          {"op": "say", "who": "brad", "expr": "worried", "text": "People told the truth. All of them. For about thirty minutes."},
+          {"op": "say", "who": "gord", "expr": "worried", "text": "Thirty. It was ten, in my day."},
+          {"op": "say", "who": "brad", "expr": "confused", "text": "In your day?"},
+          {"op": "say", "who": "gord", "expr": "neutral", "text": "...Never mind. Bed."}
+        ]},
+        {"text": "Ask about Patch Seven", "do": [
+          {"op": "say", "who": "brad", "expr": "determined", "text": "Uncle Gord. What's in Patch Seven?"},
+          {"op": "say", "who": "gord", "expr": "angry", "text": "Not tonight."},
+          {"op": "say", "who": "gord", "expr": "neutral", "text": "...Soon. Not tonight."}
+        ]},
+        {"text": "Just say goodnight", "do": [
+          {"op": "say", "who": "brad", "expr": "smile", "text": "Goodnight, Uncle Gord."},
+          {"op": "say", "who": "gord", "expr": "smile", "text": "Night, boy."}
+        ]}
+      ]},
+      {"op": "say", "who": "gord", "expr": "neutral", "text": "Saturday. Six. Bring your boots. We're doing the pumpkins."},
+      {"op": "say", "who": "narrator", "text": "In the far field, something glows faintly orange. The crow lands on the porch railing and watches."},
+      {"op": "fade", "to": "black", "ms": 800},
+      {"op": "set", "var": "scene", "n": 6},
+      {"op": "end"}
+    ]
+
+  }
+}

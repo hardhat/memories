@@ -63,7 +63,7 @@
   "M11": {
     "name": "Grove Cafe interior",
     "tiles": null,
-    "spawns": ["door"],
+    "spawns": ["door", "counter", "table", "booth_corner"],
     "triggers": []
   },
   "M12": {
