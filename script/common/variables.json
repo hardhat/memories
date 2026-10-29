@@ -44,7 +44,8 @@
     "F_WARNED_GEORGIA": "S6/S8: warned Georgia about Patch 7 pumpkins",
     "F_FARM_MONEY": "S8: Brad's haggling earned the farm a good market day",
     "MIDTERM_PASS": "S7: passed the midterm",
-    "F_CURED": "S9: chose to cure the pumpkins"
+    "F_CURED": "S9: chose to cure the pumpkins",
+    "F_GAME_COMPLETE": "S10: the game has been completed (new game plus keeps the clue journal)"
   },
   "bits": {
     "clues": {

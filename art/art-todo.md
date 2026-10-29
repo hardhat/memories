@@ -135,6 +135,8 @@ From the CG list in the script plan. Many reuse the existing character designs, 
 - [ ] CG-09 (S9): Great Hall, glowing punch bowl, crowd mid-confession. **P2**
 - [ ] CG-11 (S10): Flashback of the original dance 25 years ago: young Daniel, Gord, and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd. **P2**
 - [ ] CG-12 (S10): Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them. **P2**
+- [ ] CG-13 (S10): Good Friends ending: group photo on the tavern steps with Brad, all four heroines and Gord, the crow photobombing in the corner. **P2**
+- [ ] CG-09 (S9) and CG-04a-d / CG-10a-d: see the CG lists in [../script/common/cgs.json](../script/common/cgs.json) for the full set of scripted images.
 
 **Route (one per route, 4 images each):**
 - [ ] CG-04a-d (S4): Bonfire moment with Jane / Sandra / Georgia / Patricia. **P2**

@@ -204,17 +204,17 @@
     ],
 
     "resolve_confess": [
-      {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 20}, "then": [
-        {"op": "if", "test": {"var": "clue_count", "cmp": "gte", "n": 6}, "then": [
+      {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 13}, "then": [
+        {"op": "if", "test": {"var": "clue_count", "cmp": "gte", "n": 7}, "then": [
           {"op": "set", "var": "ending", "n": 1}
         ], "else": [
           {"op": "set", "var": "ending", "n": 2}
         ]}
       ], "else": [
-        {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 14}, "then": [
+        {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 10}, "then": [
           {"op": "set", "var": "ending", "n": 2}
         ], "else": [
-          {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 8}, "then": [
+          {"op": "if", "test": {"var": "aff", "cmp": "gte", "n": 6}, "then": [
             {"op": "set", "var": "ending", "n": 3}
           ], "else": [
             {"op": "set", "var": "ending", "n": 4}
@@ -234,7 +234,7 @@
       {"op": "say", "who": "jane", "expr": "candid", "text": "And I want you to stay. For the winter. For Doris. For me."},
       {"op": "say", "who": "jane", "expr": "worried", "text": "I'm sorry. It's the bloom. I can't hold anything back."},
       {"op": "say", "who": "brad", "expr": "candid", "text": "Don't be sorry. I can't either."},
-      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 6}, "then": [
         {"op": "say", "who": "jane", "expr": "serious", "text": "Brad, I adore you. As a friend. I think you're not ready for the other thing. Not yet."},
         {"op": "set", "var": "ending", "n": 4},
         {"op": "call", "block": "j_react"}
@@ -285,7 +285,7 @@
       {"op": "say", "who": "narrator", "text": "The tavern regulars burst into cheers. Someone throws a pretzel."},
       {"op": "say", "who": "sandra", "expr": "mortified", "text": "I am going to destroy this punch. With fire."},
       {"op": "say", "who": "brad", "expr": "candid", "text": "I can't stop saying things either. It's a terrible night for secrets."},
-      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 6}, "then": [
         {"op": "say", "who": "sandra", "expr": "deadpan", "text": "You're a friend. Don't make it weird. I'm fine. I'll be fine."},
         {"op": "set", "var": "ending", "n": 4},
         {"op": "call", "block": "s_react"}
@@ -338,7 +338,7 @@
         {"op": "say", "who": "brad", "expr": "smile", "text": "I brought it. In case."},
         {"op": "say", "who": "georgia", "expr": "surprised", "text": "You brought it?!"}
       ]},
-      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 6}, "then": [
         {"op": "say", "who": "georgia", "expr": "worried", "text": "Oh no. I said too much. You're a lovely friend. Forget I said the other part."},
         {"op": "set", "var": "ending", "n": 4},
         {"op": "call", "block": "g_react"}
@@ -389,7 +389,7 @@
       {"op": "say", "who": "patricia", "expr": "thinking", "text": "You saw through the mustache. I find that unsettling. And pleasant. Mostly unsettling."},
       {"op": "say", "who": "patricia", "expr": "serious", "text": "Do you want to do the right thing? Stop the bloom? End it, once and for all?"},
       {"op": "say", "who": "brad", "expr": "determined", "text": "Let's decide together. In a minute."},
-      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 8}, "then": [
+      {"op": "if", "test": {"var": "aff", "cmp": "lt", "n": 6}, "then": [
         {"op": "say", "who": "patricia", "expr": "serious", "text": "Mr. Bart. I am your professor. The candor has made me say too much. You'll forget it."},
         {"op": "set", "var": "ending", "n": 4},
         {"op": "call", "block": "p_react"}

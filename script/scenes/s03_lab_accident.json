@@ -224,10 +224,10 @@
           {"op": "goto", "block": "E_close"}
         ]},
         "triggers": [
-          {"at": "invite_jane", "once": true, "do": [{"op": "call", "block": "invite_j"}]},
-          {"at": "invite_sandra", "once": true, "do": [{"op": "call", "block": "invite_s"}]},
-          {"at": "invite_georgia", "once": true, "do": [{"op": "call", "block": "invite_g"}]},
-          {"at": "invite_patricia", "once": true, "do": [{"op": "call", "block": "invite_p"}]}
+          {"at": "invite_jane", "once": true, "do": [{"op": "call", "block": "invite_j"}, {"op": "add", "var": "stops", "n": 1}]},
+          {"at": "invite_sandra", "once": true, "do": [{"op": "call", "block": "invite_s"}, {"op": "add", "var": "stops", "n": 1}]},
+          {"at": "invite_georgia", "once": true, "do": [{"op": "call", "block": "invite_g"}, {"op": "add", "var": "stops", "n": 1}]},
+          {"at": "invite_patricia", "once": true, "do": [{"op": "call", "block": "invite_p"}, {"op": "add", "var": "stops", "n": 1}]}
         ]}
     ],
 

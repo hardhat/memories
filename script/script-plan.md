@@ -72,10 +72,10 @@ Every route climax in S9 offers three kinds of answer: **confess**, **stay frien
 
 | Ending | Condition |
 |---|---|
-| **True Love** | Confess, locked route `aff` >= 20, and at least 6 clue bits |
-| **Sweet** | Confess, locked route `aff` >= 14 |
-| **Good Friends** | Picks "stay friends", or confesses with `aff` 8-13 (she gently says "let's keep it friends") |
-| **Farm (Solo)** | Picks "not yet", or `aff` < 8 at the climax (she says Brad isn't there yet) |
+| **True Love** | Confess, locked route `aff` >= 13, and `clue_count` >= 7 (six clues are guaranteed, so this needs the archive, CL7, or Sandra's photo, CL3) |
+| **Sweet** | Confess, locked route `aff` >= 10 (or `aff` >= 13 with fewer than 7 clues) |
+| **Good Friends** | Picks "stay friends", or confesses with `aff` 6-9 (she gently says "let's keep it friends") |
+| **Farm (Solo)** | Picks "not yet", or `aff` < 6 at the climax (she says Brad isn't there yet) |
 
 That is 4 routes x 3 endings plus one shared Farm ending (13 total). The cost is kept low by sharing the S9 Act D close and the S10 truth scene across all routes, and swapping only the final ~1.5-minute vignette in S10. The Farm ending is a single shared vignette with a one-line cameo from the locked heroine.
 
@@ -329,7 +329,7 @@ Each climax ends with the same three-way answer: **confess**, **stay friends**, 
 - **S:** She is in the middle of the chaos, deadpan and mortified, and she tells Brad she thinks about him constantly. The tavern crowd cheers. *Choice:* confess (or retreat with her to the roof for a quieter confession), stay friends, or "not yet."
 - **G:** Georgia admits she wants to bake in the city, and she wants Brad to come with her. *Choice:* promise to follow (or ask her to stay and open her own place here), stay friends, or "not yet."
 - **P:** In the bloom the crow steals Mr. Gourd's mustache in front of everyone, exposing Patricia in every route (the other routes learn who Mr. Gourd is here). On the balcony she tells Brad the truth about her mother and asks whether he wants to "do the right thing" and stop the bloom. After the final choice she says, "Ask me again in December, after grades are filed." (Her True ending is a promise rather than a kiss.) *Choice:* confess, stay friends, or "not yet."
-- **Ending resolution (implemented):** if the locked route's `aff` is below 8 the heroine gently says Brad isn't there yet (Farm). Otherwise the choice runs. "Confess" resolves through `resolve_confess`: `aff` >= 20 and `clue_count` >= 6 gives True Love, `aff` >= 14 gives Sweet, `aff` 8-13 gives Good Friends. "Stay friends" is Good Friends and "Not yet" is Farm.
+- **Ending resolution (implemented):** if the locked route's `aff` is below 6 the heroine gently says Brad isn't there yet (Farm). Otherwise the choice runs. "Confess" resolves through `resolve_confess`: `aff` >= 13 and `clue_count` >= 7 gives True Love, `aff` >= 10 gives Sweet, `aff` 6-9 gives Good Friends. "Stay friends" is Good Friends and "Not yet" is Farm.
 
 **Act D: Shared close (the choice, the promise)**
 - Gord and Brad speak plainly. Gord admits he wrote the note and made a promise to Brad's father. "I never wanted to lie to you. I wanted to keep you out of it." He doesn't tell the full story; he says, "Your dad should be the one to tell you. He's coming for Thanksgiving."
@@ -387,6 +387,7 @@ Each climax ends with the same three-way answer: **confess**, **stay friends**, 
 | CG-10a-d | S10 | Route (4) | Ending images per route (True Love; Sweet can reuse with a small change) |
 | CG-11 | S10 | Shared | Flashback: the original dance 25 years ago, young Daniel, Gord, and Eleanor |
 | CG-12 | S10 | Shared | Farm ending: Brad and Gord on the snowy porch, crow on the railing |
+| CG-13 | S10 | Shared | Good Friends ending: group photo on the tavern steps, crow photobombing in the corner |
 
 Priority for art: shared CGs first (11), then S4 and S10 route CGs (8), then optional extras.
 

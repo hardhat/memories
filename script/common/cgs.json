@@ -59,5 +59,40 @@
     "scene": "S9",
     "desc": "Great Hall under the full moon: the glowing punch bowl, jack-o'-lanterns aglow, the crowd mid-confession",
     "file": null
+  },
+  "CG-10a": {
+    "scene": "S10",
+    "desc": "Jane ending: Jane and Brad with a lumpy snow pumpkin on the snowy farm, barn key in her hand",
+    "file": null
+  },
+  "CG-10b": {
+    "scene": "S10",
+    "desc": "Sandra ending: Sandra smiling fully at the trivia table, Brad beside her, the old photo and a new one behind the bar",
+    "file": null
+  },
+  "CG-10c": {
+    "scene": "S10",
+    "desc": "Georgia ending: Georgia and Brad at the cafe counter, the Honest Edition Pumpkin Surprise between them",
+    "file": null
+  },
+  "CG-10d": {
+    "scene": "S10",
+    "desc": "Patricia ending: Patricia at the farmhouse door in a trench coat and safety goggles, snow falling, Brad grinning",
+    "file": null
+  },
+  "CG-11": {
+    "scene": "S10",
+    "desc": "Flashback: the original Halloween dance 25 years ago, young Daniel, Gord and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd",
+    "file": null
+  },
+  "CG-12": {
+    "scene": "S10",
+    "desc": "Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them",
+    "file": null
+  },
+  "CG-13": {
+    "scene": "S10",
+    "desc": "Good Friends ending: group photo on the tavern steps, Brad with all four, Gord, and the crow photobombing in the corner",
+    "file": null
   }
 }

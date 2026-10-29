@@ -16,6 +16,13 @@
   "tobias": {"name": "Tobias", "portrait": false},
   "gourd": {"name": "Mr. Gourd", "portrait": false},
   "student": {"name": "Student", "portrait": false},
+  "daniel": {
+    "name": "Dad",
+    "side": "right",
+    "sheet": "art/daniel-bart.png",
+    "have": [],
+    "todo": ["neutral", "smile", "sheepish", "serious"]
+  },
   "leader": {"name": "Icebreaker Leader", "portrait": false},
   "brad": {
     "name": "Brad",
