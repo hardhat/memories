@@ -395,6 +395,8 @@ Priority for art: shared CGs first (11), then S4 and S10 route CGs (8), then opt
 
 ## 7. Suggested Data Layout (for Step 2 and the engine)
 
+The compiler spec is in [compiler-spec.md](compiler-spec.md); it replaces the sketch below.
+
 ```text
 script/
   scenes/

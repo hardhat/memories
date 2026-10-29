@@ -23,7 +23,7 @@
     "have": [],
     "todo": ["neutral", "smile", "sheepish", "serious"]
   },
-  "leader": {"name": "Icebreaker Leader", "portrait": false},
+  "leader": {"name": "Leader", "portrait": false},
   "brad": {
     "name": "Brad",
     "side": "left",
