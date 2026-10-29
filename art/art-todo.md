@@ -4,14 +4,22 @@ Art requirements derived from [../script/script-plan.md](../script/script-plan.m
 
 Existing sheets: [brad-bart.png](brad-bart.png), [gord-mcvine.png](gord-mcvine.png), [jane-mcvine.png](jane-mcvine.png), [jane-mcvine-formal.png](jane-mcvine-formal.png), [sandra-stump.png](sandra-stump.png), [georgia-grove.png](georgia-grove.png), [prof-patricia-peters.png](prof-patricia-peters.png).
 
-## 0. Technical Decisions (confirm before producing final assets)
+## 0. Technical Decisions
 
-- [ ] Target screen resolution and palette limits for the Zeal 8-bit engine.
-- [ ] Portrait size (and whether portraits are full-body, half-body, or bust) so every expression is cut to the same frame and anchor.
-- [ ] Tile size (suggest 16x16) and walk-sprite size (suggest 16x24 or 16x32).
-- [ ] CG size, and whether CGs are tile-compressed or paletted bitmaps.
-- [ ] File naming: `<character>-<outfit>-<expression>.png` for portraits, `cg-<id>.png` for CGs, `sprite-<character>-<outfit>.png` for walk sprites.
-- [ ] The existing turnaround sheets are high-resolution. They need to be downscaled and palette-reduced for the engine (or redrawn from the sheets).
+Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.7 and 12):
+
+- [x] Tools: `gif2zeal.py` makes `.zts` (tiles) and `.ztp` (palette, RGB565 little endian); `tiled2zeal.py` makes `.ztm` from Tiled maps.
+- [x] Tile size 16x16. CG size: 320x240 at 4bpp (16 colours) **or** 320x192 at 8bpp (256 colours); choose per CG.
+- [x] Portraits: 8bpp, about 80x32 base image plus alternate heads per expression, 32 dedicated colours each (including transparent).
+- [x] Files are GIFs with `__` filename flags for the converter (for example `cg01__B8R.gif`); map tilesets must NOT use the unique flag (`U`), so tile order matches Tiled.
+
+Still to confirm:
+
+- [ ] Portrait geometry: is 80x32 the whole portrait or only a head strip (compiler-spec section 12, question 1).
+- [ ] The 256-entry palette split between UI, left portrait, right portrait and scene art (compiler-spec section 5.7 proposal). Pixel indices are absolute, so each GIF must be authored with its colours at its slot's indices.
+- [ ] Walk-sprite size (suggest 16x24 or 16x32).
+- [ ] File naming: `<character>-<outfit>.gif` per portrait sheet, `cg<id>__B8R.gif` for CGs, `sprite-<character>.gif` for walk sprites, map tilesets without `U`.
+- [ ] The existing turnaround sheets are high-resolution PNG. They need to be redrawn or downscaled and palette-reduced to the sizes above.
 
 ## 1. Brad Bart (main character): P1
 
