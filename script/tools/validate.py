@@ -21,7 +21,7 @@ SECONDS_PER_MAP = 10
 
 OPS = {
     "say", "map", "explore", "tutorial", "music", "sfx", "fade", "wait", "cg", "cg_off",
-    "choice", "add", "set", "setbit", "if", "call", "goto", "end", "show", "hide", "walk", "pick_max",
+    "choice", "add", "sub", "set", "setbit", "if", "call", "goto", "end", "show", "hide", "walk", "pick_max",
 }
 CMPS = {"eq", "ne", "gte", "lt"}
 
@@ -116,7 +116,7 @@ class Checker:
             for j, opt in enumerate(opts):
                 self.check_text(f"{where}.options[{j}]", opt.get("text", ""))
                 self.check_ops(f"{where}.options[{j}]", opt.get("do", []))
-        elif name in ("add", "set"):
+        elif name in ("add", "sub", "set"):
             self.check_var(where, op.get("var"))
             if not isinstance(op.get("n"), int) or not 0 <= op["n"] <= 255:
                 self.err(where, "n must be 0-255")

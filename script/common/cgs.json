@@ -39,5 +39,10 @@
     "scene": "S5",
     "desc": "Grove Cafe after hours: the group around a faintly glowing pumpkin tart with a candle, everyone mid-confession",
     "file": null
+  },
+  "CG-06": {
+    "scene": "S6",
+    "desc": "Patch 7 at golden hour: giant glowing pumpkins, Gord in silhouette holding a plank sign",
+    "file": null
   }
 }

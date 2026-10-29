@@ -21,8 +21,8 @@
   "M04": {
     "name": "McVine Farm",
     "tiles": null,
-    "spawns": ["farm_gate", "barn"],
-    "triggers": []
+    "spawns": ["farm_gate", "barn", "yard", "patch7_edge", "porch"],
+    "triggers": ["trough", "seed_row", "haul_cart", "memorial"]
   },
   "M05": {
     "name": "Farmhouse (kitchen and attic)",

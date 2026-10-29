@@ -420,7 +420,7 @@ Each scene file holds named blocks: `A_open`, `B_shared`, `C_route_j|s|g|p`, `D_
 **Command vocabulary (as implemented in [scenes/s01_arrival.json](scenes/s01_arrival.json)):**
 - `say` (who, expr, text; `style: "phone"` for text messages), `show`/`hide`, `walk`, `cg`/`cg_off`
 - `map` (id, spawn, time: afternoon/dusk/night), `explore` (objective, optional `clock` that ends the explore after N stops, `triggers` with `at`/`once`/`do`)
-- `choice` (id, prompt, up to 3 options each with `do`), `if` (var + `cmp` eq/ne/gte/lt + `n`, or a clue `bit`), `add`/`set`/`setbit`
+- `choice` (id, prompt, up to 3 options each with `do`), `if` (var + `cmp` eq/ne/gte/lt + `n`, or a clue `bit`), `add`/`sub`/`set`/`setbit` (`sub` saturates at 0)
 - `pick_max` (options: list of `{var, route}`; sets `route` to the entry with the highest value, first wins ties), used for the S3 lock-in fallback
 - `call` (run a block and return), `goto` (jump), `end`, `music`, `sfx`, `fade`, `wait`, `tutorial`
 
