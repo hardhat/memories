@@ -161,6 +161,11 @@ Have: smile, wink, serious, surprised.
 
 ### Sandra Stump (goth)
 Have: neutral, slight smile, annoyed, surprised.
+
+[Halloween witch reference](sandra-stump-witch.png) is downloaded and reviewed
+at 1024x1024: existing gothic outfit plus pointed hat and short plum-lined cape;
+neutral, slight smile, mortified and full smile. Runtime asset tasks remain open.
+
 - [ ] Mortified / blushing (S5, S9). **P1**
 - [ ] Smirk (S3, S8). **P1**
 - [ ] Deadpan stare (S1, S2). **P2**
@@ -170,6 +175,11 @@ Have: neutral, slight smile, annoyed, surprised.
 
 ### Georgia Grove (blonde, cafe)
 Have: neutral, smile, surprised, wink.
+
+[Pumpkin-pie costume reference](georgia-grove-pie.png) is downloaded and reviewed
+at 1024x1024: padded circular pie sandwich-board, crust rim and cream decoration;
+neutral, closed-eye smile, surprised and embarrassed. Runtime assets remain open.
+
 - [ ] Laughing (S4 mascot gag). **P1**
 - [ ] Worried / sad (S5 candid window, S8). **P1**
 - [ ] Embarrassed (S5). **P2**
@@ -179,6 +189,12 @@ Have: neutral, smile, surprised, wink.
 
 ### Prof. Patricia Peters
 Have: neutral, smile, serious, thinking.
+
+[Mr. Gourd reference](prof-patricia-peters-gourd.png) is downloaded and reviewed
+at 1024x1024: tan trench coat, round sunglasses, removable mustache, black
+heels, lifting pose, disguised neutral/caught and undisguised reveal.
+This supplies CG-08 continuity; runtime portraits and walk sprite remain open.
+
 - [ ] Flustered / blushing (S1 gate, S3 invitation). **P1**
 - [ ] Frustrated at technology (S2 projector, S3 computer). **P1**
 - [ ] Scared / worried (S3, S5 candid, S8, S9). **P2**
@@ -265,7 +281,7 @@ Tile sets for the maps listed in section 4 of the script plan. Each has a day va
 
 From the CG list in the script plan. Many reuse the existing character designs, so the art needs the same outfits and expressions listed above.
 
-**Production status:** CG-01 through CG-06, including CG-04a-d, are approved and installed at their
+**Production status:** CG-01 through CG-09, including CG-04a-d, and CG-11 are approved and installed at their
 existing paths in `cg-placeholders`; the directory name is retained for registry
 compatibility. Other local CGs remain placeholders.
 The successful OpenArt CG-02 consistency pilot
@@ -321,16 +337,50 @@ all match their approved session review copies by SHA256.
 | CG-05 | `a7MC2crnlpVuqRznUvEd` | Four recognizable friends, Georgia's apron, the tart and separate candle remain readable. Expressions lean toward friendly amusement rather than exaggerated confession. |
 | CG-06 | `DPogZq3nDG66lwGhKDGY` | Giant glowing pumpkins, golden-hour field, Gord and his KEEP OUT / PATCH 7 plank remain clear. |
 
+### Archive batch: approved and installed
+
+CG-07 (OpenArt `7B7ctP3RrseS1vQMtqJ4`) replaces the local placeholder at its
+existing registry path. Source dimensions are verified 1280x768; the 320x192/128-colour
+preview retains Brad, the three-person photograph and the SEALED memo.
+Small photo identities/text lose detail at game resolution. RGB565 palette
+and raster tile bytes match the converted GIF. Installed PNG/GIF files and
+rebuilt `.ztp`/`.zts` outputs match the approved review copies by SHA256.
+
+### Loading dock batch: approved and installed
+
+CG-08 (OpenArt `wVQlM6y6iezOzpipSBHc`) replaces the local placeholder at its
+existing registry path. Source dimensions are verified 1280x768; the 320x192/128-colour
+preview retains the open van, glowing pumpkin, Mr. Gourd disguise and clearly
+visible black high heel. RGB565 palette and raster tile bytes match the GIF.
+Installed PNG/GIF files and rebuilt `.ztp`/`.zts` outputs match the approved
+review copies by SHA256.
+
+### Halloween and flashback batch
+
+- CG-09 (OpenArt `yXUAyr8yvxbNwiQlBPLm`) is approved and installed at its existing
+  registry path. Verified 1280x768 source
+  and 320x192/128-colour preview; RGB565 palette and raster tile bytes match
+  the GIF. Sandra's witch outfit, Georgia's pie, glowing punch, full moon
+  and reacting crowd remain readable. Brad stays out of view so it works
+  with all three player-selected costumes. Installed PNG/GIF files and rebuilt
+  `.ztp`/`.zts` outputs match the approved review copies by SHA256.
+- CG-11 (OpenArt `3n66Wcyq6d8JfcP66Odm`) is approved and installed at its existing
+  registry path. Verified 1280x768 source and
+  320x192/128-colour preview; RGB565 palette and raster tile bytes match the GIF.
+  Young Daniel/Gord, mature Eleanor, Brad's mother, program banner and glowing
+  punch remain readable at game resolution. Installed PNG/GIF files and
+  rebuilt `.ztp`/`.zts` outputs match the approved review copies by SHA256.
+
 **Shared:**
 - [x] CG-01 (S1): Attic window at dusk, glowing Patch 7, the crow on the sill. **P1**
 - [x] CG-02 (S2): Lecture hall extinguisher chaos, Patricia over her glasses, the crow with the name tag in the window. **P1**
 - [x] CG-03 (S3): Lab flooded with glowing orange foam, four silhouettes. **P1**
 - [x] CG-05 (S5): Glowing Pumpkin Surprise and the group around the table, mid-confession. **P2**
 - [x] CG-06 (S6): Patch 7 at golden hour, giant glowing pumpkins, Gord in silhouette. **P2**
-- [ ] CG-07 (S7): Archive by flashlight, the Pumpkin Research Program binder, a photo of three young people. **P2**
-- [ ] CG-08 (S8): The van at the lab loading dock, Mr. Gourd lifting a pumpkin, one stylish shoe. **P2**
-- [ ] CG-09 (S9): Great Hall, glowing punch bowl, crowd mid-confession. **P2**
-- [ ] CG-11 (S10): Flashback of the original dance 25 years ago: young Daniel, Gord, and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd. **P2**
+- [x] CG-07 (S7): Archive by flashlight, the Pumpkin Research Program binder, a photo of three young people. **P2**
+- [x] CG-08 (S8): The van at the lab loading dock, Mr. Gourd lifting a pumpkin, one stylish shoe. **P2**
+- [x] CG-09 (S9): Great Hall, glowing punch bowl, crowd mid-confession. **P2**
+- [x] CG-11 (S10): Flashback of the original dance 25 years ago: young Daniel, Gord, and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd. **P2**
 - [ ] CG-12 (S10): Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them. **P2**
 - [ ] CG-13 (S10): Good Friends ending: group photo on the tavern steps with Brad, all four heroines and Gord, the crow photobombing in the corner. **P2**
 See [../script/common/cgs.json](../script/common/cgs.json) for the full set of scripted images.
