@@ -4,6 +4,53 @@ Art requirements derived from [../script/script-plan.md](../script/script-plan.m
 
 Existing sheets: [brad-bart.png](brad-bart.png), [gord-mcvine.png](gord-mcvine.png), [jane-mcvine.png](jane-mcvine.png), [jane-mcvine-formal.png](jane-mcvine-formal.png), [sandra-stump.png](sandra-stump.png), [georgia-grove.png](georgia-grove.png), [prof-patricia-peters.png](prof-patricia-peters.png).
 
+## Progress Snapshot (2026-10-30)
+
+Reference-sheet work and finished engine assets are separate milestones.
+Unchecked asset tasks below do not mean their character designs are missing.
+
+- [x] Review the seven original cast/outfit sheets.
+- [x] Generate, download, and review 14 supporting-character reference sheets,
+  including young Gord for the flashback; select preferred originals/revisions.
+  See section 3 for the complete linked inventory.
+- [x] Generate, download, and review all eight P1 outfit/expression references.
+  See section 1 for the complete linked inventory.
+- [x] Restore Georgia's original cheerful closed-eye smile in the selected
+  expression supplement.
+- [x] Test OpenArt MCP with reference-conditioned GPT Image 2.5 Sunburst:
+  CG-02 preserves Brad and Patricia's designs. The test result is 1600x960;
+  downloaded, converted, approved, and installed over the local placeholder.
+- [x] Convert the CG-02 pilot to 320x192 with 128 colours using the local
+  converter. Verify indexed GIF dimensions, RGB565 palette bytes, and raster
+  tile bytes; installed PNG/GIF/engine outputs match the reviewed copies by SHA256.
+- [x] Generate CG-01 and CG-03 at verified 1280x768, download to session review
+  storage, and convert to 320x192/128-colour previews and engine outputs.
+  Verify GIF dimensions, palette indices, RGB565 palette bytes, and tile ordering.
+  User approved both reduced previews; installed the PNG/GIF replacements and
+  rebuilt `.ztp`/`.zts` outputs. All installed files match the approved review
+  outputs by SHA256; existing CG registry paths are unchanged.
+- [x] Test PixelLab MCP: grass/dirt Wang tileset, 16 tiles at 16x16, 64x64
+  PNG plus metadata downloaded to session storage, not integrated into maps.
+- [ ] Convert reference art to the required portrait GIFs and walk sprites.
+  Runtime expression indexing and portrait definitions are unchanged.
+- [ ] Generate final CGs, review their downsampled/palette-limited output,
+  and replace placeholders only after approval.
+
+**P1 CG status:** CG-01 through CG-03 are approved and installed.
+No additional turnaround sheet blocks this P1 CG batch:
+the crow, Brad's farm outfit, Patricia's lab coat, and existing
+cast designs are available. Reference sheets can guide CGs before portrait or
+walk-sprite conversion is complete.
+
+**Later reference work remains:** P2/P3 outfits and expression supplements in
+sections 1-2, especially Brad's orientation/homecoming/mascot/Halloween looks,
+Jane's formal expressions, Sandra and Georgia's Halloween costumes, Patricia's
+Mr. Gourd disguise, and Gord's remaining emotions. Create these as needed before
+the corresponding later CGs rather than delaying the P1 CGs. The freshman's
+mascot sheet defines the costume but does not yet show Brad wearing it.
+CG-08 needs the Mr. Gourd disguise; S9 art needs the applicable formal/costume
+references. Duplicate-facing side profiles alone are not a retry requirement.
+
 ## 0. Technical Decisions
 
 Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.7 and 12):
@@ -15,10 +62,16 @@ Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.
 - [x] Each image has its own palette (the Video Board SDK loader supports independent palettes per 8bpp image), so there is no shared palette budget. Art is stored uncompressed in the DAT.
 - [x] Files are GIFs with `__` filename flags for the converter (for example `cg01__B8C20.gif`); the compiler needs the flags in the name. Map tilesets must NOT use the unique flag (`U`), so tile order matches Tiled, and hold at most 255 tiles.
 - [x] Save GIFs with every palette entry you use at the index you want: the pixel index is stored as is, and the build checks it is inside the palette.
+- [x] CG production workflow: request 1280x768 source PNGs (5:3), then downsize
+  and palette-limit locally with [convert_cgs.py](../script/tools/convert_cgs.py).
+  Its current output is 320x192, 8bpp, 128 colours (`__B8C80.gif`), plus
+  `.ztp` and `.zts`. Verify actual generated dimensions; the OpenArt CG-02
+  pilot was 1600x960, which has the same aspect ratio.
 
 Still to confirm:
 
-- [ ] CG mode per image: 320x240 4bpp or 320x192 8bpp.
+- [ ] Confirm exceptions to the current 320x192 8bpp/128-colour CG workflow;
+  320x240 4bpp remains an available alternative, not the current converter mode.
 - [ ] Walk-sprite size (suggest 16x24 or 16x32).
 - [ ] File naming: `<character>.gif` per portrait sheet (`jane__B8C20.gif`), `cg<id>__B8C<nn>.gif` for CGs, `sprite-<character>.gif` for walk sprites.
 - [ ] The existing turnaround sheets are high-resolution PNG. They need to be redrawn or downscaled and palette-reduced to the sizes above.
@@ -205,10 +258,38 @@ Tile sets for the maps listed in section 4 of the script plan. Each has a day va
 
 From the CG list in the script plan. Many reuse the existing character designs, so the art needs the same outfits and expressions listed above.
 
+**Production status:** CG-01 through CG-03 are approved and installed at their
+existing paths in `cg-placeholders`; the directory name is retained for registry
+compatibility. Other local CGs remain placeholders.
+The successful OpenArt CG-02 consistency pilot
+([source PNG](https://cdn.openart.ai/openart-ai/production/2026-10/create-image/S3B9Ym2wdG7dt46E5tcJ/gpt-image-2.5-sunburst-edit-1_1793396805849_c6977ba1.png))
+has been downloaded, locally converted, approved, and installed in the game.
+The 320x192, 128-colour preview retains the character
+silhouettes, red extinguisher, foam, and crow; the tiny name-tag lettering is
+not readable at that size. Dimensions, palette bytes, and tile ordering have
+been verified against the GIF.
+CG-01 and CG-03 have also been downloaded and converted through the same pipeline:
+
+- [CG-01 source](https://cdn.openart.ai/openart-ai/production/2026-10/create-image/S3B9Ym2wdG7dt46E5tcJ/gpt-image-2.5-sunburst-edit-1_1793400933495_e61d417e.png)
+  (OpenArt `YVuDcQIkTNJcpcY1v1KU`): verified 1280x768. The crow silhouette
+  and distant orange patch remain clear in the 320x192/128-colour preview.
+- [CG-03 source](https://cdn.openart.ai/openart-ai/production/2026-10/create-image/S3B9Ym2wdG7dt46E5tcJ/gpt-image-2.5-sunburst-edit-1_1793400941083_170e2a5d.png)
+  (OpenArt `dUcgJjGbhucRnKA3wRQt`): verified 1280x768. Four distinct goggled
+  students and glowing orange foam remain readable at game resolution;
+  Patricia is off-camera, consistent with the four-figure composition.
+
+All three candidates and their GIF/engine outputs are retained in session
+review storage. Palette and tile bytes match the converted GIFs. The user
+approved all three candidates; their source PNGs and GIFs now
+replace the local placeholders, with rebuilt `.ztp`/`.zts` files. SHA256 checks
+confirm every installed output matches its approved review copy.
+Use [cgs.json](../script/common/cgs.json) and each scene's script for exact
+composition and character/outfit requirements.
+
 **Shared:**
-- [ ] CG-01 (S1): Attic window at dusk, glowing Patch 7, the crow on the sill. **P1**
-- [ ] CG-02 (S2): Lecture hall extinguisher chaos, Patricia over her glasses, the crow with the name tag in the window. **P1**
-- [ ] CG-03 (S3): Lab flooded with glowing orange foam, four silhouettes. **P1**
+- [x] CG-01 (S1): Attic window at dusk, glowing Patch 7, the crow on the sill. **P1**
+- [x] CG-02 (S2): Lecture hall extinguisher chaos, Patricia over her glasses, the crow with the name tag in the window. **P1**
+- [x] CG-03 (S3): Lab flooded with glowing orange foam, four silhouettes. **P1**
 - [ ] CG-05 (S5): Glowing Pumpkin Surprise and the group around the table, mid-confession. **P2**
 - [ ] CG-06 (S6): Patch 7 at golden hour, giant glowing pumpkins, Gord in silhouette. **P2**
 - [ ] CG-07 (S7): Archive by flashlight, the Pumpkin Research Program binder, a photo of three young people. **P2**
@@ -244,4 +325,7 @@ From the CG list in the script plan. Many reuse the existing character designs, 
 - Keep the **crow** consistent across all CGs. It is a recurring gag.
 - Jane's formal outfit should only appear in S9 so it stays a surprise.
 - For every outfit, include the same expression set as the default (neutral, smile, surprised) so the script can switch outfits without adding conditions.
-- When a sheet gains a new outfit, update this file and the portrait list in `characters.json` once it exists.
+- Reference-only outfit additions are inventoried here. Update
+  [characters.json](../script/common/characters.json) and the runtime asset
+  mappings when converted portraits are ready; do not mark high-resolution
+  reference supplements as installed portrait expressions.
