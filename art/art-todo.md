@@ -43,11 +43,11 @@ cast designs are available. Reference sheets can guide CGs before portrait or
 walk-sprite conversion is complete.
 
 **Later reference work remains:** P2/P3 outfits and expression supplements in
-sections 1-2, especially Brad's orientation/homecoming/mascot/Halloween looks,
+sections 1-2, especially Brad's orientation/Halloween looks,
 Jane's formal expressions, Sandra and Georgia's Halloween costumes, Patricia's
 Mr. Gourd disguise, and Gord's remaining emotions. Create these as needed before
 the corresponding later CGs rather than delaying the P1 CGs. The freshman's
-mascot sheet defines the costume but does not yet show Brad wearing it.
+mascot sheet defines the borrowed costume; Brad's wearer reference is now available.
 CG-08 needs the Mr. Gourd disguise; S9 art needs the applicable formal/costume
 references. Duplicate-facing side profiles alone are not a retry requirement.
 
@@ -130,6 +130,13 @@ runtime portrait GIFs and expression indexing have not been changed.
 - [ ] Sad / vulnerable (S3 confession, S9 confession)
 
 **Outfits (neutral + smile + surprised each, at minimum):**
+
+Homecoming CG references are downloaded and reviewed at 1024x1024:
+[Brad homecoming](brad-bart-homecoming.png) adds an orange-and-black scarf and
+optional pennant; [Brad mascot](brad-bart-mascot.png) preserves the existing
+maroon-scarfed raven suit with Brad's identity, head on/off and detached head.
+These establish CG-04 continuity; runtime portrait/sprite tasks below remain open.
+
 - [ ] Farm work: muddy boots, flannel or work shirt (S1, S3 boots gag, S6, S8). **P1**
 - [ ] Orientation look with name tag (S2); same default outfit plus tag. **P2**
 - [ ] Homecoming: school-colors flag/scarf (S4). **P2**
@@ -258,7 +265,7 @@ Tile sets for the maps listed in section 4 of the script plan. Each has a day va
 
 From the CG list in the script plan. Many reuse the existing character designs, so the art needs the same outfits and expressions listed above.
 
-**Production status:** CG-01 through CG-03 are approved and installed at their
+**Production status:** CG-01 through CG-03 and CG-04a-d are approved and installed at their
 existing paths in `cg-placeholders`; the directory name is retained for registry
 compatibility. Other local CGs remain placeholders.
 The successful OpenArt CG-02 consistency pilot
@@ -286,6 +293,21 @@ confirm every installed output matches its approved review copy.
 Use [cgs.json](../script/common/cgs.json) and each scene's script for exact
 composition and character/outfit requirements.
 
+### Homecoming batch: approved and installed
+
+CG-04a-d replace the local placeholders at their existing registry paths.
+All four sources are verified 1280x768; converted previews are
+320x192 indexed GIFs with 128 colours. RGB565 palette bytes and raster tile
+bytes match each GIF. Rebuilt `.ztp`/`.zts` outputs and installed PNG/GIF files
+all match their approved session review copies by SHA256.
+
+| CG | OpenArt history ID | Initial reduced-preview review |
+|---|---|---|
+| CG-04a | `pqPvVWwGmikjgWfHiQcS` | Jane's shoulder lean, Brad's scarf, gold pumpkin and bonfire remain readable. |
+| CG-04b | `chyHlk2nRRYfr38wJUb9` | Sandra's quiet smile, rooftop setting and distant bonfire remain readable. |
+| CG-04c | `harXA2zxNS4dk5mt5TLC` | Brad's headless mascot suit and the detached head in Georgia's lap are clear. |
+| CG-04d | `FCfdAmLBPoaoVTUspSDV` | Patricia's glasses/lanyard/clipboard and the respectful gap from Brad remain clear. |
+
 **Shared:**
 - [x] CG-01 (S1): Attic window at dusk, glowing Patch 7, the crow on the sill. **P1**
 - [x] CG-02 (S2): Lecture hall extinguisher chaos, Patricia over her glasses, the crow with the name tag in the window. **P1**
@@ -298,10 +320,10 @@ composition and character/outfit requirements.
 - [ ] CG-11 (S10): Flashback of the original dance 25 years ago: young Daniel, Gord, and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd. **P2**
 - [ ] CG-12 (S10): Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them. **P2**
 - [ ] CG-13 (S10): Good Friends ending: group photo on the tavern steps with Brad, all four heroines and Gord, the crow photobombing in the corner. **P2**
-- [ ] CG-09 (S9) and CG-04a-d / CG-10a-d: see the CG lists in [../script/common/cgs.json](../script/common/cgs.json) for the full set of scripted images.
+See [../script/common/cgs.json](../script/common/cgs.json) for the full set of scripted images.
 
 **Route (one per route, 4 images each):**
-- [ ] CG-04a-d (S4): Bonfire moment with Jane / Sandra / Georgia / Patricia. **P2**
+- [x] CG-04a-d (S4): Bonfire moment with Jane / Sandra / Georgia / Patricia. **P2**
 - [ ] CG-06a-d (S6): Route-specific farm moment (optional). **P3**
 - [ ] CG-10a-d (S10): Ending images, one per route (True Love; Sweet reuses the image with a small change). **P2**
 - [ ] CG-10 separate Sweet variants (4). **P3**
