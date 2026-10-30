@@ -252,12 +252,18 @@ def load_assets(p, manifest_path=None, convert=False, keep_compression=False):
         tiles, tmap, pal = (a.alloc(T_TILESET, f"TILES {cg}"), a.alloc(T_TILEMAP, f"MAP {cg}"),
                             a.alloc(T_PALETTE, f"PAL {cg}"))
         spec = manifest.get("cgs", {}).get(cg)
+        base_dir = mdir
+        if spec is None:
+            cg_entry = p.cgs.get(cg)
+            if cg_entry and cg_entry.get("file"):
+                spec = {"gif": cg_entry["file"], "bpp": cg_entry.get("bpp", 8)}
+                base_dir = ROOT.parent
         got, mode = None, None
         if spec is None:
             a.missing.append(cg)
         else:
             try:
-                src = resolve_sources(spec, mdir, convert, tool, cg)
+                src = resolve_sources(spec, base_dir, convert, tool, cg)
                 info = read_gfx(src, cg)
                 if "bpp" in spec and spec["bpp"] != info["bpp"]:
                     raise AssetError(f"{cg}: manifest says {spec['bpp']}bpp but the art is {info['bpp']}bpp")

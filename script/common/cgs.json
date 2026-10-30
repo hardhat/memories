@@ -3,96 +3,115 @@
   "CG-01": {
     "scene": "S1",
     "desc": "Attic window at dusk: glowing Patch 7 in the distance, the crow on the sill",
-    "file": null
+    "file": "art/cg-placeholders/CG-01__B8C80.gif",
+    "bpp": 8
   },
   "CG-02": {
     "scene": "S2",
     "desc": "Lecture hall: Brad with a fire extinguisher in a cloud of foam, Patricia peering over her glasses, the crow in the window with his name tag",
-    "file": null
+    "file": "art/cg-placeholders/CG-02__B8C80.gif",
+    "bpp": 8
   },
   "CG-03": {
     "scene": "S3",
     "desc": "Science lab drowned in glowing orange foam, four silhouettes in goggles standing in it",
-    "file": null
+    "file": "art/cg-placeholders/CG-03__B8C80.gif",
+    "bpp": 8
   },
   "CG-04a": {
     "scene": "S4",
     "desc": "Bonfire, Jane leaning her head on Brad's shoulder, Best Float trophy on a hay bale",
-    "file": null
+    "file": "art/cg-placeholders/CG-04a__B8C80.gif",
+    "bpp": 8
   },
   "CG-04b": {
     "scene": "S4",
     "desc": "Tavern rooftop: Sandra and Brad side by side, bonfire glowing across the rooftops",
-    "file": null
+    "file": "art/cg-placeholders/CG-04b__B8C80.gif",
+    "bpp": 8
   },
   "CG-04c": {
     "scene": "S4",
     "desc": "Bonfire: Georgia and Brad, the raven mascot head in her lap",
-    "file": null
+    "file": "art/cg-placeholders/CG-04c__B8C80.gif",
+    "bpp": 8
   },
   "CG-04d": {
     "scene": "S4",
     "desc": "Patricia in silhouette against the bonfire, glasses catching the flames, Brad beside her at a respectful distance",
-    "file": null
+    "file": "art/cg-placeholders/CG-04d__B8C80.gif",
+    "bpp": 8
   },
   "CG-05": {
     "scene": "S5",
     "desc": "Grove Cafe after hours: the group around a faintly glowing pumpkin tart with a candle, everyone mid-confession",
-    "file": null
+    "file": "art/cg-placeholders/CG-05__B8C80.gif",
+    "bpp": 8
   },
   "CG-06": {
     "scene": "S6",
     "desc": "Patch 7 at golden hour: giant glowing pumpkins, Gord in silhouette holding a plank sign",
-    "file": null
+    "file": "art/cg-placeholders/CG-06__B8C80.gif",
+    "bpp": 8
   },
   "CG-07": {
     "scene": "S7",
     "desc": "Archive by flashlight: Brad holding the Pumpkin Research Program binder, a photo of three young people taped inside the cover",
-    "file": null
+    "file": "art/cg-placeholders/CG-07__B8C80.gif",
+    "bpp": 8
   },
   "CG-08": {
     "scene": "S8",
     "desc": "Lab loading dock: the van's open doors, Mr. Gourd in trench coat and mustache lifting a glowing pumpkin, one very stylish black heel showing under the coat",
-    "file": null
+    "file": "art/cg-placeholders/CG-08__B8C80.gif",
+    "bpp": 8
   },
   "CG-09": {
     "scene": "S9",
     "desc": "Great Hall under the full moon: the glowing punch bowl, jack-o'-lanterns aglow, the crowd mid-confession",
-    "file": null
+    "file": "art/cg-placeholders/CG-09__B8C80.gif",
+    "bpp": 8
   },
   "CG-10a": {
     "scene": "S10",
     "desc": "Jane ending: Jane and Brad with a lumpy snow pumpkin on the snowy farm, barn key in her hand",
-    "file": null
+    "file": "art/cg-placeholders/CG-10a__B8C80.gif",
+    "bpp": 8
   },
   "CG-10b": {
     "scene": "S10",
     "desc": "Sandra ending: Sandra smiling fully at the trivia table, Brad beside her, the old photo and a new one behind the bar",
-    "file": null
+    "file": "art/cg-placeholders/CG-10b__B8C80.gif",
+    "bpp": 8
   },
   "CG-10c": {
     "scene": "S10",
     "desc": "Georgia ending: Georgia and Brad at the cafe counter, the Honest Edition Pumpkin Surprise between them",
-    "file": null
+    "file": "art/cg-placeholders/CG-10c__B8C80.gif",
+    "bpp": 8
   },
   "CG-10d": {
     "scene": "S10",
     "desc": "Patricia ending: Patricia at the farmhouse door in a trench coat and safety goggles, snow falling, Brad grinning",
-    "file": null
+    "file": "art/cg-placeholders/CG-10d__B8C80.gif",
+    "bpp": 8
   },
   "CG-11": {
     "scene": "S10",
     "desc": "Flashback: the original Halloween dance 25 years ago, young Daniel, Gord and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd",
-    "file": null
+    "file": "art/cg-placeholders/CG-11__B8C80.gif",
+    "bpp": 8
   },
   "CG-12": {
     "scene": "S10",
     "desc": "Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them",
-    "file": null
+    "file": "art/cg-placeholders/CG-12__B8C80.gif",
+    "bpp": 8
   },
   "CG-13": {
     "scene": "S10",
     "desc": "Good Friends ending: group photo on the tavern steps, Brad with all four, Gord, and the crow photobombing in the corner",
-    "file": null
+    "file": "art/cg-placeholders/CG-13__B8C80.gif",
+    "bpp": 8
   }
 }

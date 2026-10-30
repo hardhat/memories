@@ -4,8 +4,9 @@ import re
 
 from .datread import Dat
 from .disasm import disassemble, make_syms
-from .spec import (ASSET_BASE, BLOCK_CHARS, BLOCK_INDEX, BLOCK_META, BLOCK_VARS, F_MISSING, MAX_SCENES, OP,
-                   SCENE_CODE_BASE, SCENE_STR_BASE, T_UNUSED)
+from .spec import (ASSET_BASE, BLOCK_CHARS, BLOCK_INDEX, BLOCK_META, BLOCK_VARS, CMP, EXPR_NONE, F_MISSING,
+                   MAGIC, MAX_SCENES, NO_TRIGGER, NO_VAR, OP, SCENE_CODE_BASE, SCENE_STR_BASE, T_UNUSED,
+                   VERSION)
 
 TYPE_NAMES = {0: "MAGIC", 1: "TILESET", 2: "PALETTE", 3: "SCENE_CODE", 4: "STRINGS", 5: "TILEMAP",
               6: "TABLE", 7: "MAPDEF", 8: "PORTRAIT", 0xFF: "UNUSED"}
@@ -34,6 +35,15 @@ def ids_header(p, dat_bytes, scene_codes):
             f"#define BLOCK_VARS         {BLOCK_VARS}", f"#define BLOCK_CHARS        {BLOCK_CHARS}",
             f"#define SCENE_CODE_BASE    {SCENE_CODE_BASE}", f"#define SCENE_STR_BASE     {SCENE_STR_BASE}",
             f"#define ASSET_BASE         {ASSET_BASE}", ""]
+    out += ["/* Format */",
+            f"#define MEMO_MAGIC         0x{MAGIC:08X}UL", f"#define MEMO_FORMAT_VERSION {VERSION}",
+            f"#define DAT_TYPE_UNUSED    0x{T_UNUSED:02X}", f"#define DAT_FLAG_MISSING   0x{F_MISSING:02X}",
+            f"#define NO_VAR             0x{NO_VAR:02X}", f"#define NO_TRIGGER         0x{NO_TRIGGER:02X}",
+            f"#define EXPR_NONE          {EXPR_NONE}"]
+    out += [f"#define CMP_{n.upper():<8}   {v}" for n, v in CMP.items()]
+    out += [f"#define EXPLORE_TRIGGERS_MAX {p.config['limits']['explore_triggers']}",
+            f"#define CHOICE_OPTIONS_MAX {p.config['choice']['options_max']}",
+            f"#define CHOICE_LINES_MAX   {p.config['choice']['lines_max']}", ""]
     out += ["/* Opcodes */"] + [f"#define OP_{n:<8} 0x{v:02X}" for n, v in OP.items()] + [""]
     out += ["/* Variables */"] + [f"#define VAR_{ident(n):<24} {i}" for i, n in enumerate(p.var_names)] + [""]
     bits = [b for g in p.bit_groups.values() for b in g]

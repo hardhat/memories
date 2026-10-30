@@ -1,7 +1,27 @@
 {
   "_doc": "Art manifest. Paths are relative to this file. An entry gives either 'gif' (a gif2zeal file name with flags, e.g. 'portraits/jane__B8C20.gif') or 'zts' + 'ztp' (+ 'ztm'). Run 'memo_dat.py build --convert' to run gif2zeal.py on new or changed GIFs. See compiler-spec.md section 5.7.",
   "portraits": {},
-  "cgs": {},
+  "cgs": {
+    "CG-01": { "gif": "../../art/cg-placeholders/CG-01__B8C80.gif", "bpp": 8 },
+    "CG-02": { "gif": "../../art/cg-placeholders/CG-02__B8C80.gif", "bpp": 8 },
+    "CG-03": { "gif": "../../art/cg-placeholders/CG-03__B8C80.gif", "bpp": 8 },
+    "CG-04a": { "gif": "../../art/cg-placeholders/CG-04a__B8C80.gif", "bpp": 8 },
+    "CG-04b": { "gif": "../../art/cg-placeholders/CG-04b__B8C80.gif", "bpp": 8 },
+    "CG-04c": { "gif": "../../art/cg-placeholders/CG-04c__B8C80.gif", "bpp": 8 },
+    "CG-04d": { "gif": "../../art/cg-placeholders/CG-04d__B8C80.gif", "bpp": 8 },
+    "CG-05": { "gif": "../../art/cg-placeholders/CG-05__B8C80.gif", "bpp": 8 },
+    "CG-06": { "gif": "../../art/cg-placeholders/CG-06__B8C80.gif", "bpp": 8 },
+    "CG-07": { "gif": "../../art/cg-placeholders/CG-07__B8C80.gif", "bpp": 8 },
+    "CG-08": { "gif": "../../art/cg-placeholders/CG-08__B8C80.gif", "bpp": 8 },
+    "CG-09": { "gif": "../../art/cg-placeholders/CG-09__B8C80.gif", "bpp": 8 },
+    "CG-10a": { "gif": "../../art/cg-placeholders/CG-10a__B8C80.gif", "bpp": 8 },
+    "CG-10b": { "gif": "../../art/cg-placeholders/CG-10b__B8C80.gif", "bpp": 8 },
+    "CG-10c": { "gif": "../../art/cg-placeholders/CG-10c__B8C80.gif", "bpp": 8 },
+    "CG-10d": { "gif": "../../art/cg-placeholders/CG-10d__B8C80.gif", "bpp": 8 },
+    "CG-11": { "gif": "../../art/cg-placeholders/CG-11__B8C80.gif", "bpp": 8 },
+    "CG-12": { "gif": "../../art/cg-placeholders/CG-12__B8C80.gif", "bpp": 8 },
+    "CG-13": { "gif": "../../art/cg-placeholders/CG-13__B8C80.gif", "bpp": 8 }
+  },
   "tilesets": {},
   "maps": {}
 }

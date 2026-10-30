@@ -22,7 +22,10 @@ from memo.pack import build_dat  # noqa: E402
 from memo.spec import ASSET_BASE  # noqa: E402
 from test_compile import mini, scene  # noqa: E402
 
-HAVE_TOOL = DEFAULT_TOOL.exists()
+try:
+    HAVE_TOOL = DEFAULT_TOOL.exists()
+except OSError:
+    HAVE_TOOL = False
 
 
 def sdk():

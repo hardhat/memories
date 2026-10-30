@@ -62,6 +62,7 @@ memo_dat.py build   [--out build/memo.dat] [--assets assets/manifest.json] [--co
 memo_dat.py dump    build/memo.dat        independent reader: header, tables, disassembly
 memo_dat.py stats   build/memo.dat        size and budget report
 memo_dat.py trace   --seed N [--scene s03] run the JSON interpreter and the VM, compare
+memo_dat.py ctrace  --seeds N             run the C engine (engine/) on the same plays, compare
 ```
 
 `validate.py` stays as a thin wrapper around `check` so existing habits keep working.
@@ -454,7 +455,7 @@ Errors fail the build; warnings fail only with `--strict`.
 ## 9. Verification
 
 1. **Independent reader**: `dump` parses the file with a separate code path and re-prints tables and disassembly; the build re-reads its own output and compares counts and CRC.
-2. **Trace equivalence** (the main correctness test). Two interpreters execute the same play with the same random seed and must produce the same event trace:
+2. **Trace equivalence** (the main correctness test). Two interpreters execute the same play with the same random seed and must produce the same event trace; a third, the C engine, replays the Python VM's recorded decisions (`ctrace`, section 10):
    * `sim.py` (in the code: `interp.Sim`): interprets the scene JSON directly. It is the reference semantics; the compiled VM must match it exactly.
    * `vm.py` (`interp.VM`): interprets the compiled `memo.dat` read by the independent reader.
    * A trace is the sequence of `say(who, expr, text)`, `map`, `fade`, `cg`, `music`, `sfx`, `tutorial`, `choice(index)`, and variable writes. Run over thousands of seeds across the full ten-scene game (affection-biased and uniform choice policies); any divergence is a compiler or VM bug. Also asserts that every playthrough ends with a route and an ending (it has already caught an unreachable-ending balance bug and a stuck explore).
@@ -462,38 +463,48 @@ Errors fail the build; warnings fail only with `--strict`.
 4. **Budget report** (`stats`) fails CI if code, string, or call-depth limits are exceeded.
 5. **Coverage report**: percentage of say lines and choice options reached by the seeded runs (guards against untestable branches).
 
-## 10. Engine-side contract (summary, for the Zeal 8-bit loader)
+## 10. Engine-side contract (implemented in `engine/`)
 
-The loader is `dat.c` from Wyvern adapted; the changes follow from section 2.
+The loader is `dat.c` from Wyvern adapted; the changes follow from section 2. The C sources are in [../engine/](../engine); they need only `memo_ids.h` from the build.
+
+| File | Contents |
+|---|---|
+| `dat_io.h`, `dat_io_zos.c`, `dat_io_stdio.c` | the four file calls (`open`, `close`, `seek`, `read`). The Zeal backend splits every read at 16 KB page boundaries (Wyvern's `dat_read` rule, as a loop); the desktop backend uses stdio |
+| `memo_dat.h`, `memo_dat.c` | loader (below) |
+| `memo_host.h` | the functions the game must provide (below) |
+| `memo_vm.h`, `memo_vm.c` | the script VM, a line-for-line mirror of `interp.VM` |
+| `test/trace_main.c` | desktop test harness (not part of the Zeal build) |
 
 ```c
-bool     dat_open(void);                              // read entry 0, check MEMO cookie + version
-bool     dat_entry(uint16_t id, DatEntry *out);       // seek id*8, read 8 bytes
-bool     dat_load_block(uint16_t id, void *dst, uint16_t max, uint16_t *size_out); // page-safe read
-bool     dat_load_scene(uint8_t scene);               // code -> code_buf; str table kept on disk
-bool     dat_load_string(uint16_t str_id);            // seek offset table, then data -> dialog[128]
-bool     dat_stream_block(uint16_t id, dat_sink_fn sink, void *ctx); // art: read in chunks, hand each to sink (video RAM copy, decompressor)
+uint8_t  dat_open(const char *path, uint32_t expected_crc);   // cookie, version, META; DAT_ERR_CRC if the file is not the build memo_ids.h came from
+bool     dat_entry(uint16_t id, DatEntry *out);               // seek id*8, read 8 bytes
+bool     dat_read_block(uint16_t id, uint16_t off, void *dst, uint16_t n);  // range-checked read inside a block
+bool     dat_load_vars(uint8_t *max, uint8_t *init, uint8_t cap, uint8_t *count);
+uint8_t  dat_load_scene(uint8_t scene);                       // code -> dat_code[]; strings stay on disk
+uint8_t  dat_load_string(uint16_t id, char *dst, uint8_t cap);// seek offset, seek text; returns bytes used, 0 if it does not fit
+uint8_t  dat_index_count(uint8_t table);  bool dat_index_get(uint8_t table, uint8_t i, uint16_t *out);   // CG, portrait, tileset ... block ids
+bool     dat_stream_block(uint16_t id, uint8_t *buf, uint16_t chunk, dat_sink_fn sink, void *ctx);      // art, chunk by chunk; missing art succeeds with no chunks
 ```
 
-**What the "resident code buffer" is.** It is not application paging. The scene bytecode is just *data*: about 1.2-1.7 KB per scene that the script VM (part of the normal program) interprets. "Resident" means the whole scene's bytecode is read once into a fixed RAM array when the scene starts, so jumps and calls are plain array indexing. The alternative, closer to Wyvern, is to keep only the current block in RAM (at most 320 bytes today) and re-read the caller's block after each `call`. That would save about 3.5 KB of RAM at the cost of more reads, and is a reasonable fallback if RAM turns out tight. The spec keeps the resident buffer as the default because it is simpler and the cost is tiny; `CODE_BUF_SIZE` can be lowered to 2048 (the largest scene is 1,738 bytes).
+The VM has no presentation code. It calls `host_say`, `host_map`, `host_fade`, `host_music`, `host_sfx`, `host_cg`, `host_cg_off`, `host_tutorial`, `host_wait`, `host_end`, `host_choose(prompt, options, n)` and `host_pick_trigger(objective, table_idx, trig_id, n)` (link-time functions the game implements), plus `host_var` when built with `MEMO_TRACE_VARS` (the harness). `memo_vm_init()`, `memo_run_scene(n)` and `memo_run_game()` return 0 or a fault code (`MEMO_ERR_*`: pc out of range or operand past the end, unknown opcode, variable or bit out of range, call overflow or `RET` without `CALL`, explore misuse, bad menu, bad string); the fault scene and pc are in `memo_fault_scene` and `memo_fault_pc`. Corrupt code therefore stops with an error and never reads outside the code buffer. Tutorials show once per game (`memo_tutorial_seen`, 32 ids) unless `memo_tutorial_once` is cleared. A menu's prompt and options share one 226-byte pool (the 6-line budget).
 
-Suggested RAM budget (to confirm with the engine owner):
+**What the "resident code buffer" is.** It is not application paging. The scene bytecode is just *data*: about 1.2-1.7 KB per scene that the script VM (part of the normal program) interprets. "Resident" means the whole scene's bytecode is read once into a fixed RAM array when the scene starts, so jumps and calls are plain array indexing. The alternative, closer to Wyvern, is to keep only the current block in RAM (at most 320 bytes today) and re-read the caller's block after each `call`. That would save about 3.5 KB of RAM at the cost of more reads, and is a reasonable fallback if RAM turns out tight. The spec keeps the resident buffer as the default because it is simpler and the cost is tiny; `limits.code_buf` in `config.json` (it becomes `CODE_BUF_SIZE` in `memo_ids.h`) can be lowered to 2048 (the largest scene is 1,764 bytes).
+
+**Measured with SDCC 4.4 (`-mz80`)**: loader code 2,346 bytes, VM code 6,216 bytes, Zeal file backend 212 bytes (about 8.8 KB of code). RAM: the code buffer 4,096, the VM 512 (variables 64 + 64 maximums, dialog 128, menu pool 226, call stack 16, state), loader about 20.
+
+Remaining RAM budget for the parts of the game that are not written yet (to confirm with the engine owner):
 
 | Item | Bytes |
 |---|---|
-| Scene code buffer | 4096 (2048 is enough today) |
-| Dialog buffer | 128 |
-| Choice strings (prompt + 3 options) | 4 x 80 |
-| VM: pc, call stack 8 x 2, explore context (obj, cvar, cmax, once-mask, table pc) | about 32 |
-| Variable array (44 used) | 64 |
-| Tutorial-seen mask | 4 |
 | Palette staging (a 256-colour palette) | 512 |
 | Art streaming chunk (tile data to video RAM) | 4096 |
-| **Total** | **about 6-8 KB** |
+| Tutorial-seen mask, variables (already counted above) | 0 |
+| **Total with the VM and loader** | **about 9-10 KB** (about 7-8 KB with `code_buf` 2048) |
 
-* Reads must go through the Wyvern `dat_read` helper that splits at 16 KB virtual page boundaries. Art is streamed in chunks (`dat_stream_block`) rather than loaded whole: a CG tileset is up to 61,440 bytes.
+* Reads must go through the Wyvern `dat_read` helper that splits at 16 KB virtual page boundaries (done in `dat_io_zos.c`). Art is streamed in chunks (`dat_stream_block`) rather than loaded whole: a CG tileset is up to 61,440 bytes. The sink must not touch the file while a stream is running.
 * **Decompression** is not needed by default: the build stores art uncompressed (section 5.7), and Zeal reads uncompressed images very quickly even in 4 KB chunks. Only if `--keep-compression` is used must the engine decode gif2zeal's RLE or LZ for `.zts` and tiled2zeal's RLE for `.ztm`; the `comp` byte in each graphics header says which.
-* The VM maps opcodes to engine calls (map view, dialog, CG, menu). All gameplay state lives in the variable array, so a save is `vars[64]` + scene + tutorial mask. Saving only at scene starts (autosave) keeps the VM state trivial; saving inside a scene is out of scope for v1.
+* All gameplay state lives in the variable array, so a save is `vars[64]` + scene + tutorial mask. Saving only at scene starts (autosave) keeps the VM state trivial; saving inside a scene is out of scope for v1.
+* `MEMO_CONTENT_CRC` covers every block, art included, so any art change changes the constant and forces a recompile of whatever includes `memo_ids.h`. Pass 0 to `dat_open` (skip the check) while art is changing often.
 
 ## 11. Capacity estimate (from the current scripts)
 
@@ -543,10 +554,10 @@ Script content totals about 106 KB, plus tables (under 1 KB) and a header of abo
 | M2 | Symbol assignment, lowering, assembler, string packer; `build` writes tables + scene blocks | **done**: `dump` round-trips; golden tests pass |
 | M3 | JSON interpreter and bytecode VM with trace comparison | **done**: 5,000 playthroughs, 6.2 million events, zero divergence; 100% of say lines and choice options reached (`trace --seeds 2500`) |
 | M4 | Art: manifest, graphics headers, palette checks, `--convert` driving gif2zeal; `--keep-compression` decoders | **done**: stable block allocation with `MISSING` placeholders, portrait/CG/tileset checks, 16 art tests (decoders cross-checked against the SDK encoders, end-to-end through the real `gif2zeal.py`). No art exists yet, so the build reports 26 missing assets |
-| M5 | C loader skeleton adapted from Wyvern's `dat.c` plus a VM stub that executes scene 1 in a desktop test harness | not started; VM trace should match `vm.py` |
+| M5 | C loader adapted from Wyvern's `dat.c` plus the script VM in C, with a desktop harness | **done**: `engine/` (section 10). `ctrace --seeds 2500` runs 5,000 playthroughs (6.2 million events) through the C engine with replayed decisions: event count, trace CRC and final variables equal the Python VM's, and the C loader's header, INDEX, scene code, strings and art streaming equal the Python reader's for all 126 entries. 9 fault-injection tests; compiles warning-free for Z80 with SDCC. Not yet run on a Zeal machine or emulator |
 | M6 | Maps: TMX conventions, `tiled2zeal.py` driver, object-layer reader, MAPDEF packing | not started; a sample TMX must validate against `maps.json` and its ZTM bytes must match the SDK tool's output |
 
-## 14. Implementation notes (milestones 1-4)
+## 14. Implementation notes (milestones 1-5)
 
 Commands (from the `script/` folder; `python` is Python 3):
 
@@ -559,10 +570,11 @@ python tools/memo_dat.py build --strict   fail while any art is missing (and on 
 python tools/memo_dat.py dump --scene 1   header, tables and a disassembly of scene 1 (or --all)
 python tools/memo_dat.py stats            code and string sizes per scene
 python tools/memo_dat.py trace --seeds 500  JSON interpreter versus VM, policies uniform and first
+python tools/memo_dat.py ctrace --seeds 100 builds the C engine with gcc, replays the Python VM's decisions through it, compares (needs gcc, clang or CC)
 python -m unittest discover tests         golden tests (hand-computed bytes for every lowering rule)
 ```
 
-Modules in `tools/memo/`: `spec` (constants), `project` (loading and id assignment), `flow` (op-tree helpers), `check` (diagnostics), `compile` (assembler and lowering), `blocks`, `gfx` (gif2zeal file name flags, RLE/LZ decoders, pixel analysis), `assets` (manifest, converter driver, art checks, block allocation), `pack` (writer), `datread` (independent reader), `disasm`, `interp` (JSON interpreter and VM), `trace` (comparison and coverage), `sidecar`, `estimate`, `cli`.
+Modules in `tools/memo/`: `spec` (constants), `project` (loading and id assignment), `flow` (op-tree helpers), `check` (diagnostics), `compile` (assembler and lowering), `blocks`, `gfx` (gif2zeal file name flags, RLE/LZ decoders, pixel analysis), `assets` (manifest, converter driver, art checks, block allocation), `pack` (writer), `datread` (independent reader), `disasm`, `interp` (JSON interpreter and VM), `trace` (comparison and coverage), `ctrace` (C engine comparison), `sidecar`, `estimate`, `cli`. The C engine is in `../engine/` (section 10).
 
 Results on the current scripts: 12,746 bytes of code (largest scene 1,764), 1,813 strings in 93,657 bytes, `memo.dat` 111,968 bytes in 102 blocks (all 78 art blocks are `MISSING` placeholders) with a 1,008-byte header (126 entries).
 

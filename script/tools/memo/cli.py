@@ -191,6 +191,29 @@ def add_art_args(sp):
                     help="store the converter's RLE/LZ tile streams instead of raw tiles")
 
 
+def cmd_ctrace(args):
+    from .ctrace import CTraceError, compare_c
+    built = build_all(args)
+    if built is None:
+        return 1
+    p, codes, data, layout = built
+    out = Path(args.out) if args.out else DEFAULT_OUT
+    work = out / "ctrace"
+    try:
+        result = compare_c(p, data, ids_header(p, data, codes), work, range(args.seeds),
+                           args.policies.split(","))
+    except CTraceError as e:
+        print(f"\n{e}")
+        return 1
+    if not result["ok"]:
+        print("\nC ENGINE MISMATCH\n" + result["error"])
+        return 1
+    print(f"\nC loader: header, tables, code and strings of all {result['entries']} entries match the python reader")
+    print(f"C vm: {result['runs']} playthroughs, {result['events']} events: engine and python vm agree")
+    print(f"harness: {result['exe']}")
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser("memo_dat", description="Memories of Ravenwood resource compiler")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -225,6 +248,14 @@ def main(argv=None):
     t.add_argument("--strict", action="store_true")
     add_art_args(t)
     t.set_defaults(fn=cmd_trace)
+
+    ct = sub.add_parser("ctrace", help="compare the C engine (engine/) with the python reader and VM")
+    ct.add_argument("--seeds", type=int, default=100)
+    ct.add_argument("--policies", default="uniform,first")
+    ct.add_argument("--out", help="work directory root (default script/build)")
+    ct.add_argument("--strict", action="store_true")
+    add_art_args(ct)
+    ct.set_defaults(fn=cmd_ctrace)
 
     args = ap.parse_args(argv)
     try:
