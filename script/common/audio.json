@@ -1,0 +1,163 @@
+{
+  "_doc": "Music and sound effect registry. 'file' is null until the asset exists.",
+  "music": {
+    "archive_theme": {
+      "file": null
+    },
+    "bloom_theme": {
+      "file": null
+    },
+    "bonfire_theme": {
+      "file": null
+    },
+    "cafe_theme": {
+      "file": null
+    },
+    "campus_theme": {
+      "file": null
+    },
+    "credits_theme": {
+      "file": null
+    },
+    "dance_theme": {
+      "file": null
+    },
+    "epilogue_theme": {
+      "file": null
+    },
+    "farm_theme": {
+      "file": null
+    },
+    "farmhouse_theme": {
+      "file": null
+    },
+    "friends_theme": {
+      "file": null
+    },
+    "game_theme": {
+      "file": null
+    },
+    "lab_theme": {
+      "file": null
+    },
+    "lecture_theme": {
+      "file": null
+    },
+    "library_theme": {
+      "file": null
+    },
+    "love_theme": {
+      "file": null
+    },
+    "market_theme": {
+      "file": null
+    },
+    "moon_theme": {
+      "file": null
+    },
+    "mystery_theme": {
+      "file": null
+    },
+    "parade_theme": {
+      "file": null
+    },
+    "patch_theme": {
+      "file": null
+    },
+    "quad_night": {
+      "file": null
+    },
+    "story_theme": {
+      "file": null
+    },
+    "tavern_theme": {
+      "file": null
+    },
+    "town_theme": {
+      "file": null
+    }
+  },
+  "sfx": {
+    "alarm": {
+      "file": null
+    },
+    "beep_denied": {
+      "file": null
+    },
+    "beep_ok": {
+      "file": null
+    },
+    "bus_brakes": {
+      "file": null
+    },
+    "camera_click": {
+      "file": null
+    },
+    "car_door": {
+      "file": null
+    },
+    "caw": {
+      "file": null
+    },
+    "clock_chime": {
+      "file": null
+    },
+    "crash": {
+      "file": null
+    },
+    "door_bell": {
+      "file": null
+    },
+    "door_open": {
+      "file": null
+    },
+    "extinguisher": {
+      "file": null
+    },
+    "fizz": {
+      "file": null
+    },
+    "foam_surge": {
+      "file": null
+    },
+    "footsteps": {
+      "file": null
+    },
+    "honk": {
+      "file": null
+    },
+    "marching_band": {
+      "file": null
+    },
+    "phone_buzz": {
+      "file": null
+    },
+    "projector_buzz": {
+      "file": null
+    },
+    "projector_whir": {
+      "file": null
+    },
+    "pumpkin_hum": {
+      "file": null
+    },
+    "pumpkin_thud": {
+      "file": null
+    },
+    "squirrel": {
+      "file": null
+    },
+    "steam_hiss": {
+      "file": null
+    },
+    "tractor": {
+      "file": null
+    },
+    "van_engine": {
+      "file": null
+    },
+    "whoosh": {
+      "file": null
+    }
+  }
+}

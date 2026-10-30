@@ -1,0 +1,7 @@
+{
+  "_doc": "Art manifest. Paths are relative to this file. An entry gives either 'gif' (a gif2zeal file name with flags, e.g. 'portraits/jane__B8C20.gif') or 'zts' + 'ztp' (+ 'ztm'). Run 'memo_dat.py build --convert' to run gif2zeal.py on new or changed GIFs. See compiler-spec.md section 5.7.",
+  "portraits": {},
+  "cgs": {},
+  "tilesets": {},
+  "maps": {}
+}

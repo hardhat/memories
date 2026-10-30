@@ -10,15 +10,17 @@ Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.
 
 - [x] Tools: `gif2zeal.py` makes `.zts` (tiles) and `.ztp` (palette, RGB565 little endian); `tiled2zeal.py` makes `.ztm` from Tiled maps.
 - [x] Tile size 16x16. CG size: 320x240 at 4bpp (16 colours) **or** 320x192 at 8bpp (256 colours); choose per CG.
-- [x] Portraits: 8bpp, about 80x32 base image plus alternate heads per expression, 32 dedicated colours each (including transparent).
-- [x] Files are GIFs with `__` filename flags for the converter (for example `cg01__B8R.gif`); map tilesets must NOT use the unique flag (`U`), so tile order matches Tiled.
+- [x] Portraits: 8bpp, **32 pixels wide by 80 tall** (2 x 5 tiles) base image plus alternate heads per expression, 32 colours each including transparent.
+- [x] The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image**. One GIF per portrait, 32 px wide: the 80 px base image (expression 0) first, then one 32x32 head for each further expression stacked below it, in the order listed in `characters.json` (`have`, then `todo`). A character with `n` expressions is `32 x (80 + 32 * (n - 1))` px, exported as `name__B8C20.gif` (`C20` = 32 colours). The compiler rejects other sizes and says what it expected.
+- [x] Each image has its own palette (the Video Board SDK loader supports independent palettes per 8bpp image), so there is no shared palette budget. Art is stored uncompressed in the DAT.
+- [x] Files are GIFs with `__` filename flags for the converter (for example `cg01__B8C20.gif`); the compiler needs the flags in the name. Map tilesets must NOT use the unique flag (`U`), so tile order matches Tiled, and hold at most 255 tiles.
+- [x] Save GIFs with every palette entry you use at the index you want: the pixel index is stored as is, and the build checks it is inside the palette.
 
 Still to confirm:
 
-- [ ] Portrait geometry: is 80x32 the whole portrait or only a head strip (compiler-spec section 12, question 1).
-- [ ] The 256-entry palette split between UI, left portrait, right portrait and scene art (compiler-spec section 5.7 proposal). Pixel indices are absolute, so each GIF must be authored with its colours at its slot's indices.
+- [ ] CG mode per image: 320x240 4bpp or 320x192 8bpp.
 - [ ] Walk-sprite size (suggest 16x24 or 16x32).
-- [ ] File naming: `<character>-<outfit>.gif` per portrait sheet, `cg<id>__B8R.gif` for CGs, `sprite-<character>.gif` for walk sprites, map tilesets without `U`.
+- [ ] File naming: `<character>.gif` per portrait sheet (`jane__B8C20.gif`), `cg<id>__B8C<nn>.gif` for CGs, `sprite-<character>.gif` for walk sprites.
 - [ ] The existing turnaround sheets are high-resolution PNG. They need to be redrawn or downscaled and palette-reduced to the sizes above.
 
 ## 1. Brad Bart (main character): P1

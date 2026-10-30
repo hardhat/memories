@@ -36,7 +36,7 @@
 
     "B_slots": [
       {"op": "say", "who": "narrator", "text": "The wall clock reads nine. The library closes at midnight. Brad has three time slots."},
-      {"op": "tutorial", "id": "slots", "text": "Each slot: study, or search for the archive. Study right twice to pass. Search twice to find a way in. You can't do both."},
+      {"op": "tutorial", "id": "slots", "text": "Each slot: study or search. Study right twice to pass. Search twice to find a way in."},
       {"op": "choice", "id": "c7_slot1", "prompt": "Slot 1 of 3. Nine o'clock.", "options": [
         {"text": "Study for the midterm", "do": [{"op": "call", "block": "study_1"}]},
         {"text": "Search for the archive", "do": [{"op": "call", "block": "inv_1"}]}
