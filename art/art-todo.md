@@ -25,7 +25,44 @@ Still to confirm:
 
 ## 1. Brad Bart (main character): P1
 
-Brad's sheet has a turnaround and no expression set. He appears on the left in every dialog scene, so he needs the most variants.
+Brad's original sheet has a turnaround; the expression supplement below adds
+the ten requested reference expressions. He appears on the left in every dialog
+scene, so he needs the most variants.
+
+### P1 outfit and expression reference sheets
+
+Generated with OpenArt GPT Image 2.5 Sunburst from each character's canonical
+sheet, downloaded as 1024x1024 PNGs, and given an initial visual review:
+
+- [Brad expressions](brad-bart-expressions.png): all ten listed default
+  expressions are present with consistent identity.
+- [Brad farm outfit](brad-bart-farm.png): open brown plaid flannel over the
+  black tee, jeans, muddy work boots; neutral, smile, surprised, worried, laugh.
+- [Jane expressions](jane-mcvine-expressions.png): neutral/smile anchors,
+  worried, and laugh.
+- [Sandra expressions](sandra-stump-expressions.png): neutral/slight-smile
+  anchors, mortified, and smirk.
+- [Georgia expressions](georgia-grove-expressions.png): neutral/smile anchors,
+  laugh, and worried. Selected the smile revision using the original
+  turnaround's cheerful closed-eye smile as reference; the prior supplement
+  is archived outside the repository.
+- [Patricia expressions](prof-patricia-peters-expressions.png): neutral/serious
+  anchors, flustered, and frustrated.
+- [Georgia cafe apron](georgia-grove-cafe.png): sage-green bib apron over the
+  default outfit, with front/back construction details and neutral, smile,
+  surprised, laugh, worried expressions.
+- [Patricia lab coat](prof-patricia-peters-lab.png): open white lab coat over
+  the default outfit, with neutral, smile, surprised, serious, worried
+  expressions.
+
+All eight P1 reference sheets are downloaded and initially reviewed.
+The requested emotions are readable at reference resolution. Georgia's revised
+default smile is distinct from neutral but close to laugh; her apron
+neutral/smile remain subtle. Brad's confused expression reads somewhat annoyed;
+check readability again when adapting to small portraits.
+These supplements do not replace the original turnarounds. The checkboxes
+below still track game-ready portraits/outfits, not high-resolution references;
+runtime portrait GIFs and expression indexing have not been changed.
 
 **Expressions (default outfit: black tee, jeans, white sneakers):**
 - [ ] Neutral
@@ -102,6 +139,40 @@ Have: neutral, smile, surprised, angry.
 ## 3. New Supporting Characters
 
 Mostly small portraits (neutral + one extra), plus a walk sprite where noted.
+
+### Supporting-character design sheets
+
+Reference sheets generated with OpenArt GPT Image 2.5 Sunburst using the
+existing cast sheets as style or family references. These are 1024x1024 PNG
+design references, not converted portraits or walk sprites; the asset tasks
+below remain open until their required game-ready images exist.
+
+- Downloaded and visually reviewed; preferred versions selected:
+  [crow](crow.png), [tour guide](tour-guide.png),
+  [icebreaker leader](icebreaker-leader.png), [alumni trio](alumni-trio.png),
+  [freshman raven mascot](freshman-raven-mascot.png), [Big Mel](big-mel.png),
+  [Brad's mother, young](brads-mother-young.png),
+  [Dr. Eleanor Peters, program era](dr-eleanor-peters-young.png),
+  [crowd](crowd.png), [Mr. Pruitt](mr-pruitt.png),
+  [Dean Whitlock](dean-whitlock.png), [young Daniel Bart](daniel-bart-young.png),
+  [present-day Daniel Bart](daniel-bart.png),
+  and [young Gord McVine](gord-mcvine-young.png) (for CG-11).
+- Revision selection (preferred images use the standard filenames above):
+  - Crow, tour guide, icebreaker leader, and young Daniel: revisions preserve
+    the designs and useful expression/prop panels while adding opposite-facing
+    profiles.
+  - Freshman mascot: revision preserves the costume, fixes the profiles, and
+    makes the nervous expression clearly distinct.
+  - Present-day Daniel: revision reads convincingly older than Brad and young
+    Daniel, while preserving the outfit, pie box, and family resemblance.
+    Duplicate-facing side profiles remain acceptable for this reference use.
+  - Eleanor: revision has a more angular, mature face, narrower eyes, and
+    clearer expressions, distinguishing her better from Patricia.
+  - Dean: revision retains his identity and expressions while matching the
+    textured pixel-art rendering of the other sheets more closely.
+  - The other six supporting sheets retain their original generations.
+  - Superseded originals are archived outside the repository in session
+    storage. No further retries are planned solely for duplicate side profiles.
 
 - [ ] **Crow**: recurring mascot. Portrait or icon: perched, stealing a tag, holding the tag, holding a mustache. Walk/fly sprite (map). **P1**
 - [ ] Tour guide (S2). **P3**
