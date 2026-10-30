@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Convert CG placeholder images for the Zeal 8-bit engine.
 
-Downsizes high-res CG placeholder PNGs (1280x960) to 320x192, converts them
+Downsizes high-res CG placeholder PNGs (1280x768) to 320x192, converts them
 to 128-color palette GIFs (named with gif2zeal flags, e.g. CG-01__B8C80.gif),
 and converts them directly to uncompressed Zeal formats:
   - .ztp: 128-color palette (RGB565 little-endian, 256 bytes)

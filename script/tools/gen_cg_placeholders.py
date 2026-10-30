@@ -23,7 +23,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]          # .../script
-DEFAULT_WORKFLOW = ROOT / "z-image_1280x960.json"
+DEFAULT_WORKFLOW = ROOT / "z-image_1280x768.json"
 DEFAULT_OUT = ROOT.parent / "art" / "cg-placeholders"
 DEFAULT_SERVER = "http://10.0.0.140:8188"
 
