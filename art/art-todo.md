@@ -265,7 +265,7 @@ Tile sets for the maps listed in section 4 of the script plan. Each has a day va
 
 From the CG list in the script plan. Many reuse the existing character designs, so the art needs the same outfits and expressions listed above.
 
-**Production status:** CG-01 through CG-03 and CG-04a-d are approved and installed at their
+**Production status:** CG-01 through CG-06, including CG-04a-d, are approved and installed at their
 existing paths in `cg-placeholders`; the directory name is retained for registry
 compatibility. Other local CGs remain placeholders.
 The successful OpenArt CG-02 consistency pilot
@@ -308,12 +308,25 @@ all match their approved session review copies by SHA256.
 | CG-04c | `harXA2zxNS4dk5mt5TLC` | Brad's headless mascot suit and the detached head in Georgia's lap are clear. |
 | CG-04d | `FCfdAmLBPoaoVTUspSDV` | Patricia's glasses/lanyard/clipboard and the respectful gap from Brad remain clear. |
 
+### Cafe and Patch Seven batch: approved and installed
+
+CG-05 and CG-06 replace the local placeholders at their existing registry
+paths. Both sources are verified 1280x768 and converted to
+320x192/128-colour indexed GIFs. RGB565 palette bytes and raster tile bytes
+match each GIF. Installed PNG/GIF files and rebuilt `.ztp`/`.zts` outputs
+all match their approved session review copies by SHA256.
+
+| CG | OpenArt history ID | Initial reduced-preview review |
+|---|---|---|
+| CG-05 | `a7MC2crnlpVuqRznUvEd` | Four recognizable friends, Georgia's apron, the tart and separate candle remain readable. Expressions lean toward friendly amusement rather than exaggerated confession. |
+| CG-06 | `DPogZq3nDG66lwGhKDGY` | Giant glowing pumpkins, golden-hour field, Gord and his KEEP OUT / PATCH 7 plank remain clear. |
+
 **Shared:**
 - [x] CG-01 (S1): Attic window at dusk, glowing Patch 7, the crow on the sill. **P1**
 - [x] CG-02 (S2): Lecture hall extinguisher chaos, Patricia over her glasses, the crow with the name tag in the window. **P1**
 - [x] CG-03 (S3): Lab flooded with glowing orange foam, four silhouettes. **P1**
-- [ ] CG-05 (S5): Glowing Pumpkin Surprise and the group around the table, mid-confession. **P2**
-- [ ] CG-06 (S6): Patch 7 at golden hour, giant glowing pumpkins, Gord in silhouette. **P2**
+- [x] CG-05 (S5): Glowing Pumpkin Surprise and the group around the table, mid-confession. **P2**
+- [x] CG-06 (S6): Patch 7 at golden hour, giant glowing pumpkins, Gord in silhouette. **P2**
 - [ ] CG-07 (S7): Archive by flashlight, the Pumpkin Research Program binder, a photo of three young people. **P2**
 - [ ] CG-08 (S8): The van at the lab loading dock, Mr. Gourd lifting a pumpkin, one stylish shoe. **P2**
 - [ ] CG-09 (S9): Great Hall, glowing punch bowl, crowd mid-confession. **P2**
