@@ -165,7 +165,7 @@
         {"op": "cg_off"}
       ], "else": [
         {"op": "say", "who": "jane", "expr": "smile", "text": "Ask me again after the harvest."},
-        {"op": "cg", "id": "CG-10a"},
+        {"op": "cg", "id": "CG-10a-sweet"},
         {"op": "say", "who": "narrator", "text": "They lean against the snow pumpkin and watch the sun set over the white field."},
         {"op": "cg_off"}
       ]}
@@ -192,7 +192,7 @@
         {"op": "cg_off"}
       ], "else": [
         {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Come back next week. Bring brains."},
-        {"op": "cg", "id": "CG-10b"},
+        {"op": "cg", "id": "CG-10b-sweet"},
         {"op": "say", "who": "narrator", "text": "She leans on the table next to him. It's close, but not quite touching. For now."},
         {"op": "cg_off"}
       ]}
@@ -221,7 +221,7 @@
         {"op": "cg_off"}
       ], "else": [
         {"op": "say", "who": "georgia", "expr": "smile", "text": "Help me plan the city trip? Maps, bakeries, snacks. You carry the snacks."},
-        {"op": "cg", "id": "CG-10c"},
+        {"op": "cg", "id": "CG-10c-sweet"},
         {"op": "say", "who": "narrator", "text": "They spend the morning drawing a map of the best bakeries in a city neither of them has seen."},
         {"op": "cg_off"}
       ]}
@@ -248,7 +248,7 @@
       ], "else": [
         {"op": "say", "who": "patricia", "expr": "thinking", "text": "I would rather wait for spring. I'd like to do this properly."},
         {"op": "say", "who": "brad", "expr": "smile", "text": "Spring it is."},
-        {"op": "cg", "id": "CG-10d"},
+        {"op": "cg", "id": "CG-10d-sweet"},
         {"op": "say", "who": "narrator", "text": "She hands him the thermos. Cocoa, with a little cinnamon. For her, it is a declaration."},
         {"op": "cg_off"}
       ]}

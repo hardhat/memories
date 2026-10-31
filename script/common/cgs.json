@@ -113,5 +113,29 @@
     "desc": "Good Friends ending: group photo on the tavern steps, Brad with all four, Gord, and the crow photobombing in the corner",
     "file": "art/cg-placeholders/CG-13__B8C80.gif",
     "bpp": 8
+  },
+  "CG-10b-sweet": {
+    "scene": "S10",
+    "desc": "Sandra Sweet ending: leaning beside Brad at the trivia table, close but not touching, only the old researchers' photo behind the bar",
+    "file": "art/cg-placeholders/CG-10b-sweet__B8C80.gif",
+    "bpp": 8
+  },
+  "CG-10c-sweet": {
+    "scene": "S10",
+    "desc": "Georgia Sweet ending: Georgia and Brad planning a bakery map at the cafe counter, ordinary pumpkin tart beside them",
+    "file": "art/cg-placeholders/CG-10c-sweet__B8C80.gif",
+    "bpp": 8
+  },
+  "CG-10a-sweet": {
+    "scene": "S10",
+    "desc": "Jane Sweet ending: Jane and Brad in winter work jackets resting separately against the snow pumpkin at sunset",
+    "file": "art/cg-placeholders/CG-10a-sweet__B8C80.gif",
+    "bpp": 8
+  },
+  "CG-10d-sweet": {
+    "scene": "S10",
+    "desc": "Patricia Sweet ending: cocoa thermos exchange at the snowy farmhouse door, Patricia in her trench coat and ordinary glasses, Brad in his winter jacket",
+    "file": "art/cg-placeholders/CG-10d-sweet__B8C80.gif",
+    "bpp": 8
   }
 }

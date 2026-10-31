@@ -385,11 +385,83 @@ review copies by SHA256.
 - [ ] CG-13 (S10): Good Friends ending: group photo on the tavern steps with Brad, all four heroines and Gord, the crow photobombing in the corner. **P2**
 See [../script/common/cgs.json](../script/common/cgs.json) for the full set of scripted images.
 
-**Route (one per route, 4 images each):**
+### Ending variants batch
+
+Separate True Love and Sweet images are approved for production for all four
+routes. Keep existing CG-10a-d IDs for True Love; add separate Sweet registry
+entries and branch calls when the corresponding reviewed art is approved.
+Do not install pending images or change runtime references before approval.
+
+All six results are downloaded and initially reviewed. All four Sandra/Georgia
+CGs are approved and installed. Existing CG-10b/c IDs retain the True Love
+images; new CG-10b-sweet and CG-10c-sweet registry entries are used only by
+their respective Sweet branches. New entries are appended to preserve existing
+numeric CG IDs. Installed source/GIF/palette/tile files match approved review
+copies by SHA256.
+Focused epilogue validation/compilation passes, with expected partial-scene
+warnings about flags set elsewhere. Branch checks confirm True Love keeps
+CG-10b/c and Sweet selects the new variants; existing CG index order is unchanged.
+
+- CG-10b True Love: `4PfBmKIPhtAlLjnUX2RO`; Sandra's full smile,
+  joined hands, old/new photographs.
+- CG-10b Sweet: `WXFixw4fe7yaWKxNRZQi`; tentative smile, close but not
+  touching, old photograph only.
+- CG-10c True Love: `r67tVGlVnKCa0w78Xac1`; cafe-counter kiss,
+  ordinary pumpkin tart and brass key.
+- CG-10c Sweet: `mddmupYfNafv14lxd9He`; planning a bakery map,
+  no kiss or cafe key.
+- [Brad winter reference](brad-bart-winter.png): `0Zai2mzgZiVhGCZsPd5S`;
+  brown shearling-collar work jacket, jeans and winter boots.
+- [Jane winter reference](jane-mcvine-winter.png): `xAUHwnu0cGed1njcCNTi`;
+  olive insulated work jacket, black trousers and winter boots.
+
+Verified actual source sizes: all four CGs are 1280x768 and both reference
+sheets are 1024x1024. Each CG preview is 320x192 with 128 colours; palette
+indices, exact RGB565 palette bytes and raster tile bytes are validated.
+Sandra's True Love image shows joined hands below the table and both framed
+photos; Sweet keeps hands separate and only the old photo. Georgia's kiss/key
+and separate bakery-map scene remain readable without magical pastry glow.
+Winter outfits preserve both characters' identities; Brad's profiles face
+the same direction, a previously accepted nonblocking reference-sheet flaw.
+Jane/Patricia variants use Brad's winter sheet in all
+four images and Jane's winter sheet in both Jane images:
+
+- CG-10a True Love: `dDLEc7y1mUPNTgj0SXZa`; snowy farm kiss, snow pumpkin
+  and barn key.
+- CG-10a Sweet: `ALqNeKcF4v0L3HSrV6XE`; leaning against the snow pumpkin
+  watching sunset, no kiss or key.
+- CG-10d True Love: `ehHXDZxrvYcDgaSSMUnO`; cautious doorway kiss,
+  Patricia's tan trench coat and clear safety goggles.
+- CG-10d Sweet: `EJ5PGBvZ5NVoOKw0BTDU`; cocoa thermos exchange,
+  tan trench coat and ordinary rectangular glasses.
+
+All four are approved and installed. Existing CG-10a/d IDs retain True Love;
+new CG-10a-sweet and CG-10d-sweet entries are appended to preserve existing
+numeric CG IDs and selected by their respective Sweet branches.
+Installed PNG/GIF/palette/tile files match approved review copies by SHA256.
+Actual sources are 1280x768; previews are 320x192
+indexed GIFs with 128 colours. Palette index bounds, exact RGB565 palette
+bytes and raster tile bytes are validated.
+Brad's winter jacket appears in all four, Jane's olive jacket in both hers.
+Jane True Love shows the kiss and joined hands, but the barn key is not clearly
+readable at game resolution. Jane Sweet seats them separately against the
+snow pumpkin rather than standing; sunset and non-contact staging are clear.
+Patricia True Love retains clear safety goggles; Sweet uses normal glasses
+and a thermos exchange. Neither includes the disguise accessories.
+Patricia references include her canonical identity and established trench-coat
+sheet, explicitly excluding the mustache and sunglasses in both endings.
+Gord's winter continuity remains for CG-12. Runtime winter portraits/sprites
+are not complete.
+
+**Route:**
 - [x] CG-04a-d (S4): Bonfire moment with Jane / Sandra / Georgia / Patricia. **P2**
 - [ ] CG-06a-d (S6): Route-specific farm moment (optional). **P3**
-- [ ] CG-10a-d (S10): Ending images, one per route (True Love; Sweet reuses the image with a small change). **P2**
-- [ ] CG-10 separate Sweet variants (4). **P3**
+- [x] CG-10a-d (S10): True Love ending images, one per route. **P2**
+  - [x] CG-10b/c: Sandra and Georgia approved and installed.
+  - [x] CG-10a/d: Jane and Patricia approved and installed.
+- [x] CG-10 separate Sweet variants (4), with matching registry/scene wiring. **P2**
+  - [x] CG-10b-sweet / CG-10c-sweet: approved, installed and wired.
+  - [x] CG-10a-sweet / CG-10d-sweet: approved, installed and wired.
 
 **Possible additional CGs (not yet in the script plan, do only if the script needs them):**
 - [ ] Brad and Gord at the dinner table (S1). **P3**
@@ -403,7 +475,7 @@ See [../script/common/cgs.json](../script/common/cgs.json) for the full set of s
 |---|---|
 | **P1** | Brad expressions (default outfit) and farm outfit, walk sprites (all main characters), crow, town/farm/lab/lecture-hall tiles, UI frames, missing P1 expressions, CG-01 to CG-03 |
 | **P2** | Remaining outfits and costumes, remaining interiors, supporting characters, Mr. Gourd, shared CGs for S5-S9, route CGs for S4 and S9 |
-| **P3** | Extra expressions, extra costumes, route CGs for S6, Sweet endings, bonus CGs |
+| **P3** | Extra expressions, extra costumes, route CGs for S6, bonus CGs |
 
 ## 7. Notes
 
