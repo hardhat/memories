@@ -163,6 +163,63 @@ checks before expanding to full locations.
   Reuse these bases when adding connected terrain rather than independently
   regenerating the shared surface.
 
+- [ ] Farm detail source batch: PixelLab
+  `b77f71f4-fd21-454b-a10b-20ddd66f467e`, completed at 32x32 source size;
+  user reports improvement. All sixteen originals are downloaded to
+  [farm-details-32](terrain/farm-details-32/), numbered `tile_00.png` through
+  `tile_15.png` in prompt order. Verified dimensions and alpha channels;
+  generated a native/reduced comparison in session review storage.
+  Completed 16x16 job `7129b3c6-beb2-43ab-8798-23a7c58f73e8` was
+  reported broken by the user; retained remotely, not installed.
+  Original job `a89ee957-d2cb-4272-a608-b630d44d8762` failed with
+  "Tier 1 is required for this"; user upgraded and authorized resubmission.
+  Requested sixteen 32x32 square top-down pieces: six fence segments,
+  horizontal/vertical furrows, seedlings, vine, four pumpkin variants,
+  blank signpost and crate. Requested at most 24 colours per generated image,
+  not a locked shared palette. Review actual output, fence connections,
+  transparency and terrain compatibility before selecting pieces.
+  Keep the original sixteen terrain tile indices unchanged when assembling
+  an expanded atlas. Hardware tiles remain 16x16. Compare reductions to 16x16
+  before deciding which pieces need full-size multi-tile treatment.
+  Sixteen reduced detail pieces would bring scenery to 32 tiles, leaving 60
+  shared slots; retaining all sixteen at 32x32 would instead cost 64 detail
+  tiles plus 16 terrain tiles, leaving only 12 of the 92 shared slots.
+  Source candidates are not yet installed or budgeted as final art.
+  Initial review: pumpkins, sign and crate remain recognizable at 16x16.
+  Images include opaque olive ground patches despite transparent outer pixels,
+  so they are not clean drop-in overlays. Several requested fence directions
+  and corners instead repeat horizontal fences; proper north/south/corner
+  connections are not established. Do not mark this as a complete fence kit
+  or add these unmodified pieces to the production atlas.
+
+- [ ] Mixed-size farm review atlas: [PNG](terrain/farm-mixed-sample.png),
+  [Tiled tileset](../map/farm-mixed-sample.tsx) and separate
+  [prop test map](../map/farm-props-sample.tmx). Existing maps, source
+  PNGs and first sixteen terrain tile pixels/indices are preserved.
+  User approved the sample's visual appearance. Hardware palette and
+  runtime validation remain open, so this item is not yet complete.
+  Includes eight hand-repaired connecting 16x16 fence pieces, furrows and
+  seedlings, three 32x32 props (pumpkin, crate, sign), one experimental
+  16x16 pumpkin, and one reserved blank. Full allocation is 40 tiles,
+  leaving 52 of the 92 shared slots before characters/effects; no
+  deduplication or mirroring savings assumed.
+  Fence edge pixels match for every supported connection. Native props
+  are assembled from four consecutive local IDs in row-major order,
+  even where those IDs wrap across atlas rows. Tile `role` properties
+  identify each quadrant.
+  Deterministic locally coherent jitter tests copy exact source pixels
+  from each corresponding 2x2 block; no interpolation or new colours.
+  They do not reliably recover fine outlines. Kept the sign at 32x32
+  rather than adopting its poorly readable reduction.
+  Removed exact olive backing and outer frame pixels from selected
+  props; residual ground-colour fringes remain in the approved sample.
+  Atlas has 86 opaque RGB colours plus transparency, within the
+  128-colour scenery ceiling alone, but is RGBA review art, not a
+  hardware-indexed/shared character-and-effects palette.
+  Test map has ground/above layers and a hidden binary collision layer;
+  its conservative prop footprints are untested in runtime. No M04,
+  spawn/trigger, palette-remapping or sprite-readability integration yet.
+
 ## 1. Brad Bart (main character): P1
 
 Brad's original sheet has a turnaround; the expression supplement below adds
