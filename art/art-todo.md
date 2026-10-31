@@ -33,7 +33,7 @@ Unchecked asset tasks below do not mean their character designs are missing.
   PNG plus metadata downloaded to session storage, not integrated into maps.
 - [ ] Convert reference art to the required portrait GIFs and walk sprites.
   Runtime expression indexing and portrait definitions are unchanged.
-- [ ] Generate final CGs, review their downsampled/palette-limited output,
+- [x] Generate final required CGs, review their downsampled/palette-limited output,
   and replace placeholders only after approval.
 
 **P1 CG status:** CG-01 through CG-03 are approved and installed.
@@ -281,9 +281,11 @@ Tile sets for the maps listed in section 4 of the script plan. Each has a day va
 
 From the CG list in the script plan. Many reuse the existing character designs, so the art needs the same outfits and expressions listed above.
 
-**Production status:** CG-01 through CG-09, including CG-04a-d, and CG-11 are approved and installed at their
+**Production status:** All 23 registered CGs (CG-01 through CG-13, including
+CG-04a-d, CG-10a-d and all four
+CG-10 Sweet variants) are approved and installed at their
 existing paths in `cg-placeholders`; the directory name is retained for registry
-compatibility. Other local CGs remain placeholders.
+compatibility. The required CG set is complete; optional extra CGs remain open.
 The successful OpenArt CG-02 consistency pilot
 ([source PNG](https://cdn.openart.ai/openart-ai/production/2026-10/create-image/S3B9Ym2wdG7dt46E5tcJ/gpt-image-2.5-sunburst-edit-1_1793396805849_c6977ba1.png))
 has been downloaded, locally converted, approved, and installed in the game.
@@ -381,8 +383,8 @@ review copies by SHA256.
 - [x] CG-08 (S8): The van at the lab loading dock, Mr. Gourd lifting a pumpkin, one stylish shoe. **P2**
 - [x] CG-09 (S9): Great Hall, glowing punch bowl, crowd mid-confession. **P2**
 - [x] CG-11 (S10): Flashback of the original dance 25 years ago: young Daniel, Gord, and Eleanor under the program banner, glowing punch bowl in the foreground, Brad's mother in the crowd. **P2**
-- [ ] CG-12 (S10): Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them. **P2**
-- [ ] CG-13 (S10): Good Friends ending: group photo on the tavern steps with Brad, all four heroines and Gord, the crow photobombing in the corner. **P2**
+- [x] CG-12 (S10): Farm ending: Brad and Gord on the snowy porch, the crow on the railing, a carved glowing pumpkin between them. **P2**
+- [x] CG-13 (S10): Good Friends ending: group photo on the tavern steps with Brad, all four heroines and Gord, the crow photobombing in the corner. **P2**
 See [../script/common/cgs.json](../script/common/cgs.json) for the full set of scripted images.
 
 ### Ending variants batch
@@ -450,8 +452,32 @@ Patricia True Love retains clear safety goggles; Sweet uses normal glasses
 and a thermos exchange. Neither includes the disguise accessories.
 Patricia references include her canonical identity and established trench-coat
 sheet, explicitly excluding the mustache and sunglasses in both endings.
-Gord's winter continuity remains for CG-12. Runtime winter portraits/sprites
-are not complete.
+Runtime winter portraits/sprites are not complete.
+
+### Final shared endings batch
+
+- CG-12 (OpenArt `tsTZvaJC7n7sB7U825Oo`): Brad and Gord on the snowy porch,
+  carved glowing pumpkin between them, crow on railing and welcome-home note.
+  Uses Brad's winter sheet and Gord's canonical identity; Gord wears a plain
+  forest-green insulated coat over his grey-green work shirt.
+- CG-13 (OpenArt `27ZRIejv9BDiZ9RRI73g`): timed-camera tavern-steps group
+  photo with exactly Brad, Jane, Sandra, Georgia, Patricia, Gord and one crow.
+  Brad/Jane use winter sheets; Gord repeats the forest-green coat, Patricia
+  wears her tan trench without disguise, Sandra adds a black wool coat and
+  Georgia a camel coat with winter leggings.
+
+Both are approved and installed at their existing registry paths. Installed
+PNG/GIF/palette/tile files match the approved review copies by SHA256;
+conversion freshness checks pass. Actual sources are 1280x768; both previews are
+320x192 indexed GIFs with 128 colours. Palette index bounds, exact RGB565
+palette bytes and raster tile bytes are validated.
+CG-12 clearly retains Brad/Gord, winter coats, welcome-home note, central
+glowing carved pumpkin and crow on the rail.
+CG-13 contains all six distinct characters once: Gord/Patricia/Brad behind
+Jane/Sandra/Georgia, with unobstructed faces and a foreground crow photobomb.
+Winter layers and Georgia's closed-eye smile remain readable. The crow is
+larger than prompted but stays clear of faces; Sandra retains her canonical
+fishnets under the added coat.
 
 **Route:**
 - [x] CG-04a-d (S4): Bonfire moment with Jane / Sandra / Georgia / Patricia. **P2**
