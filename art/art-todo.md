@@ -35,6 +35,10 @@ Unchecked asset tasks below do not mean their character designs are missing.
   Runtime expression indexing and portrait definitions are unchanged.
 - [x] Generate final required CGs, review their downsampled/palette-limited output,
   and replace placeholders only after approval.
+- [x] Complete all 23 registered CGs, including four separate Sweet endings,
+  and wire the ending branches to their approved variants.
+- [x] Complete seven later outfit references: Brad homecoming, mascot and
+  winter; Jane winter; Sandra witch; Georgia pie; Patricia Mr. Gourd.
 
 **P1 CG status:** CG-01 through CG-03 are approved and installed.
 No additional turnaround sheet blocks this P1 CG batch:
@@ -42,14 +46,13 @@ the crow, Brad's farm outfit, Patricia's lab coat, and existing
 cast designs are available. Reference sheets can guide CGs before portrait or
 walk-sprite conversion is complete.
 
-**Later reference work remains:** P2/P3 outfits and expression supplements in
-sections 1-2, especially Brad's orientation/Halloween looks,
-Jane's formal expressions, Sandra and Georgia's Halloween costumes, Patricia's
-Mr. Gourd disguise, and Gord's remaining emotions. Create these as needed before
-the corresponding later CGs rather than delaying the P1 CGs. The freshman's
-mascot sheet defines the borrowed costume; Brad's wearer reference is now available.
-CG-08 needs the Mr. Gourd disguise; S9 art needs the applicable formal/costume
-references. Duplicate-facing side profiles alone are not a retry requirement.
+**Later reference work remains:** Brad's orientation/scarecrow/Gord-parody
+looks, Jane's formal expressions and remaining P2/P3 expression supplements
+in sections 1-2. Homecoming, winter, Sandra's witch, Georgia's pie and
+Patricia's Mr. Gourd references are complete and have guided approved CGs.
+Brad is off-camera in CG-09, so his selectable Halloween looks remain
+portrait/sprite work, not CG blockers. Duplicate-facing side profiles alone
+are not a retry requirement.
 
 ## 0. Technical Decisions
 
@@ -70,8 +73,8 @@ Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.
 
 Still to confirm:
 
-- [ ] Confirm exceptions to the current 320x192 8bpp/128-colour CG workflow;
-  320x240 4bpp remains an available alternative, not the current converter mode.
+- [x] All 23 required CGs use 320x192 8bpp/128 colours; no output-mode
+  exceptions were needed. 320x240 4bpp remains an available alternative.
 - [ ] Walk-sprite size (suggest 16x24 or 16x32).
 - [ ] File naming: `<character>.gif` per portrait sheet (`jane__B8C20.gif`), `cg<id>__B8C<nn>.gif` for CGs, `sprite-<character>.gif` for walk sprites.
 - [ ] The existing turnaround sheets are high-resolution PNG. They need to be redrawn or downscaled and palette-reduced to the sizes above.
@@ -87,24 +90,24 @@ scene, so he needs the most variants.
 Generated with OpenArt GPT Image 2.5 Sunburst from each character's canonical
 sheet, downloaded as 1024x1024 PNGs, and given an initial visual review:
 
-- [Brad expressions](brad-bart-expressions.png): all ten listed default
+- [x] [Brad expressions](brad-bart-expressions.png): all ten listed default
   expressions are present with consistent identity.
-- [Brad farm outfit](brad-bart-farm.png): open brown plaid flannel over the
+- [x] [Brad farm outfit](brad-bart-farm.png): open brown plaid flannel over the
   black tee, jeans, muddy work boots; neutral, smile, surprised, worried, laugh.
-- [Jane expressions](jane-mcvine-expressions.png): neutral/smile anchors,
+- [x] [Jane expressions](jane-mcvine-expressions.png): neutral/smile anchors,
   worried, and laugh.
-- [Sandra expressions](sandra-stump-expressions.png): neutral/slight-smile
+- [x] [Sandra expressions](sandra-stump-expressions.png): neutral/slight-smile
   anchors, mortified, and smirk.
-- [Georgia expressions](georgia-grove-expressions.png): neutral/smile anchors,
+- [x] [Georgia expressions](georgia-grove-expressions.png): neutral/smile anchors,
   laugh, and worried. Selected the smile revision using the original
   turnaround's cheerful closed-eye smile as reference; the prior supplement
   is archived outside the repository.
-- [Patricia expressions](prof-patricia-peters-expressions.png): neutral/serious
+- [x] [Patricia expressions](prof-patricia-peters-expressions.png): neutral/serious
   anchors, flustered, and frustrated.
-- [Georgia cafe apron](georgia-grove-cafe.png): sage-green bib apron over the
+- [x] [Georgia cafe apron](georgia-grove-cafe.png): sage-green bib apron over the
   default outfit, with front/back construction details and neutral, smile,
   surprised, laugh, worried expressions.
-- [Patricia lab coat](prof-patricia-peters-lab.png): open white lab coat over
+- [x] [Patricia lab coat](prof-patricia-peters-lab.png): open white lab coat over
   the default outfit, with neutral, smile, surprised, serious, worried
   expressions.
 
@@ -117,7 +120,7 @@ These supplements do not replace the original turnarounds. The checkboxes
 below still track game-ready portraits/outfits, not high-resolution references;
 runtime portrait GIFs and expression indexing have not been changed.
 
-**Expressions (default outfit: black tee, jeans, white sneakers):**
+**Game-ready portrait expressions (default outfit: black tee, jeans, white sneakers):**
 - [ ] Neutral
 - [ ] Smile
 - [ ] Laugh
@@ -131,11 +134,16 @@ runtime portrait GIFs and expression indexing have not been changed.
 
 **Outfits (neutral + smile + surprised each, at minimum):**
 
-Homecoming CG references are downloaded and reviewed at 1024x1024:
-[Brad homecoming](brad-bart-homecoming.png) adds an orange-and-black scarf and
-optional pennant; [Brad mascot](brad-bart-mascot.png) preserves the existing
-maroon-scarfed raven suit with Brad's identity, head on/off and detached head.
-These establish CG-04 continuity; runtime portrait/sprite tasks below remain open.
+Completed later CG references, downloaded and reviewed at 1024x1024:
+
+- [x] [Brad homecoming](brad-bart-homecoming.png): orange-and-black scarf,
+  optional pennant.
+- [x] [Brad mascot](brad-bart-mascot.png): maroon-scarfed raven suit with
+  Brad's identity, head on/off and detached head.
+- [x] [Brad winter](brad-bart-winter.png): brown shearling-collar jacket,
+  jeans, winter boots and removable gloves.
+
+These establish CG continuity; game-ready portrait/sprite tasks below remain open.
 
 - [ ] Farm work: muddy boots, flannel or work shirt (S1, S3 boots gag, S6, S8). **P1**
 - [ ] Orientation look with name tag (S2); same default outfit plus tag. **P2**
@@ -150,9 +158,16 @@ These establish CG-04 continuity; runtime portrait/sprite tasks below remain ope
 ## 2. Existing Characters: Missing Expressions and Outfits
 
 The script uses these expressions beyond the current sheets (smile, wink, serious, surprised etc.).
+Unchecked tasks in this section require game-ready portraits/outfits, not
+just the completed high-resolution references.
 
 ### Jane McVine (red hair, green tee)
 Have: smile, wink, serious, surprised.
+
+- [x] [Winter work reference](jane-mcvine-winter.png): olive insulated jacket,
+  black trousers, boots, gloves and barn-key detail; used in approved endings.
+
+Game-ready assets:
 - [ ] Worried / anxious (S4, S5, S6, S8). **P1**
 - [ ] Laughing (S1 wheelbarrow, S8 haggling). **P1**
 - [ ] Candid / blushing (S5, S9). **P2**
@@ -162,7 +177,7 @@ Have: smile, wink, serious, surprised.
 ### Sandra Stump (goth)
 Have: neutral, slight smile, annoyed, surprised.
 
-[Halloween witch reference](sandra-stump-witch.png) is downloaded and reviewed
+- [x] [Halloween witch reference](sandra-stump-witch.png) is downloaded and reviewed
 at 1024x1024: existing gothic outfit plus pointed hat and short plum-lined cape;
 neutral, slight smile, mortified and full smile. Runtime asset tasks remain open.
 
@@ -176,7 +191,7 @@ neutral, slight smile, mortified and full smile. Runtime asset tasks remain open
 ### Georgia Grove (blonde, cafe)
 Have: neutral, smile, surprised, wink.
 
-[Pumpkin-pie costume reference](georgia-grove-pie.png) is downloaded and reviewed
+- [x] [Pumpkin-pie costume reference](georgia-grove-pie.png) is downloaded and reviewed
 at 1024x1024: padded circular pie sandwich-board, crust rim and cream decoration;
 neutral, closed-eye smile, surprised and embarrassed. Runtime assets remain open.
 
@@ -190,7 +205,7 @@ neutral, closed-eye smile, surprised and embarrassed. Runtime assets remain open
 ### Prof. Patricia Peters
 Have: neutral, smile, serious, thinking.
 
-[Mr. Gourd reference](prof-patricia-peters-gourd.png) is downloaded and reviewed
+- [x] [Mr. Gourd reference](prof-patricia-peters-gourd.png) is downloaded and reviewed
 at 1024x1024: tan trench coat, round sunglasses, removable mustache, black
 heels, lifting pose, disguised neutral/caught and undisguised reveal.
 This supplies CG-08 continuity; runtime portraits and walk sprite remain open.
@@ -223,16 +238,23 @@ existing cast sheets as style or family references. These are 1024x1024 PNG
 design references, not converted portraits or walk sprites; the asset tasks
 below remain open until their required game-ready images exist.
 
-- Downloaded and visually reviewed; preferred versions selected:
-  [crow](crow.png), [tour guide](tour-guide.png),
-  [icebreaker leader](icebreaker-leader.png), [alumni trio](alumni-trio.png),
-  [freshman raven mascot](freshman-raven-mascot.png), [Big Mel](big-mel.png),
-  [Brad's mother, young](brads-mother-young.png),
-  [Dr. Eleanor Peters, program era](dr-eleanor-peters-young.png),
-  [crowd](crowd.png), [Mr. Pruitt](mr-pruitt.png),
-  [Dean Whitlock](dean-whitlock.png), [young Daniel Bart](daniel-bart-young.png),
-  [present-day Daniel Bart](daniel-bart.png),
-  and [young Gord McVine](gord-mcvine-young.png) (for CG-11).
+Downloaded and visually reviewed; preferred reference versions selected:
+
+- [x] [Crow](crow.png).
+- [x] [Tour guide](tour-guide.png).
+- [x] [Icebreaker leader](icebreaker-leader.png).
+- [x] [Alumni trio](alumni-trio.png).
+- [x] [Freshman raven mascot](freshman-raven-mascot.png).
+- [x] [Big Mel](big-mel.png).
+- [x] [Brad's mother, young](brads-mother-young.png).
+- [x] [Dr. Eleanor Peters, program era](dr-eleanor-peters-young.png).
+- [x] [Crowd](crowd.png).
+- [x] [Mr. Pruitt](mr-pruitt.png).
+- [x] [Dean Whitlock](dean-whitlock.png).
+- [x] [Young Daniel Bart](daniel-bart-young.png).
+- [x] [Present-day Daniel Bart](daniel-bart.png).
+- [x] [Young Gord McVine](gord-mcvine-young.png) (for CG-11).
+
 - Revision selection (preferred images use the standard filenames above):
   - Crow, tour guide, icebreaker leader, and young Daniel: revisions preserve
     the designs and useful expression/prop panels while adding opposite-facing
@@ -258,10 +280,14 @@ below remain open until their required game-ready images exist.
 - [ ] Big Mel, the rival vendor (S8). **P2**
 - [ ] Janitor with the archive key (S7). **P3**
 - [ ] Dean (S9, "afraid of squirrels" candid gag). **P3**
-- [ ] Brad's dad, young (from the photo in S4 and S7, and the CG-11 flashback). **P2**
+- [ ] Brad's dad, young: game-ready photo portrait; reference and CG-07/CG-11
+  appearances are complete. **P2**
 - [ ] **Daniel Bart, present day** (S10 epilogue): an older version of Brad's design, with a pie box. Neutral, smile, sheepish, serious. **P2**
-- [ ] Brad's mother, young (small background figure in CG-11; no portrait needed). **P3**
-- [ ] Dr. Eleanor Peters (Patricia's mother), young (photo only). **P2**
+- [x] Brad's mother, young: reference complete and included in approved CG-11;
+  no separate portrait needed. **P3**
+- [x] Dr. Eleanor Peters (Patricia's mother), program era (photo only):
+  reference complete and used in approved CG-07/CG-11; mature program
+  director, not a fellow student. **P2**
 - [ ] Generic crowd sprites for the market and dance floor (4-6 variants). **P2**
 
 ## 4. Map Tilesets and Environments
@@ -499,8 +525,8 @@ fishnets under the added coat.
 
 | Priority | What |
 |---|---|
-| **P1** | Brad expressions (default outfit) and farm outfit, walk sprites (all main characters), crow, town/farm/lab/lecture-hall tiles, UI frames, missing P1 expressions, CG-01 to CG-03 |
-| **P2** | Remaining outfits and costumes, remaining interiors, supporting characters, Mr. Gourd, shared CGs for S5-S9, route CGs for S4 and S9 |
+| **P1** | Remaining game-ready portraits/expressions and farm outfit, walk sprites (all main characters), crow, town/farm/lab/lecture-hall tiles, UI frames. P1 references and CGs are complete. |
+| **P2** | Remaining game-ready outfits, costumes, expressions, supporting-character portraits/sprites and interiors. All required shared/route CGs and Sweet variants are complete. |
 | **P3** | Extra expressions, extra costumes, route CGs for S6, bonus CGs |
 
 ## 7. Notes
