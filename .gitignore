@@ -1,4 +1,5 @@
 *.zts
 *.ztp
+*.tiled-session
 obj/
 bin/

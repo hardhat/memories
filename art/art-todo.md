@@ -142,8 +142,20 @@ checks before expanding to full locations.
 - [ ] Farm terrain production pilot: PixelLab
   `504c9bda-e262-429a-a949-6ce413958a41`, submitted for 16 corner-Wang
   tiles at 16x16, muted olive autumn grass / warm compacted dirt, low detail
-  and basic shading. Await download, seam/readability review, palette
-  consolidation and Tiled terrain metadata before marking complete.
+  and basic shading. Downloaded [source PNG](terrain/farm-grass-dirt.png)
+  and [PixelLab metadata](terrain/farm-grass-dirt.json); added
+  [Tiled tileset](../map/farm-grass-dirt.tsx) with all 16 corner-Wang
+  definitions validated against metadata bounding boxes.
+  Verified 64x64 RGBA source, 60 RGB colours. User approved the terrain sample
+  appearance in Tiled. Palette consolidation and sprite-readability review
+  remain before marking complete.
+  The user's `farm.tmx`, `farmland.tsx` and placeholder image are unchanged;
+  placeholder tile meanings do not match this atlas automatically.
+  Added a separate [terrain sample map](../map/farm-terrain-sample.tmx),
+  24x18 tiles, with a central yard, connected dirt paths and a southwest plot.
+  Validated dimensions, image references and all adjacent Wang corners;
+  rendered a preview for initial visual review. This is terrain-only, not
+  runtime M04: collision/spawns/triggers and sprite contrast tests remain open.
   Standard generation does not enforce a fixed palette; these are source
   pixels, not a final hardware-indexed atlas.
   Dirt base ID: `1559eee0-0ed5-4035-8457-01ee2c9010d5`;
