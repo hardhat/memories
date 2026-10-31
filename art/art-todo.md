@@ -62,7 +62,8 @@ Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.
 - [x] Tile size 16x16. CG size: 320x240 at 4bpp (16 colours) **or** 320x192 at 8bpp (256 colours); choose per CG.
 - [x] Portraits: 8bpp, **32 pixels wide by 80 tall** (2 x 5 tiles) base image plus alternate heads per expression, 32 colours each including transparent.
 - [x] The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image**. One GIF per portrait, 32 px wide: the 80 px base image (expression 0) first, then one 32x32 head for each further expression stacked below it, in the order listed in `characters.json` (`have`, then `todo`). A character with `n` expressions is `32 x (80 + 32 * (n - 1))` px, exported as `name__B8C20.gif` (`C20` = 32 colours). The compiler rejects other sizes and says what it expected.
-- [x] Each image has its own palette (the Video Board SDK loader supports independent palettes per 8bpp image), so there is no shared palette budget. Art is stored uncompressed in the DAT.
+- [x] Exploration uses the shared tile/palette budgets below, superseding the
+  earlier independent-palette assumption. Art is stored uncompressed in the DAT.
 - [x] Files are GIFs with `__` filename flags for the converter (for example `cg01__B8C20.gif`); the compiler needs the flags in the name. Map tilesets must NOT use the unique flag (`U`), so tile order matches Tiled, and hold at most 255 tiles.
 - [x] Save GIFs with every palette entry you use at the index you want: the pixel index is stored as is, and the build checks it is inside the palette.
 - [x] CG production workflow: request 1280x768 source PNGs (5:3), then downsize
@@ -75,9 +76,80 @@ Still to confirm:
 
 - [x] All 23 required CGs use 320x192 8bpp/128 colours; no output-mode
   exceptions were needed. 320x240 4bpp remains an available alternative.
-- [ ] Walk-sprite size (suggest 16x24 or 16x32).
+- [x] Walk-sprite size: 16x32; two animation frames per stored direction,
+  with one reused as idle.
 - [ ] File naming: `<character>.gif` per portrait sheet (`jane__B8C20.gif`), `cg<id>__B8C<nn>.gif` for CGs, `sprite-<character>.gif` for walk sprites.
 - [ ] The existing turnaround sheets are high-resolution PNG. They need to be redrawn or downscaled and palette-reduced to the sizes above.
+
+### Exploration tiles and palettes (2026-10-30 decisions)
+
+Orthogonal maps on a 16x16 grid, with readable RPG building fronts/top
+surfaces rather than isometric art. Backgrounds should be quieter and lower
+contrast than character silhouettes. Generate at native tile resolution.
+
+The shared 256-tile memory layout retains both portraits:
+
+| Hardware tile slots | Count | Use |
+|---|---:|---|
+| 0 | 1 | Empty tile |
+| 1-63 | 63 | Dialog area |
+| 64-113 | 50 | Left portrait |
+| 114-163 | 50 | Right portrait |
+| 164-255 | 92 | Location scenery, sprites and effects together |
+
+Each portrait reserves a 2x5-tile base plus up to ten additional 2x2 heads:
+10 + 10*4 = 50 tiles (up to eleven expressions including the base).
+Keep both portraits as the baseline; reclaim portrait space only if story
+needs and a concrete location budget justify it. The existing portrait file
+layout remains unchanged; its old 32-colour export limit is a legacy tooling
+constraint, not the new hardware budget.
+
+- [x] Moving character: front/back/one side, two frames each, two tiles per
+  frame = 12 unique tiles. Mirror X for the opposite side.
+- [x] Stationary NPC: one 16x32 pose = two tiles; extra facings/poses cost more.
+- [x] Hardware supports independent X/Y mirroring of each 16x16 sprite tile.
+  Symmetric wider costumes may reuse mirrored halves; head/feet and animation
+  differences still count. Test the pie costume silhouette before final export.
+- [x] Budget only simultaneously resident characters, but include all their
+  resident animation frames and effects. Example: Brad plus three stationary
+  NPCs costs 18 tiles, leaving 74 for scenery/effects.
+- [x] Shared palette entry 0 is transparent for sprites and layer 1; layer 0
+  displays its colour normally. Portrait budgets are 48 colours each including
+  shared transparency, dialog 32 colours, world/sprites/effects 128 colours
+  including shared transparency. These are not independent 256-colour palettes.
+- [ ] Assign exact non-overlapping hardware palette ranges and local-to-global
+  pixel remapping before exporting production atlases; count entry 0 only once.
+- [x] Preserve atlas tile order (no unique/deduplication converter flag).
+  Tiled uses local atlas indices, not hardware tile-slot numbers.
+  Remap exported empty 255 to hardware tile 0 separately from relocating real
+  local world indices 0-91 into slots 164-255. Collision is logical data,
+  not a display tile layer to relocate.
+- [x] Keep tile indices and semantic palette roles stable across variants.
+  Prefer palette swaps for dusk/night and snow where sufficient; use matching
+  replacement tiles when snow changes outlines/coverage. Keep sprite skin,
+  clothing and effect roles separate from terrain lighting roles as needed.
+- [ ] Implement/validate shared VRAM allocation, palette remapping and map
+  empty-cell translation in the runtime/build pipeline. Documentation records
+  the target contract; current compiler checks do not enforce it yet.
+
+Terrain starts with one 16-tile corner-Wang grass/dirt set for a farm pilot.
+Reserve the rest of the 92-tile budget for props, buildings, sprites and effects;
+do not spend it all on terrain combinations. Author TMX with CSV layers
+`ground`, optional `above`, `collision`, plus `spawns` and `triggers` objects.
+Day/dusk/night/snow previews and sprite/background readability are acceptance
+checks before expanding to full locations.
+
+- [ ] Farm terrain production pilot: PixelLab
+  `504c9bda-e262-429a-a949-6ce413958a41`, submitted for 16 corner-Wang
+  tiles at 16x16, muted olive autumn grass / warm compacted dirt, low detail
+  and basic shading. Await download, seam/readability review, palette
+  consolidation and Tiled terrain metadata before marking complete.
+  Standard generation does not enforce a fixed palette; these are source
+  pixels, not a final hardware-indexed atlas.
+  Dirt base ID: `1559eee0-0ed5-4035-8457-01ee2c9010d5`;
+  grass base ID: `8724c56c-a468-4fb2-adc9-7e86e6b4f8ec`.
+  Reuse these bases when adding connected terrain rather than independently
+  regenerating the shared surface.
 
 ## 1. Brad Bart (main character): P1
 

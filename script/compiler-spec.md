@@ -265,7 +265,30 @@ u16 palette_block          PALETTE block for this portrait
 
 Tile layout in the `.zts` (so no explicit tile map is stored): raster order of that sheet, which is the base image's tiles (`base_w * base_h`, including the head of expression 0) then each alternate head (`head_w * head_h` tiles). Expression `e` (1 or more) tile `j` is tile `base_w*base_h + (e-1)*head_w*head_h + j`. Total tiles: `base_w*base_h + (expr_count-1)*head_w*head_h`. The build checks this count against the GIF and reports the expected sheet size when it does not match.
 
-**Palettes.** Every image has its **own palette**: the Zeal Video Board SDK loader can load several 8bpp images, each with an independent palette, so there is no shared palette budget and no slot map. The palette block holds the `.ztp` entries (`first` is 0 in practice; the header keeps the field for sub-range palettes). Build checks: every pixel index in a decoded `.zts` is below the palette's colour count (catches a GIF whose pixels use an index its palette does not define); a portrait's palette has at most 32 colours (so it must be exported with the `C20` flag, otherwise gif2zeal writes 256); a 4bpp asset uses indices 0-15.
+**Palettes (current tooling, legacy constraints).** The palette block holds
+the `.ztp` entries (`first` is 0 in practice; the header supports sub-ranges).
+Current checks require decoded pixel indices below the palette colour count,
+portraits at most 32 colours (`C20`), and 4bpp indices 0-15. These checks do
+not yet implement the exploration allocation below.
+
+**Exploration target contract (2026-10-30).** Shared hardware tile slots:
+0 empty; 1-63 dialog; 64-113 left portrait; 114-163 right portrait;
+164-255 scenery, sprites and effects (92 tiles together). Each portrait
+reserves a 2x5 base and ten additional 2x2 expression heads (50 tiles).
+Walking sprites are 16x32, front/back/one side, two frames each, with X-mirroring
+for the opposite side: 12 unique tiles per moving character. A stationary
+single pose costs two tiles. Each 16x16 sprite tile supports independent X/Y
+mirroring, allowing symmetric costume halves to share tiles.
+
+Palette entry 0 is shared transparency for sprites/layer 1 and an ordinary
+visible colour on layer 0. Budget 48 colours per portrait including shared 0,
+32 for dialog, and 128 for world/sprites/effects including shared 0.
+Exact palette ranges and local-to-global remapping remain to be assigned.
+Preserve tile indices and semantic palette roles across lighting/season
+variants; use palette swaps where sufficient, replacement tiles where shapes
+change. See [art-todo.md](../art/art-todo.md#exploration-tiles-and-palettes-2026-10-30-decisions)
+for the production decisions and outstanding implementation work. This target
+does not change the separate full-screen CG workflow.
 
 **CG checks.** 4bpp or 8bpp only. Without a tile map the tile count must be 300 (4bpp) or 240 (8bpp). With `U` and `M` flags the `.ztm` must have 300 or 240 entries, each below the tile count. A tileset used by maps may hold at most 255 tiles (map entries are one byte and 255 means empty).
 
@@ -313,6 +336,10 @@ Maps are authored in Tiled and saved as TMX with **CSV** layer encoding, as `til
 
 * Tile layers are converted by calling `tiled2zeal.py -i map.tmx -l <layer id> [-z]`, using the layer id found by name, so the ZTM bytes are exactly what the SDK tool produces. `-z` (RLE) is optional per map. Maps are single large tile maps (no `-s` screen splitting) unless a map is set to `screens` in the manifest.
 * The map's tileset is the image Tiled used (`gid - 1` equals the tile index in the `.zts`, so the GIF must be converted **without** `-u` or the order breaks). The manifest binds the map to its tileset.
+* Exploration target: use local world atlas indices 0-91, relocated to hardware
+  slots 164-255. Translate exported empty 255 to hardware tile 0 separately;
+  never relocate the empty sentinel as a real tile. Collision remains logical
+  data. This relocation/translation is not implemented by the converter itself.
 * Pixel positions of objects are divided by 16 to give tile coordinates; rectangles are rounded outward.
 * The build fails if `maps.json` lists a spawn or trigger the TMX lacks, if a tile id is above 254, or if the three tile layers differ in size. A TMX object whose name `maps.json` does not list is a warning.
 
@@ -531,7 +558,9 @@ Script content totals about 106 KB, plus tables (under 1 KB) and a header of abo
 **Decided in review**
 
 1. **Art:** `gif2zeal.py` produces `.zts` (16x16 tiles) and `.ztp` (RGB565 little endian). CGs are 320x240 at 4bpp or 320x192 at 8bpp. Portraits are 8bpp, **32 pixels wide by 80 tall** (2 x 5 tiles), with alternate heads per expression and 32 colours each (including transparent).
-2. **Palettes:** every image carries its own palette; the Video Board SDK loader supports several 8bpp images with independent palettes. No palette slot map.
+2. **Palettes:** exploration shares hardware palette memory under the
+   2026-10-30 allocation in section 5.7; the earlier independent-palette/no-slot-map
+   assumption is superseded. Compiler/runtime support still needs updating.
 3. **Compression:** art is stored uncompressed by default (it loads very fast); RLE/LZ pass-through is the opt-in `--keep-compression`. The engine needs no decompressor.
 4. **Maps:** Tiled (TMX, CSV) converted with `tiled2zeal.py`; spawns and triggers come from TMX object layers (section 5.8).
 5. **Code buffer:** a plain RAM array holding the scene's bytecode, not application paging (section 10).
