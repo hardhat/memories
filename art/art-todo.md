@@ -220,6 +220,107 @@ checks before expanding to full locations.
   its conservative prop footprints are untested in runtime. No M04,
   spawn/trigger, palette-remapping or sprite-readability integration yet.
 
+- [ ] Brad farm walking/readability pilot: PixelLab character
+  `3ff2969c-95f1-4545-858b-52e7b2b1f80d`, concept-conditioned from
+  [Brad's farm turnaround](brad-bart-farm.png), Pro mode, 32px canvas,
+  requested 24 colours and a silhouette fitting 16x32. Generation submitted;
+  actual bounds and colours must be measured before accepting the target.
+  Flash custom 16x32 attempt rejected the 1024px style reference before
+  submission; Pro concept-art mode accepts the original sheet.
+  User redirected the pilot to Creator image candidates instead of the
+  full character/animation pipeline: select suitable individual poses,
+  needing only two frames per stored direction. Do not queue more
+  character animations for this pilot. The character job has already
+  completed; no active background jobs were reported before Creator submission.
+  Creator Pro south-facing batch `fe9f44c9-be6d-4f8b-88d7-eb73bc16825e`
+  completed: downloaded all 64 originals to session review storage.
+  Verified all are 32x32; 54 fit 16x32 without resizing. Each of those
+  54 has 24 opaque RGB colours. Ten generations for the batch, same
+  farm reference. Several other candidates add unwanted hats/equipment.
+  Built a labelled contact sheet and unretouched pair tests 00/02,
+  16/18 and 48/50: cropped only transparent side margins to 16x32,
+  preserving source pixel scale and baseline. Animated review shows
+  each pair on grass and dirt; these are candidate poses, not yet
+  an approved walk cycle. Some generated ground shadows remain.
+  User prefers pair 00/02 slightly over 16/18 and rejects one-arm motion
+  for a two-frame cycle. Built a separate 00/02 comparison holding the
+  upper 24 rows identical to frame 00 while preserving frame 02's
+  lower eight rows. Originals remain unchanged. User approved this
+  steady-upper-body south-facing two-frame motion.
+  Submitted Creator Pro north/east batches using approved south candidate 00
+  as reference and its exact 24 opaque RGB colours as the requested palette:
+  north `2dc258fb-9b0a-407a-a448-dd99d02324d0`,
+  east `68daebe9-fe05-4914-a5db-954cd0d58328`.
+  Each batch requests 64 candidates at 32x32 (ten generations each),
+  relaxed stationary arms, small leg-pose variations, and a narrow 16x32
+  silhouette matching the south baseline. Both completed and all 128
+  originals downloaded to session review storage with labelled contact sheets.
+  All candidates use only the requested south palette. All 64 east
+  candidates fit 16x32. User suggested north 33/37 and east 26/27.
+  Built original-versus-steady-body animated comparisons on grass/dirt,
+  preserving source pixel scale and baseline. North upper 25 rows and
+  east upper 24 rows are held identical to each pair's first frame;
+  original leg pixels remain unchanged. User approved north steady-body
+  motion, but rejected east 26/27. Prepared steady-body east alternatives
+  16/17, 40/41 and 44/45 for comparison; all fit 16x32 without resizing.
+  User likes east 40/41 but misses some arm motion from 26/27.
+  Built a separate one-pixel backward hand shift in frame 41 (rows 22-23),
+  preserving frame 40, shoulder/torso, legs and palette exactly.
+  User approved east 40/41 with the one-pixel hand swing over the
+  unchanged steady-body version. No new generation was needed.
+  Selected north pair is 20px wide: preview retains that full width,
+  not a valid two-tile hardware sprite yet. North candidates are 18-20px wide and
+  29-31px tall: none fit 16x32 unchanged. North needs deliberate pixel
+  repair or regeneration, not silent clipping or a larger tile allocation.
+  Built a separate north 16px revision by removing four symmetric interior
+  columns, retaining outside contours and original pixel colours; no
+  interpolation. User reports the assembled walking test looks fine.
+  Initial north revision retained 31px visible height; user noticed it
+  looked taller. After south shadow removal, measured south at 27px.
+  Shortened north by removing repeated rows 6/10 (head), 18 (shirt),
+  and 26 (trousers); positioned visible rows at 3-29, matching both south
+  frames exactly in height and boot baseline. Upper-body pixels remain
+  identical between north frames. Tall revision and originals preserved.
+  Rebuilt/reloaded walking test; user approved the north height correction.
+  Assembled a self-contained browser farm test with mirrored west,
+  movement and a foot-box collision preview, separate from game runtime.
+  Removed south's baked-in ground shadow on request using explicit
+  per-frame masks (35/39 pixels); verified every other pixel unchanged,
+  including boot pixels sharing the shadow colour. Rebuilt and reloaded
+  the browser test. Original generated images remain intact.
+  Six 16x32 frames use 31 opaque RGB colours across the set.
+  Saved approved source pixels in [Brad farm sheet](sprites/brad-farm.png),
+  16x192: south frames 0/1, north 0/1, east 0/1 stacked vertically.
+  All six frames match approved session copies byte-for-byte in RGBA.
+  Next: complete collision validation and physical palette/runtime integration.
+  Target is twelve resident 16x16 sprite tiles,
+  making 52 scenery-plus-Brad slots and leaving 40 for other actors/effects.
+  South/north/east motion is approved and north width revision reviewed;
+  source sheet and local-palette pilot exports are installed, not runtime-bound.
+
+- [x] Prepare shared farm/Brad local-palette pilot with
+  [export_farm_pilot.py](../script/tools/export_farm_pilot.py).
+  Run `python script\tools\export_farm_pilot.py` to reproduce
+  [exports](exploration/farm-pilot/): farm and Brad indexed GIFs,
+  raster-order `.zts` files, one shared 128-entry RGB565 little-endian
+  `.ztp`, and [frame/allocation manifest](exploration/farm-pilot/manifest.json).
+  Uses 118 entries: transparent 0, 86 terrain/prop RGB colours, then
+  31 sprite RGB colours. Ten palette entries remain for this pilot;
+  other actors/effects still need budgeting. No dithering/quantization
+  or tile deduplication; GIF palette/indices and visible RGB/alpha
+  round-trip exactly. RGB565 hardware precision still applies.
+  Farm has 40 tiles (10,240 bytes), Brad twelve (3,072 bytes);
+  shared palette is 256 bytes. Manifest assigns local tiles 40-51
+  to Brad (target hardware slots 204-215), preserving scenery IDs 0-39.
+  West mirrors both vertically stacked east tiles independently.
+  These indices are local, not a finalized physical shared palette.
+  Palette placement, map relocation/empty handling and runtime loading
+  remain unimplemented; do not treat these as a ready DAT integration.
+  Four focused unit tests cover transparency including opaque black,
+  palette overflow, partial-alpha rejection, palette encoding and
+  saved tile-order reconstruction. Pylance syntax service was unavailable;
+  execution and focused tests passed.
+
 ## 1. Brad Bart (main character): P1
 
 Brad's original sheet has a turnaround; the expression supplement below adds
