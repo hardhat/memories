@@ -13,9 +13,6 @@ void game_initialize(void)
     for (i = 0; i < MAX_INPUT; i++) {
         held[i] = false;
     }
-    /* main.c's legacy initialization runs before the DAT is open and passes
-     * its cookie as the CRC. Re-establish the loader/VM contract here. */
-    dat_close();
     result = dat_open("memo.dat", MEMO_CONTENT_CRC);
     if (result != DAT_OK) {
         debug_logf("DAT initialization failed: %u", result);

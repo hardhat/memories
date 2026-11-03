@@ -74,7 +74,8 @@ uint8_t add_sprite(uint16_t x, uint8_t y, uint8_t sprite, uint8_t flags)
     sprites[sprite_count].x = x+16; // Note sprites are displayed anchored the bottom right corner
     sprites[sprite_count].y = y+16;
     sprites[sprite_count].tile = sprite;
-    sprites[sprite_count].flags = flags;
+    sprites[sprite_count].flags = flags & ~SPRITE_FLAG_TALL;
+    sprites[sprite_count].options = (flags & SPRITE_FLAG_TALL) ? SPRITE_OPTION_32PX : SPRITE_OPTION_NONE;
     return sprite_count++;
 }
 
@@ -95,36 +96,13 @@ void clear_sprites(void)
 
 void initialize_game()
 {
-    memo_vm_init();
-    dat_open("memo.dat",0x4F4D454D); // 'MEMO'
+    // The graphics context must exist before the host initializes: the host's screen
+    // module writes VRAM, and its game setup opens memo.dat and starts the script VM.
+    gfx_error err = gfx_initialize(ZVB_CTRL_VID_MODE_GFX_320_8BIT,&ctx);
+    if(err != GFX_SUCCESS) {
+        debug_logf("gfx_initialize failed: %u", err);
+    }
     memo_host_initialize();
-    gfx_initialize(ZVB_CTRL_VID_MODE_GFX_320_8BIT,&ctx);
-    clear_text_buffer(0); // Clear the off-screen text buffer initially
-
-    char line[80];
-    memset(line, 0, sizeof(line));
-    for(uint8_t i=0;i<15;i++) {
-        draw_bg((const uint8_t *)line, 0, i, 80, 1); // Draw each line to the background
-        draw_fg((const uint8_t *)line, 0, i, 80, 1); // Draw each line to the foreground
-    }
-
-    char buffer[60];
-    for(uint8_t i=0;i<60;i++) buffer[i] = i+1; // Initialize buffer to sequence
-    draw_bg((const uint8_t *)buffer, 0, 4, 20, 3); // Example usage of draw_bg with the buffer
-
-    const char *text[] = {
-        "     Memories of Ravenwood Academy",
-        "     a tale of mystery",
-        "     by hardhat",
-        "     Copyright 2026",
-        "     All rights reserved",
-        "     1 2 3 4 5 6 7 8 9"
-    };
-    for(uint8_t i=0;i<6;i++) {
-        if((i&1) == 0) clear_text_buffer(1);
-        draw_text(0, ((i&1)<<3), text[i], i+10); // Draw initial text to the off-screen text buffer
-        if((i&1) == 1) render_text_buffer(1+20*((i&7)>>1), 20); // Render the off-screen text buffer to the screen tileset
-    }
 }
 
 void draw_bg(const uint8_t *data, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
@@ -143,7 +121,8 @@ void draw_fg(const uint8_t *data, uint8_t x, uint8_t y, uint8_t width, uint8_t h
 
 void load_palette(const uint16_t *palette, uint8_t offset, uint8_t count)
 {
-    gfx_palette_load(&ctx, palette, offset, count);
+    // gfx_palette_load takes the size in bytes first, then the first colour index.
+    gfx_palette_load(&ctx, (void *)palette, (uint16_t)count*2, offset);
 }
 
 void load_tileset(const uint8_t *tileset, uint16_t offset, uint16_t size, uint8_t palette_base)

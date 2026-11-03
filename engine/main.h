@@ -25,10 +25,14 @@ enum INPUT
 #define SPRITE_FLAG_PRIORITY 0x02
 #define SPRITE_FLAG_FLIP_Y 0x04
 #define SPRITE_FLAG_FLIP_X 0x08
+// Software flag (masked off before the hardware sees it): a 16x32 sprite that shows tile
+// `sprite` over tile `sprite+1`. The hardware palette nibble is unused in 8bpp mode.
+#define SPRITE_FLAG_TALL 0x10
 
 void debug_log(const char *message);
 void debug_logf(const char *format, ...);
-// Add a sprite to the offscreen sprite buffer and return its index
+// Add a sprite to the offscreen sprite buffer and return its index, or 255 if full.
+// x and y are the top-left corner in screen pixels. flags is any mix of the SPRITE_FLAG_* values.
 uint8_t add_sprite(uint16_t x, uint8_t y, uint8_t sprite, uint8_t flags);
 // Clear the sprite buffer and render empty sprites on the screen
 void clear_sprites(void);
@@ -62,7 +66,7 @@ void render_text_buffer(uint16_t first_tile, uint16_t num_tiles);
 void draw_fg(const uint8_t *data, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
 // Draw data to the background tilemap
 void draw_bg(const uint8_t *data, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-// Load a palette into the graphics context
+// Load count RGB565 colours into the palette, starting at colour index offset
 void load_palette(const uint16_t *palette, uint8_t offset, uint8_t count);
 // Load a tileset into the graphics context
 void load_tileset(const uint8_t *tileset, uint16_t offset, uint16_t size, uint8_t palette_base);

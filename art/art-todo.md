@@ -59,7 +59,7 @@ are not a retry requirement.
 Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.7 and 12):
 
 - [x] Tools: `gif2zeal.py` makes `.zts` (tiles) and `.ztp` (palette, RGB565 little endian); `tiled2zeal.py` makes `.ztm` from Tiled maps.
-- [x] Tile size 16x16. CG size: 320x240 at 4bpp (16 colours) **or** 320x192 at 8bpp (256 colours); choose per CG.
+- [x] Tile size 16x16. CGs are 320x192 at 8bpp (all 23); see the CG display decision below. (The 4bpp 320x240 option is not used.)
 - [x] Portraits: 8bpp, **32 pixels wide by 80 tall** (2 x 5 tiles) base image plus alternate heads per expression, 32 colours each including transparent.
 - [x] The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image**. One GIF per portrait, 32 px wide: the 80 px base image (expression 0) first, then one 32x32 head for each further expression stacked below it, in the order listed in `characters.json` (`have`, then `todo`). A character with `n` expressions is `32 x (80 + 32 * (n - 1))` px, exported as `name__B8C20.gif` (`C20` = 32 colours). The compiler rejects other sizes and says what it expected.
 - [x] Exploration uses the shared tile/palette budgets below, superseding the
@@ -117,8 +117,19 @@ constraint, not the new hardware budget.
   displays its colour normally. Portrait budgets are 48 colours each including
   shared transparency, dialog 32 colours, world/sprites/effects 128 colours
   including shared transparency. These are not independent 256-colour palettes.
-- [ ] Assign exact non-overlapping hardware palette ranges and local-to-global
-  pixel remapping before exporting production atlases; count entry 0 only once.
+- [x] Palette ranges assigned (2026-11-03, [screen-spec.md](../script/screen-spec.md)
+  section 3): shared 0; dialog 1-31; left portrait 32-78; right portrait
+  79-125; world or CG 126-252; 253-255 spare. Exports must bake these final
+  indices (the engine does not remap, for speed). **Open:** the converters
+  still write local indices (`export_farm_pilot.py`, `convert_cgs.py`, the
+  portrait export); a CG must be quantized to 127 colours plus black.
+- [x] CG display (2026-11-03): CGs are 320x192 8bpp in tile rows 0-11; the
+  dialog box covers their bottom three rows, because a CG has 240 unique
+  tiles and cannot coexist with the 60 dialog tiles in 256 slots. No portraits
+  during CGs; text is not drawn onto the image. See screen-spec.md.
+- [x] Dialog box (screen-spec.md section 4): name plate plus three lines of 36
+  columns, drawn by `engine/screen.c` in map mode. Verified against a desktop
+  video model and a Z80 compile only; not yet run on an emulator or hardware.
 - [x] Preserve atlas tile order (no unique/deduplication converter flag).
   Tiled uses local atlas indices, not hardware tile-slot numbers.
   Remap exported empty 255 to hardware tile 0 separately from relocating real

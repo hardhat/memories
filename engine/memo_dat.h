@@ -71,6 +71,11 @@ bool dat_read_block(uint16_t id, uint16_t offset, void *dst, uint16_t n);
 /* VARS block: copies up to cap entries; *count receives the number in the file. */
 bool dat_load_vars(uint8_t *vmax, uint8_t *vinit, uint8_t cap, uint8_t *count);
 
+/* CHARS block: speaker `id` (characters.json order, narrator = 0). Copies the NUL terminated
+ * name into name (cap bytes including the NUL); side (0 none, 1 left, 2 right) and
+ * expr_count are optional. Returns false if the id is bad or the name does not fit. */
+bool dat_load_char(uint8_t id, uint8_t *side, uint8_t *expr_count, char *name, uint8_t cap);
+
 /* Read scene n (1-based) code into dat_code and prepare its string table. */
 uint8_t dat_load_scene(uint8_t scene);
 

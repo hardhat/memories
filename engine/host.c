@@ -1,7 +1,9 @@
 #include "main.h"
 #include "memo_host.h"
+#include "memo_dat.h"
 #include "memo_vm.h"
 #include "game.h"
+#include "screen.h"
 
 enum {
     HOST_IDLE, HOST_DIALOG, HOST_TUTORIAL, HOST_TIMER, HOST_CHOICE, HOST_EXPLORE
@@ -20,6 +22,7 @@ void memo_host_initialize(void)
     state = HOST_IDLE;
     ms_left = 0;
     confirmed = dirty = false;
+    screen_init();
     game_initialize();
 }
 
@@ -30,6 +33,7 @@ bool host_busy(void)
 
 void game_host_update(uint16_t elapsed)
 {
+    screen_update(elapsed);
     if (state == HOST_TIMER) {
         if (elapsed >= ms_left) {
             ms_left = 0;
@@ -43,7 +47,8 @@ void game_host_update(uint16_t elapsed)
 void game_host_input(uint8_t input)
 {
     if (state == HOST_DIALOG || state == HOST_TUTORIAL) {
-        if (input == INPUT_A || input == INPUT_START) {
+        /* Input is ignored until every row of the text is on screen. */
+        if (screen_text_ready() && (input == INPUT_A || input == INPUT_START)) {
             state = HOST_IDLE;
         }
     } else if (state == HOST_CHOICE || state == HOST_EXPLORE) {
@@ -62,15 +67,22 @@ void game_host_input(uint8_t input)
 void game_host_draw(void)
 {
     uint8_t i;
+    bool text = state == HOST_DIALOG || state == HOST_TUTORIAL;
+
+    /* The box stays up while a dialog waits, and also across back-to-back lines:
+     * the VM replaces the text in the same frame the previous one is dismissed. */
+    if (!text) {
+        screen_text_hide();
+    }
+    screen_text_marker(text && screen_text_ready());
+    screen_draw();
+
     if (!dirty) {
         return;
     }
     dirty = false;
-    /* Serial-only presentation until the tile/font/map renderers are bound. */
-    if (state == HOST_DIALOG || state == HOST_TUTORIAL) {
-        debug_log(prompt);
-        debug_log("A/Start: continue");
-    } else if (state == HOST_CHOICE) {
+    /* Choices and trigger picks are still serial-only until the box draws menus. */
+    if (state == HOST_CHOICE) {
         debug_log(prompt);
         for (i = 0; i < count; i++) {
             debug_logf("%c %u: %s", i == selected ? '>' : ' ', i, options[i]);
@@ -84,10 +96,15 @@ void game_host_draw(void)
 
 void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
 {
-    debug_logf("Dialog: character %u, expression %u, style %u", who, expr, style);
-    prompt = text;
+    char name[SCREEN_NAME_MAX + 1];
+    uint8_t side, exprs;
+
+    (void)expr;   /* portraits are not bound yet */
+    if (!dat_load_char(who, &side, &exprs, name, sizeof name)) {
+        name[0] = '\0';
+    }
+    screen_text_show(name, text, style);
     state = HOST_DIALOG;
-    dirty = true;
 }
 
 void host_map(uint8_t map, uint8_t spawn, uint8_t time_of_day)
@@ -125,9 +142,8 @@ void host_cg_off(void)
 void host_tutorial(uint8_t id, const char *text)
 {
     debug_logf("Tutorial %u", id);
-    prompt = text;
+    screen_text_show("Tutorial", text, 0);
     state = HOST_TUTORIAL;
-    dirty = true;
 }
 
 void host_wait(uint8_t ticks)

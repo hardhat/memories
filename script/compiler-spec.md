@@ -246,7 +246,7 @@ TILEMAP block:  u8 comp (0 none, 1 rle), u8 width, u8 height (tiles)            
 | Mode | Tiles | Raw tileset | Colours |
 |---|---|---|---|
 | 320x240, 4bpp | 20 x 15 = 300 | 38,400 bytes | 16 |
-| 320x192, 8bpp | 20 x 12 = 240 | 61,440 bytes | up to 256, with its own palette (leaves a 48-pixel strip, 3 tile rows, below the image) |
+| 320x192, 8bpp | 20 x 12 = 240 | 61,440 bytes | up to 256, with its own palette. In the game it fills tile rows 0-11 and the dialog box covers its bottom three rows ([screen-spec.md](screen-spec.md)) |
 
 `-u` plus a `.ztm` index shrinks either, if the picture repeats tiles (index bytes cap the unique tile count at 256). Both modes are supported; the choice is per CG in the manifest (`bpp`).
 
@@ -283,12 +283,20 @@ mirroring, allowing symmetric costume halves to share tiles.
 Palette entry 0 is shared transparency for sprites/layer 1 and an ordinary
 visible colour on layer 0. Budget 48 colours per portrait including shared 0,
 32 for dialog, and 128 for world/sprites/effects including shared 0.
-Exact palette ranges and local-to-global remapping remain to be assigned.
+The ranges are assigned in [screen-spec.md](screen-spec.md) section 3: dialog 1-31,
+left portrait 32-78, right portrait 79-125, world or CG 126-252. Asset tools
+must bake these final slot and palette indices into the art (the engine does
+not remap); the converters and compiler checks have not been updated yet.
 Preserve tile indices and semantic palette roles across lighting/season
 variants; use palette swaps where sufficient, replacement tiles where shapes
 change. See [art-todo.md](../art/art-todo.md#exploration-tiles-and-palettes-2026-10-30-decisions)
-for the production decisions and outstanding implementation work. This target
-does not change the separate full-screen CG workflow.
+for the production decisions and outstanding implementation work.
+
+**CGs share these slots.** A CG has 240 unique tiles (all 23 measured), so it cannot
+coexist with the 60 dialog tiles. In the game the 320x192 CG fills tile rows 0-11, the
+dialog box covers its bottom three rows, and those 60 CG tiles share slots 1-60 with the
+text (restored from the DAT when the text is hidden). Portraits are not shown during a
+CG. Details and the slot map: [screen-spec.md](screen-spec.md).
 
 **CG checks.** 4bpp or 8bpp only. Without a tile map the tile count must be 300 (4bpp) or 240 (8bpp). With `U` and `M` flags the `.ztm` must have 300 or 240 entries, each below the tile count. A tileset used by maps may hold at most 255 tiles (map entries are one byte and 255 means empty).
 
@@ -500,14 +508,18 @@ The loader is `dat.c` from Wyvern adapted; the changes follow from section 2. Th
 | `memo_dat.h`, `memo_dat.c` | loader (below) |
 | `memo_host.h` | the functions the game must provide (below) |
 | `memo_vm.h`, `memo_vm.c` | resumable script VM; observable events match `interp.VM` |
-| `game.c`, `game.h`, `host.c` | frame-loop binding and nonblocking serial-debug host |
-| `test/trace_main.c` | desktop test harness (not part of the Zeal build) |
+| `game.c`, `game.h`, `host.c` | frame-loop binding and the nonblocking host (dialog and tutorial text on screen; choices and trigger picks still serial) |
+| `screen.c`, `screen.h`, `layout.h` | screen compositor: tile slot, row and palette constants, the dialog box ([screen-spec.md](screen-spec.md)) |
+| `main.c`, `main.h` | the Zeal platform layer: graphics calls, text rendering, sprites, input and the main loop |
+| `test/trace_main.c` | desktop trace harness (not part of the Zeal build) |
+| `test/gfx_mock.c`, `test/screen_main.c`, `test/frame_main.c`, `test/chars_main.c` | desktop tests: a software video model, the box, the frame loop with the real host, and the `CHARS` reader |
 
 ```c
 uint8_t  dat_open(const char *path, uint32_t expected_crc);   // cookie, version, META; DAT_ERR_CRC if the file is not the build memo_ids.h came from
 bool     dat_entry(uint16_t id, DatEntry *out);               // seek id*8, read 8 bytes
 bool     dat_read_block(uint16_t id, uint16_t off, void *dst, uint16_t n);  // range-checked read inside a block
 bool     dat_load_vars(uint8_t *max, uint8_t *init, uint8_t cap, uint8_t *count);
+bool     dat_load_char(uint8_t id, uint8_t *side, uint8_t *expr_count, char *name, uint8_t cap);   // CHARS entry: side, expression count, NUL terminated name (side and expr_count may be NULL)
 uint8_t  dat_load_scene(uint8_t scene);                       // code -> dat_code[]; strings stay on disk
 uint8_t  dat_load_string(uint16_t id, char *dst, uint8_t cap);// seek offset, seek text; returns bytes used, 0 if it does not fit
 uint8_t  dat_index_count(uint8_t table);  bool dat_index_get(uint8_t table, uint8_t i, uint16_t *out);   // CG, portrait, tileset ... block ids
@@ -535,16 +547,21 @@ be copied by the host. The desktop trace host returns `false` from
 `host_busy()` and supplies decisions immediately.
 
 The `game_update(uint16_t elapsed)` binding fits the current `main()` loop,
-which passes 16 milliseconds per frame.
-`memo_host_initialize()` resets host state and calls `game_initialize()`,
-which reopens `memo.dat` with `MEMO_CONTENT_CRC` and initializes the VM after
-the loader. This compensates for the legacy initialization ordering in
-`main.c` without editing it. Input is edge-triggered: A/Start dismisses
+which passes 16 milliseconds per frame. `main()` creates the graphics context
+first, then calls `memo_host_initialize()`, which initializes the screen module
+(palette, static tiles, empty tilemaps) and calls `game_initialize()`; that opens
+`memo.dat` with `MEMO_CONTENT_CRC`, initializes the VM and starts the game.
+Input is edge-triggered: A/Start dismisses
 dialog/tutorial or confirms a menu/trigger; directional keys select entries.
 Wait/fade countdowns consume the supplied elapsed milliseconds: wait ticks
-are 16 ms each and fade units are 10 ms each. Presentation is serial-debug only: map/CG/fade rendering,
-portraits, sprites and audio are explicitly reported as not bound. It does not
-claim to implement exploration movement or asset loading yet.
+are 16 ms each and fade units are 10 ms each.
+
+**Presentation.** `host_*` calls only record state; all VRAM writes happen in
+`game_draw()` (see [screen-spec.md](screen-spec.md) section 5). Dialog and tutorial
+text are drawn in the dialog box by `screen.c`, with the speaker's name from
+`dat_load_char`. Choices and trigger picks are still serial-only, and map, CG, fade,
+portrait, sprite and audio output are logged as not bound. Exploration movement and
+art loading are not implemented yet.
 
 **What the "resident code buffer" is.** It is not application paging. The scene bytecode is just *data*: about 1.2-1.7 KB per scene that the script VM (part of the normal program) interprets. "Resident" means the whole scene's bytecode is read once into a fixed RAM array when the scene starts, so jumps and calls are plain array indexing. The alternative, closer to Wyvern, is to keep only the current block in RAM (at most 320 bytes today) and re-read the caller's block after each `call`. That would save about 3.5 KB of RAM at the cost of more reads, and is a reasonable fallback if RAM turns out tight. The spec keeps the resident buffer as the default because it is simpler and the cost is tiny; `limits.code_buf` in `config.json` (it becomes `CODE_BUF_SIZE` in `memo_ids.h`) can be lowered to 2048 (the largest scene is 1,764 bytes).
 
@@ -597,10 +614,11 @@ Script content totals about 106 KB, plus tables (under 1 KB) and a header of abo
 5. **Code buffer:** a plain RAM array holding the scene's bytecode, not application paging (section 10).
 6. **Dialog area:** 6 lines tall, so every choice (at most 6 lines) fits and no script trimming is needed.
 7. **Portrait head:** the alternate head is a 2 x 2 tile (32x32 px) region at the top of the 2 x 5 tile base image. The artist's sheet is the 80 px base on top with each alternate head stacked below it (section 5.7).
+8. **Screen layout (2026-11-03):** map full screen with the dialog box in rows 12-14; CGs in rows 0-11 with the box over their bottom three rows (a CG has 240 unique tiles, so it cannot share the 256 slots with the 60 dialog tiles); no portraits during CGs; text is not drawn onto CG images. Final slot and palette indices are baked into the art. Everything is in [screen-spec.md](screen-spec.md).
 
 **Open (deferred)**
 
-1. **CG mode.** 4bpp (16 colours) or 8bpp (richer). Both are supported; per-CG decision.
+1. **CG mode.** Settled: all 23 CGs are 320x192 8bpp (the game runs the 8bpp video mode), laid out as described in [screen-spec.md](screen-spec.md). The 4bpp 320x240 option would need a different video mode and is not used.
 2. **Audio.** Music and SFX formats and their RAM cost. The registry exists; the assets do not.
 3. **Font and charset.** Is the font ASCII-only? Are `{`, `}`, `|`, `~` available? (Current text uses only printable ASCII.)
 4. **Save granularity.** Scene-start autosave (recommended for v1) or mid-scene checkpoints (would require saving explore state and the call stack)?

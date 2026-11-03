@@ -165,13 +165,26 @@ class ZealBuild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             (d / "memo_ids.h").write_text(header, encoding="utf-8")
-            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host"):
+            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen"):
                 src = ctrace.ENGINE / f"{name}.c"
                 r = subprocess.run(["sdcc", "-mz80", "--std-c2x", "-c", "-I", str(ctrace.ENGINE), "-I", str(d),
                                     "-I", str(self.ZOS), "--codeseg", "TEXT", "-o", str(d / f"{name}.rel"), str(src)],
                                    capture_output=True, text=True)
                 self.assertEqual(r.returncode, 0, f"{name}: {r.stderr}")
                 self.assertNotIn("warning", r.stderr, f"{name}: {r.stderr}")
+
+
+def build_c(work, sources, exe_name, header):
+    """Compile desktop test programs strictly against a generated memo_ids.h."""
+    (work / "memo_ids.h").write_text(header, encoding="utf-8")
+    exe = work / exe_name
+    command = [ctrace.find_compiler(), "-std=c11", "-Wall", "-Wextra", "-Werror", "-pedantic",
+               "-I", str(ctrace.ENGINE), "-I", str(work)]
+    command += [str(ctrace.ENGINE / name) for name in sources] + ["-o", str(exe)]
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise AssertionError(result.stderr)
+    return exe
 
 
 @unittest.skipUnless(HAVE_CC, "no C compiler")
@@ -182,16 +195,54 @@ class FrameLoop(unittest.TestCase):
         data, _ = build_dat(p, codes)
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            (work / "memo_ids.h").write_text(ids_header(p, data, codes), encoding="utf-8")
-            exe = work / "frame_test.exe"
-            command = [ctrace.find_compiler(), "-std=c11", "-Wall", "-Wextra", "-Werror",
-                       "-pedantic", "-I", str(ctrace.ENGINE), "-I", str(work)]
-            command += [str(ctrace.ENGINE / name) for name in
-                        ("memo_vm.c", "game.c", "host.c", "test/frame_main.c")]
-            result = subprocess.run(command + ["-o", str(exe)], capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stderr)
+            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "test/gfx_mock.c",
+                                 "test/frame_main.c"), "frame_test.exe", ids_header(p, data, codes))
             result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
+
+
+@unittest.skipUnless(HAVE_CC, "no C compiler")
+class ScreenModel(unittest.TestCase):
+    """The dialog box against a software model of the video board."""
+
+    def test_dialog_box(self):
+        from PIL import Image
+
+        p = mini([scene({"A": [{"op": "end"}]})])
+        codes = compile_project(p)
+        data, _ = build_dat(p, codes)
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            exe = build_c(work, ("screen.c", "test/gfx_mock.c", "test/screen_main.c"), "screen_test.exe",
+                          ids_header(p, data, codes))
+            result = subprocess.run([str(exe), str(work)], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("screen tests passed", result.stdout)
+            with Image.open(work / "screen-dialog.ppm") as image:
+                shot = image.convert("RGB")
+            self.assertEqual(shot.size, (320, 240))
+            top = shot.crop((0, 0, 320, 192))
+            self.assertEqual(set(top.get_flattened_data()), {(0, 0, 0)})   # art area untouched
+            box = shot.crop((0, 192, 320, 240))
+            colours = set(box.get_flattened_data())
+            self.assertGreaterEqual(len(colours), 3)                       # background, name, text
+            self.assertEqual(shot.getpixel((0, 192)), shot.getpixel((319, 239)))
+
+
+@unittest.skipUnless(HAVE_CC, "no C compiler")
+class CharsBlock(unittest.TestCase):
+    def test_loader_matches_python_reader(self):
+        p, data, header = full_game()
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "test/chars_main.c"), "chars_test.exe", header)
+            (work / "memo.dat").write_bytes(data)
+            result = subprocess.run([str(exe), str(work / "memo.dat")], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        lines = result.stdout.splitlines()
+        expected = [f"{i} {c['side']} {c['exprs']} {c['name']}".rstrip() for i, c in enumerate(Dat(data).chars)]
+        self.assertEqual([line.rstrip() for line in lines[:len(expected)]], expected)
+        self.assertEqual(lines[len(expected):], ["past-end 0", "tiny 0", "no-capacity 0"])
 
 
 if __name__ == "__main__":

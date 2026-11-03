@@ -120,6 +120,43 @@ bool dat_load_vars(uint8_t *vmax, uint8_t *vinit, uint8_t cap, uint8_t *count)
     return dat_read_block(BLOCK_VARS, 1, vmax, n) && dat_read_block(BLOCK_VARS, 1 + n, vinit, n);
 }
 
+bool dat_load_char(uint8_t id, uint8_t *side, uint8_t *expr_count, char *name, uint8_t cap)
+{
+    DatEntry e;
+    uint8_t count, rec[4];
+    uint16_t pos, n, i;
+
+    /* CHARS: u8 count, { u8 side, u8 expr_count, u16 name_offset }[count], then the packed
+     * names; name_offset counts from the start of the names. */
+    if (cap == 0 || !dat_entry(BLOCK_CHARS, &e) || !dat_read_block(BLOCK_CHARS, 0, &count, 1)
+        || id >= count || !dat_read_block(BLOCK_CHARS, 1u + 4u * id, rec, 4)) {
+        return false;
+    }
+    pos = 1u + 4u * count + le16(rec + 2);
+    if (pos >= e.size) {
+        return false;
+    }
+    n = e.size - pos;
+    if (n > cap) {
+        n = cap;
+    }
+    if (!dat_read_block(BLOCK_CHARS, pos, name, n)) {
+        return false;
+    }
+    for (i = 0; i < n; i++) {
+        if (name[i] == '\0') {
+            if (side) {
+                *side = rec[0];
+            }
+            if (expr_count) {
+                *expr_count = rec[1];
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
 uint8_t dat_load_scene(uint8_t scene)
 {
     DatEntry e;
