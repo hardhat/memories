@@ -32,6 +32,10 @@ static uint8_t  call_sp;
 static bool     ex_active;
 static uint16_t ex_pc;      /* address of the EXPLORE instruction */
 static uint16_t ex_once;    /* triggers already used */
+static uint16_t pc;
+static uint8_t scene_result;
+static uint8_t game_scene;
+static uint8_t game_result;
 
 #define B(o) (dat_code[pc + (o)])
 #define W(o) ((uint16_t)dat_code[pc + (o)] | ((uint16_t)dat_code[pc + (o) + 1] << 8))
@@ -60,6 +64,8 @@ uint8_t memo_vm_init(void)
     }
     ex_active = false;
     call_sp = 0;
+    scene_result = MEMO_OK;
+    game_result = MEMO_OK;
     return MEMO_OK;
 }
 
@@ -84,6 +90,9 @@ static uint8_t next_trigger(uint16_t *target)
         return MEMO_ERR_EXPLORE;
     }
     k = host_pick_trigger(dat_code[ex_pc + 1], table_idx, trig_id, avail);
+    if (k == HOST_PENDING) {
+        return MEMO_RUNNING;
+    }
     if (k >= avail) {
         return MEMO_ERR_EXPLORE;
     }
@@ -96,26 +105,38 @@ static uint8_t next_trigger(uint16_t *target)
     return MEMO_OK;
 }
 
-uint8_t memo_run_scene(uint8_t scene)
+uint8_t memo_start_scene(uint8_t scene)
 {
-    uint16_t pc;
+    memo_fault_scene = scene;
+    memo_fault_pc = 0;
+    call_sp = 0;
+    ex_active = false;
+    if (dat_load_scene(scene) != DAT_OK) {
+        scene_result = MEMO_ERR_DAT;
+        return scene_result;
+    }
+    pc = dat_code_entry;
+    scene_result = MEMO_RUNNING;
+    return MEMO_RUNNING;
+}
+
+uint8_t memo_step_scene(void)
+{
     uint8_t err = MEMO_OK;
     uint8_t a, b, c, n, k, i, got;
+    uint8_t budget = 64;
     uint16_t sid;
     char *pool;
     const char *opts[CHOICE_OPTIONS_MAX];
     uint16_t left;
 
-    memo_fault_scene = scene;
-    if (dat_load_scene(scene) != DAT_OK) {
-        memo_fault_pc = 0;
-        return MEMO_ERR_DAT;
+    if (scene_result != MEMO_RUNNING) {
+        return scene_result;
     }
-    pc = dat_code_entry;
-    call_sp = 0;
-    ex_active = false;
-
-    for (;;) {
+    if (host_busy()) {
+        return MEMO_RUNNING;
+    }
+    while (budget--) {
         if (pc >= dat_code_size) {
             err = MEMO_ERR_PC;
             goto fault;
@@ -123,6 +144,7 @@ uint8_t memo_run_scene(uint8_t scene)
         switch (dat_code[pc]) {
         case OP_END:
             host_end();
+            scene_result = MEMO_OK;
             return MEMO_OK;
 
         case OP_SAY:
@@ -133,19 +155,19 @@ uint8_t memo_run_scene(uint8_t scene)
             }
             host_say(B(1), B(2) & 0x1F, B(2) >> 5, memo_dialog);
             pc += 5;
-            break;
+            return MEMO_RUNNING;
 
         case OP_MAP:
             NEED(4);
             host_map(B(1), B(2), B(3));
             pc += 4;
-            break;
+            return MEMO_RUNNING;
 
         case OP_FADE:
             NEED(3);
             host_fade(B(1), B(2));
             pc += 3;
-            break;
+            return MEMO_RUNNING;
 
         case OP_MUSIC:
             NEED(2);
@@ -190,13 +212,13 @@ uint8_t memo_run_scene(uint8_t scene)
             }
             host_tutorial(a, memo_dialog);
             pc += 4;
-            break;
+            return MEMO_RUNNING;
 
         case OP_WAIT:
             NEED(2);
             host_wait(B(1));
             pc += 2;
-            break;
+            return MEMO_RUNNING;
 
         case OP_SET:
             NEED(3);
@@ -357,6 +379,9 @@ uint8_t memo_run_scene(uint8_t scene)
                 left -= got;
             }
             k = host_choose(choice_pool, opts, n);
+            if (k == HOST_PENDING) {
+                return MEMO_RUNNING;
+            }
             if (k >= n) {
                 err = MEMO_ERR_CHOICE;
                 goto fault;
@@ -376,6 +401,9 @@ uint8_t memo_run_scene(uint8_t scene)
             ex_pc = pc;
             ex_once = 0;
             err = next_trigger(&pc);
+            if (err == MEMO_RUNNING) {
+                return MEMO_RUNNING;
+            }
             if (err) {
                 goto fault;
             }
@@ -394,6 +422,9 @@ uint8_t memo_run_scene(uint8_t scene)
                 pc = (uint16_t)dat_code[ex_pc + 5] | ((uint16_t)dat_code[ex_pc + 6] << 8);
             } else {
                 err = next_trigger(&pc);
+                if (err == MEMO_RUNNING) {
+                    return MEMO_RUNNING;
+                }
                 if (err) {
                     goto fault;
                 }
@@ -413,31 +444,63 @@ uint8_t memo_run_scene(uint8_t scene)
             err = MEMO_ERR_OP;
             goto fault;
         }
+        if (host_busy()) {
+            return MEMO_RUNNING;
+        }
     }
+    return MEMO_RUNNING;
 
 fault:
     memo_fault_pc = pc;
+    scene_result = err;
+    return err;
+}
+
+uint8_t memo_start_game(void)
+{
+    game_scene = 1;
+    game_result = memo_start_scene(game_scene);
+    return game_result;
+}
+
+uint8_t memo_step_game(void)
+{
+    uint8_t next, err;
+    if (game_result != MEMO_RUNNING) {
+        return game_result;
+    }
+    err = memo_step_scene();
+    if (err == MEMO_OK) {
+        if (VAR_SCENE >= memo_var_count) {
+            game_result = MEMO_ERR_VAR;
+            return game_result;
+        }
+        next = memo_vars[VAR_SCENE];
+        if (next > game_scene && next <= dat_scene_count) {
+            game_scene = next;
+            return game_result = memo_start_scene(next);
+        }
+    }
+    game_result = err;
+    return err;
+}
+
+uint8_t memo_run_scene(uint8_t scene)
+{
+    uint8_t err = memo_start_scene(scene);
+    while (err == MEMO_RUNNING) {
+        err = memo_step_scene();
+    }
     return err;
 }
 
 uint8_t memo_run_game(void)
 {
-    uint8_t n = 1, next, err;
-
-    for (;;) {
-        err = memo_run_scene(n);
-        if (err) {
-            return err;
-        }
-        if (VAR_SCENE >= memo_var_count) {
-            return MEMO_ERR_VAR;
-        }
-        next = memo_vars[VAR_SCENE];
-        if (next <= n || next > dat_scene_count) {
-            return MEMO_OK;
-        }
-        n = next;
+    uint8_t err = memo_start_game();
+    while (err == MEMO_RUNNING) {
+        err = memo_step_game();
     }
+    return err;
 }
 
 const char *memo_error_text(uint8_t code)

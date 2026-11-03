@@ -499,7 +499,8 @@ The loader is `dat.c` from Wyvern adapted; the changes follow from section 2. Th
 | `dat_io.h`, `dat_io_zos.c`, `dat_io_stdio.c` | the four file calls (`open`, `close`, `seek`, `read`). The Zeal backend splits every read at 16 KB page boundaries (Wyvern's `dat_read` rule, as a loop); the desktop backend uses stdio |
 | `memo_dat.h`, `memo_dat.c` | loader (below) |
 | `memo_host.h` | the functions the game must provide (below) |
-| `memo_vm.h`, `memo_vm.c` | the script VM, a line-for-line mirror of `interp.VM` |
+| `memo_vm.h`, `memo_vm.c` | resumable script VM; observable events match `interp.VM` |
+| `game.c`, `game.h`, `host.c` | frame-loop binding and nonblocking serial-debug host |
 | `test/trace_main.c` | desktop test harness (not part of the Zeal build) |
 
 ```c
@@ -514,6 +515,36 @@ bool     dat_stream_block(uint16_t id, uint8_t *buf, uint16_t chunk, dat_sink_fn
 ```
 
 The VM has no presentation code. It calls `host_say`, `host_map`, `host_fade`, `host_music`, `host_sfx`, `host_cg`, `host_cg_off`, `host_tutorial`, `host_wait`, `host_end`, `host_choose(prompt, options, n)` and `host_pick_trigger(objective, table_idx, trig_id, n)` (link-time functions the game implements), plus `host_var` when built with `MEMO_TRACE_VARS` (the harness). `memo_vm_init()`, `memo_run_scene(n)` and `memo_run_game()` return 0 or a fault code (`MEMO_ERR_*`: pc out of range or operand past the end, unknown opcode, variable or bit out of range, call overflow or `RET` without `CALL`, explore misuse, bad menu, bad string); the fault scene and pc are in `memo_fault_scene` and `memo_fault_pc`. Corrupt code therefore stops with an error and never reads outside the code buffer. Tutorials show once per game (`memo_tutorial_seen`, 32 ids) unless `memo_tutorial_once` is cleared. A menu's prompt and options share one 226-byte pool (the 6-line budget).
+
+**Frame-loop API.** Call `memo_start_game()` once after opening the DAT and
+initializing the VM, then `memo_step_game()` once per frame. Single-scene
+users can use `memo_start_scene(n)` / `memo_step_scene()`. Start/step return
+`MEMO_RUNNING` (255), `MEMO_OK` on completion, or a fault; completed/faulted
+runs remain stopped. Steps execute at most 64 instructions, retaining PC,
+call stack and exploration once-trigger state across frames. Scene progression
+still follows the `scene` variable as in the blocking trace helpers.
+`memo_run_scene` / `memo_run_game` remain blocking compatibility wrappers for
+the desktop harness, not for the game loop.
+
+The host must never sleep or wait for input inside a callback. `host_busy()`
+pauses script execution during dialog, tutorials and timed effects.
+Menu/trigger callbacks return `HOST_PENDING` (255) until input selects a result;
+polls must retain the current interaction. Dialog and menu string storage
+remains valid until completion, but call-local pointer/trigger arrays must
+be copied by the host. The desktop trace host returns `false` from
+`host_busy()` and supplies decisions immediately.
+
+The `game_update(uint16_t elapsed)` binding fits the current `main()` loop,
+which passes 16 milliseconds per frame.
+`memo_host_initialize()` resets host state and calls `game_initialize()`,
+which reopens `memo.dat` with `MEMO_CONTENT_CRC` and initializes the VM after
+the loader. This compensates for the legacy initialization ordering in
+`main.c` without editing it. Input is edge-triggered: A/Start dismisses
+dialog/tutorial or confirms a menu/trigger; directional keys select entries.
+Wait/fade countdowns consume the supplied elapsed milliseconds: wait ticks
+are 16 ms each and fade units are 10 ms each. Presentation is serial-debug only: map/CG/fade rendering,
+portraits, sprites and audio are explicitly reported as not bound. It does not
+claim to implement exploration movement or asset loading yet.
 
 **What the "resident code buffer" is.** It is not application paging. The scene bytecode is just *data*: about 1.2-1.7 KB per scene that the script VM (part of the normal program) interprets. "Resident" means the whole scene's bytecode is read once into a fixed RAM array when the scene starts, so jumps and calls are plain array indexing. The alternative, closer to Wyvern, is to keep only the current block in RAM (at most 320 bytes today) and re-read the caller's block after each `call`. That would save about 3.5 KB of RAM at the cost of more reads, and is a reasonable fallback if RAM turns out tight. The spec keeps the resident buffer as the default because it is simpler and the cost is tiny; `limits.code_buf` in `config.json` (it becomes `CODE_BUF_SIZE` in `memo_ids.h`) can be lowered to 2048 (the largest scene is 1,764 bytes).
 

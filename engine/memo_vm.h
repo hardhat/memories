@@ -13,7 +13,7 @@
 #define MEMO_VAR_MAX        64     /* RAM reserved for variables; the file has 44 today */
 #define MEMO_DIALOG_MAX     128    /* DIALOG_MAX_STRING */
 
-/* Run results. 0 is success; anything else is a corrupt or hostile script and carries the
+/* Run results. 0 is complete, 255 is still running; other values are faults carrying the
  * scene (memo_fault_scene) and the program counter (memo_fault_pc) of the failing instruction. */
 #define MEMO_OK              0
 #define MEMO_ERR_DAT         1   /* loader failure */
@@ -25,6 +25,7 @@
 #define MEMO_ERR_CHOICE      7   /* bad option count or host result */
 #define MEMO_ERR_STRING      8   /* string id bad or text does not fit its buffer */
 #define MEMO_ERR_TUTORIAL    9   /* tutorial id above 31 */
+#define MEMO_RUNNING       255  /* yielded; call step again next frame */
 
 extern uint8_t  memo_vars[MEMO_VAR_MAX];
 extern uint8_t  memo_var_count;
@@ -37,7 +38,14 @@ extern char     memo_dialog[MEMO_DIALOG_MAX];
 /* Load VARS from the open file and reset all state. */
 uint8_t memo_vm_init(void);
 
-/* Run one scene from its entry point until END. */
+/* Start returns MEMO_RUNNING or a fault. Each step executes at most 64
+ * instructions and yields to host interactions. Completion/faults are latched. */
+uint8_t memo_start_scene(uint8_t scene);
+uint8_t memo_step_scene(void);
+uint8_t memo_start_game(void);
+uint8_t memo_step_game(void);
+
+/* Blocking compatibility helpers for desktop traces, not the frame loop. */
 uint8_t memo_run_scene(uint8_t scene);
 
 /* Run scene 1, then follow the `scene` variable until a scene leaves it unchanged. */

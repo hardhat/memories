@@ -165,13 +165,33 @@ class ZealBuild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             (d / "memo_ids.h").write_text(header, encoding="utf-8")
-            for name in ("memo_dat", "memo_vm", "dat_io_zos"):
+            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host"):
                 src = ctrace.ENGINE / f"{name}.c"
                 r = subprocess.run(["sdcc", "-mz80", "--std-c2x", "-c", "-I", str(ctrace.ENGINE), "-I", str(d),
                                     "-I", str(self.ZOS), "--codeseg", "TEXT", "-o", str(d / f"{name}.rel"), str(src)],
                                    capture_output=True, text=True)
                 self.assertEqual(r.returncode, 0, f"{name}: {r.stderr}")
                 self.assertNotIn("warning", r.stderr, f"{name}: {r.stderr}")
+
+
+@unittest.skipUnless(HAVE_CC, "no C compiler")
+class FrameLoop(unittest.TestCase):
+    def test_nonblocking_game_host_vm(self):
+        p = mini([scene({"A": [{"op": "end"}]})])
+        codes = compile_project(p)
+        data, _ = build_dat(p, codes)
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            (work / "memo_ids.h").write_text(ids_header(p, data, codes), encoding="utf-8")
+            exe = work / "frame_test.exe"
+            command = [ctrace.find_compiler(), "-std=c11", "-Wall", "-Wextra", "-Werror",
+                       "-pedantic", "-I", str(ctrace.ENGINE), "-I", str(work)]
+            command += [str(ctrace.ENGINE / name) for name in
+                        ("memo_vm.c", "game.c", "host.c", "test/frame_main.c")]
+            result = subprocess.run(command + ["-o", str(exe)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":

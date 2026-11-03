@@ -3,9 +3,18 @@
 
 /* What the script VM needs from the game. The VM decides nothing about presentation: it calls
  * these functions in script order and the game (or the desktop trace harness) implements them.
- * Strings passed in are valid only for the duration of the call. */
+ * Dialog text and menu string storage remain valid until the interaction
+ * completes. Pointer arrays and trigger arrays are call-local: copy their
+ * elements if the host retains them between frames. */
 
 #include <stdint.h>
+#include <stdbool.h>
+
+#define HOST_PENDING 255
+
+/* Frame hosts return immediately. busy gates dialog/tutorial/timed effects;
+ * choose/pick_trigger return HOST_PENDING until input supplies a result. */
+bool host_busy(void);
 
 /* Dialog line. expr is the expression index (EXPR_NONE = no portrait change), style 0 normal,
  * 1 phone, 2 credits. */
@@ -21,10 +30,11 @@ void host_tutorial(uint8_t id, const char *text);
 void host_wait(uint8_t ticks);
 void host_end(void);
 
-/* Menu: prompt, n options (1..CHOICE_OPTIONS_MAX). Returns the picked index 0..n-1. */
+/* Menu: returns 0..n-1 or HOST_PENDING. Repeated polls must not restart it. */
 uint8_t host_choose(const char *prompt, const char *const *options, uint8_t n);
 
-/* Map exploration. objective is the trigger id to mark (NO_TRIGGER = none). The player may
+/* Map exploration. Returns HOST_PENDING until a trigger is selected.
+ * objective is the trigger id to mark (NO_TRIGGER = none). The player may
  * use any of the n currently enabled triggers: table_idx[k] is its position in the script's
  * explore table, trig_id[k] its global trigger id. Returns k in 0..n-1. */
 uint8_t host_pick_trigger(uint8_t objective, const uint8_t *table_idx, const uint8_t *trig_id, uint8_t n);

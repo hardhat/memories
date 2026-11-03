@@ -110,6 +110,7 @@ void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
 {
     emit("say %u %u %u %s", who, expr, style, esc(text));
 }
+bool host_busy(void) { return false; }
 void host_map(uint8_t map, uint8_t spawn, uint8_t t) { emit("map %u %u %u", map, spawn, t); }
 void host_fade(uint8_t mode, uint8_t t) { emit("fade %u %u", mode, t); }
 void host_music(uint8_t id) { emit("music %u", id); }
