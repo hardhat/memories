@@ -68,13 +68,13 @@ void reset_sprites(void)
     memset(sprites, 0, sizeof(sprites));
 }
 
-uint8_t add_sprite(uint16_t x, uint8_t y, uint8_t sprite)
+uint8_t add_sprite(uint16_t x, uint8_t y, uint8_t sprite, uint8_t flags)
 {
     if(sprite_count >= 128) return -1;
     sprites[sprite_count].x = x+16; // Note sprites are displayed anchored the bottom right corner
     sprites[sprite_count].y = y+16;
     sprites[sprite_count].tile = sprite;
-    sprites[sprite_count].flags = 0;
+    sprites[sprite_count].flags = flags;
     return sprite_count++;
 }
 

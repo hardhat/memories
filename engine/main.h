@@ -21,10 +21,15 @@ enum INPUT
     MAX_INPUT
 };
 
+#define SPRITE_FLAG_NONE 0x00
+#define SPRITE_FLAG_PRIORITY 0x02
+#define SPRITE_FLAG_FLIP_Y 0x04
+#define SPRITE_FLAG_FLIP_X 0x08
+
 void debug_log(const char *message);
 void debug_logf(const char *format, ...);
 // Add a sprite to the offscreen sprite buffer and return its index
-uint8_t add_sprite(uint16_t x, uint8_t y, uint8_t sprite);
+uint8_t add_sprite(uint16_t x, uint8_t y, uint8_t sprite, uint8_t flags);
 // Clear the sprite buffer and render empty sprites on the screen
 void clear_sprites(void);
 // Reset the offscreen sprite buffer without rendering
