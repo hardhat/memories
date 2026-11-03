@@ -99,6 +99,32 @@ void initialize_game()
     dat_open("memo.dat",0x4F4D454D); // 'MEMO'
     memo_host_initialize();
     gfx_initialize(ZVB_CTRL_VID_MODE_GFX_320_8BIT,&ctx);
+    clear_text_buffer(0); // Clear the off-screen text buffer initially
+
+    char line[80];
+    memset(line, 0, sizeof(line));
+    for(uint8_t i=0;i<15;i++) {
+        draw_bg((const uint8_t *)line, 0, i, 80, 1); // Draw each line to the background
+        draw_fg((const uint8_t *)line, 0, i, 80, 1); // Draw each line to the foreground
+    }
+
+    char buffer[60];
+    for(uint8_t i=0;i<60;i++) buffer[i] = i+1; // Initialize buffer to sequence
+    draw_bg((const uint8_t *)buffer, 0, 4, 20, 3); // Example usage of draw_bg with the buffer
+
+    const char *text[] = {
+        "     Memories of Ravenwood Academy",
+        "     a tale of mystery",
+        "     by hardhat",
+        "     Copyright 2026",
+        "     All rights reserved",
+        "     1 2 3 4 5 6 7 8 9"
+    };
+    for(uint8_t i=0;i<6;i++) {
+        if((i&1) == 0) clear_text_buffer(1);
+        draw_text(0, ((i&1)<<3), text[i], i+10); // Draw initial text to the off-screen text buffer
+        if((i&1) == 1) render_text_buffer(1+20*((i&7)>>1), 20); // Render the off-screen text buffer to the screen tileset
+    }
 }
 
 void draw_bg(const uint8_t *data, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
@@ -126,9 +152,9 @@ void load_tileset(const uint8_t *tileset, uint16_t offset, uint16_t size, uint8_
     gfx_tileset_load(&ctx, tileset, size, &options0);
 }
 
-void clear_text_buffer()
+void clear_text_buffer(uint8_t color)
 {
-    memset(text_tiles, 0, sizeof(text_tiles));
+    memset(text_tiles, color, sizeof(text_tiles));
 }
 
 void draw_text_pixel(uint16_t x, uint8_t y,uint8_t color)

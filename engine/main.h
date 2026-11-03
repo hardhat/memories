@@ -31,6 +31,28 @@ void clear_sprites(void);
 void reset_sprites(void);
 // Render the current offscreen sprite buffer to the screen
 void render_sprites(void);
+
+// The off-screen text buffer is a 320x16 pixel  (20x1 tile) area used for off-screen 
+//  text rendering before being displayed on the screen
+// Clear the off screen text buffer with the specified color, all 20 tiles across
+void clear_text_buffer(uint8_t color);
+// Draw a single pixel in the text buffer
+void draw_text_pixel(uint16_t x, uint8_t y, uint8_t color);
+// Draw a single pixel in the text buffer at the specified offset
+void draw_text_pixel_offset(uint16_t offset, uint8_t color);
+// Draw a character to the text buffer
+void draw_text_char(uint16_t x, uint8_t y, uint8_t c, uint8_t color);
+// Draw a string of text to the text buffer
+void draw_text(uint16_t x, uint8_t y, const char *text, uint8_t color);
+// Draw a character to the text buffer with opaque background
+void draw_char_opaque(uint16_t x, uint8_t y, uint8_t c, uint8_t fg, uint8_t bg);
+// Draw a string of text to the text buffer with opaque background
+void draw_text_opaque(uint16_t x, uint8_t y, const char *text, uint8_t fg, uint8_t bg);
+// Render the off-screen text buffer to the screen tileset
+/// @param first_tile The index of the first tile of the tile set to render to
+/// @param num_tiles The number of tiles to render (up to 20)
+void render_text_buffer(uint16_t first_tile, uint16_t num_tiles);
+
 // Draw data to the foreground tilemap
 void draw_fg(const uint8_t *data, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
 // Draw data to the background tilemap

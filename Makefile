@@ -11,8 +11,13 @@ LD=sdldz80
 MAP=map/bg.ztm map/fg.ztm
 LDFLAGS=-n -y -mjwx -i -b _HEADER=0x4000 -k $(ZOS_PATH)/sdk/sdcc/lib -l z80 $(ZOS_LDFLAGS)
 ZOS_LIBS=-k $(ZVB_SDK_PATH)/lib -l zvb_sound -l zvb_gfx
-# 1. Detect the operating system
-ifeq ($(OS),Windows_NT)
+# 1. Detect the operating system. Cygwin/MSYS/MinGW make also see OS=Windows_NT, but they run
+# commands through a POSIX shell, so uname tells them apart from native cmd.exe make.
+UNAME_S := $(shell uname -s 2>/dev/null)
+ifneq ($(filter CYGWIN% MSYS% MINGW%,$(UNAME_S)),)
+    POSIX_SHELL = 1
+endif
+ifeq ($(OS)$(POSIX_SHELL),Windows_NT)
     # Windows settings (cmd.exe native commands)
     # Note: 'RM' uses 'del /q /f' and 'rmdir /s /q' to mimic 'rm -rf'
     RM = del /q /f
@@ -22,7 +27,7 @@ ifeq ($(OS),Windows_NT)
     FIX_PATH = $(subst /,\,$1)
     EXE_EXT = .exe
 else
-    # Linux / macOS settings
+    # Linux / macOS / Cygwin / MSYS settings
     RM = rm -f
     RMDIR = rm -rf
     CP = cp
