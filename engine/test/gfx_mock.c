@@ -107,6 +107,25 @@ void draw_text(uint16_t x, uint8_t y, const char *text, uint8_t color)
     }
 }
 
+void draw_text_opaque(uint16_t x, uint8_t y, const char *text, uint8_t fg, uint8_t bg)
+{
+    size_t i;
+    uint8_t row, col, c;
+
+    for (i = 0; i < strlen(text); i++) {
+        c = (uint8_t)text[i];
+        if (c < 32 || c > 127) {
+            c = 32;
+        }
+        for (row = 0; row < 8; row++) {
+            for (col = 0; col < 8; col++) {
+                draw_text_pixel(x + i * 8 + col, y + row,
+                                (FONT_NICETY_BITMAP[((c - 32) << 3) + row] & (1 << (7 - col))) ? fg : bg);
+            }
+        }
+    }
+}
+
 void render_text_buffer(uint16_t first_tile, uint16_t num_tiles)
 {
     if (num_tiles > 20 || first_tile + num_tiles > 256) {

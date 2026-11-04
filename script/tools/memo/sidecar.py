@@ -57,6 +57,9 @@ def ids_header(p, dat_bytes, scene_codes):
     out += ["/* Maps */"] + enum("MAP", p.map_names)
     out += ["/* CGs */"] + enum("CG", p.cg_names, "CG-")
     out += ["/* Triggers (global names) */"] + enum("TRIG", p.trigger_names)
+    # Display labels for the placeholder trigger picker; the underscores are only for C identifiers.
+    labels = ", ".join(json.dumps(n.replace("_", " "), ensure_ascii=True) for n in p.trigger_names)
+    out += [f"#define MEMO_TRIGGER_NAMES {{{labels}}}", ""]
     out += ["/* Music */"] + enum("MUSIC", p.music)
     out += ["/* Sound effects */"] + enum("SFX", p.sfx)
     out += ["/* Times of day */"] + enum("TIME", p.times)

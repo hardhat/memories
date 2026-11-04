@@ -482,7 +482,7 @@ Errors fail the build; warnings fail only with `--strict`.
 
 ## 8. Sidecar outputs
 
-* **`memo_ids.h`**: generated constants, so the engine never hard-codes ids: `VAR_*` indices (`VAR_ROUTE`, `VAR_ENDING`, `VAR_SCENE`, `VAR_CLUES`, ...), `CL1..CL8` bit numbers, `OP_*` opcodes, `SCENE_COUNT`, `BLOCK_*` fixed ids, `CODE_BUF_SIZE`, `MEMO_CONTENT_CRC`, and enums for characters, maps, CGs, trigger names, music, SFX, time of day.
+* **`memo_ids.h`**: generated constants, so the engine never hard-codes ids: `VAR_*` indices (`VAR_ROUTE`, `VAR_ENDING`, `VAR_SCENE`, `VAR_CLUES`, ...), `CL1..CL8` bit numbers, `OP_*` opcodes, `SCENE_COUNT`, `BLOCK_*` fixed ids, `CODE_BUF_SIZE`, `MEMO_CONTENT_CRC`, `MEMO_TRIGGER_NAMES` (display labels for the placeholder trigger picker), and enums for characters, maps, CGs, trigger names, music, SFX, time of day.
 * **`memo.sym`** (JSON): names for debugging: variable names, block label offsets per scene, choice ids to code offsets, and a table `string id -> (file, block, op index)`. A `memo_dat.py dump --sym` shows `say jane/smile "Yes."` rather than numbers.
 * **`memo.lst`**: disassembly with source positions.
 * **`memo.layout.txt`**: block table (id, type, offset, size, flags, name) and budget usage: header bytes, code bytes per scene versus the cap, string bytes per scene, count of `MISSING` assets.
@@ -508,7 +508,7 @@ The loader is `dat.c` from Wyvern adapted; the changes follow from section 2. Th
 | `memo_dat.h`, `memo_dat.c` | loader (below) |
 | `memo_host.h` | the functions the game must provide (below) |
 | `memo_vm.h`, `memo_vm.c` | resumable script VM; observable events match `interp.VM` |
-| `game.c`, `game.h`, `host.c` | frame-loop binding and the nonblocking host (dialog and tutorial text on screen; choices and trigger picks still serial) |
+| `game.c`, `game.h`, `host.c` | frame-loop binding and the nonblocking host (dialog, tutorial, choice and trigger-pick text on screen) |
 | `screen.c`, `screen.h`, `layout.h` | screen compositor: tile slot, row and palette constants, the dialog box ([screen-spec.md](screen-spec.md)) |
 | `main.c`, `main.h` | the Zeal platform layer: graphics calls, text rendering, sprites, input and the main loop |
 | `test/trace_main.c` | desktop trace harness (not part of the Zeal build) |
@@ -559,7 +559,9 @@ are 16 ms each and fade units are 10 ms each.
 **Presentation.** `host_*` calls only record state; all VRAM writes happen in
 `game_draw()` (see [screen-spec.md](screen-spec.md) section 5). Dialog and tutorial
 text are drawn in the dialog box by `screen.c`, with the speaker's name from
-`dat_load_char`. Choices and trigger picks are still serial-only, and map, CG, fade,
+`dat_load_char`. Choice menus and the placeholder trigger picker use the same box
+(a highlighted selection, a scrolling list; [screen-spec.md](screen-spec.md) section 4).
+Map, CG, fade,
 portrait, sprite and audio output are logged as not bound. Exploration movement and
 art loading are not implemented yet.
 

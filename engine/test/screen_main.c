@@ -201,6 +201,96 @@ int main(int argc, char **argv)
         assert(mock_fg[ROW_TEXT_MAP - 1][i] == 0 && mock_fg[ROW_TEXT_MAP + TEXT_ROWS][i] == 0);
     }
     assert(mock_bg[13][3] == 7);
+
+    /* Choice menu: prompt, a two-line option, highlight and margin mark on the selection. */
+    {
+        const char *opts[3] = {"Yes please", "No\nthanks", "Maybe"};
+        const char *tall_prompt = "a\nb\nc\nd\ne";
+        unsigned row1, row2;
+
+        screen_menu_show("Which one?\nChoose.", opts, 3);
+        assert(!screen_text_ready());
+        settle(&uploads);
+        assert(box_complete() && uploads <= 3);
+        assert(count_color(SLOT_DIALOG + 20, 20, PAL_SELECT_BG) > 0);          /* option 0, line 2 */
+        assert(count_color(SLOT_DIALOG + 20, 1, PAL_MARKER) > 0);              /* '>' in the margin */
+        assert(count_color(SLOT_DIALOG + 40, 20, PAL_SELECT_BG) == 0);
+        dump("screen-menu.ppm");
+
+        /* Moving the selection redraws in place: the box never blinks out and each frame
+         * uploads one row. */
+        screen_menu_select(1);
+        assert(!screen_text_ready());
+        for (frames = 0; !screen_text_ready(); frames++) {
+            mock_reset_counters();
+            screen_draw();
+            assert(box_complete() && mock_upload_calls <= 1);
+            assert(frames < 4);
+        }
+        row1 = count_color(SLOT_DIALOG + 20, 20, PAL_SELECT_BG);
+        row2 = count_color(SLOT_DIALOG + 40, 20, PAL_SELECT_BG);
+        assert(row1 > 0 && row2 > 0);                                            /* option 1 spans lines 3-4 */
+        assert(mock_tileset[SLOT_DIALOG + 20 + 18][8 * 16 + 8] == PAL_SELECT_BG);   /* bar, line 3 */
+        assert(mock_tileset[SLOT_DIALOG + 40 + 18][4 * 16 + 8] == PAL_SELECT_BG);   /* bar, line 4 */
+        screen_menu_select(2);
+        settle(&uploads);
+        assert(count_color(SLOT_DIALOG + 20, 20, PAL_SELECT_BG) == 0);
+        assert(mock_tileset[SLOT_DIALOG + 40 + 18][12 * 16 + 8] == PAL_SELECT_BG);  /* bar, line 5 */
+        assert(mock_tileset[SLOT_DIALOG + 40 + 18][4 * 16 + 8] != PAL_SELECT_BG);
+        before = mock_upload_calls;
+        screen_menu_select(3);                                                   /* out of range: ignored */
+        screen_menu_select(2);                                                   /* unchanged: nothing to draw */
+        screen_draw();
+        assert(screen_text_ready() && mock_upload_calls == before);
+
+        /* Too many lines: the prompt gives way so every option keeps a line. */
+        screen_menu_show(tall_prompt, opts, 3);
+        settle(&uploads);
+        screen_menu_select(0);
+        settle(&uploads);
+        assert(mock_tileset[SLOT_DIALOG + 20 + 18][8 * 16 + 8] == PAL_SELECT_BG);   /* option 0 on line 3 */
+        screen_menu_select(1);
+        settle(&uploads);
+        assert(mock_tileset[SLOT_DIALOG + 40 + 18][4 * 16 + 8] == PAL_SELECT_BG);   /* option 1 on line 4 */
+        screen_menu_select(2);
+        settle(&uploads);
+        assert(mock_tileset[SLOT_DIALOG + 40 + 18][12 * 16 + 8] == PAL_SELECT_BG);  /* option 2 on line 5 */
+
+        /* Ordinary text afterwards carries no highlight or margin mark. */
+        screen_text_show("Brad", "Done.", 0);
+        settle(&uploads);
+        assert(count_color(SLOT_DIALOG, DIALOG_TILES, PAL_SELECT_BG) == 0);
+        screen_menu_select(1);                                                   /* not a menu: ignored */
+        assert(screen_text_ready());
+    }
+
+    /* Scrolling list under a header. */
+    {
+        const char *items[9] = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+
+        screen_list_show("Go where? Goal: seven", items, 9, 0);
+        settle(&uploads);
+        assert(box_complete());
+        dump("screen-list.ppm");
+        screen_list_select(1);
+        settle(&uploads);
+        screen_list_select(5);               /* scrolls: lines 1-5 now hold two..six */
+        for (frames = 0; !screen_text_ready(); frames++) {
+            mock_reset_counters();
+            screen_draw();
+            assert(box_complete() && mock_upload_calls <= 1 && frames < 5);
+        }
+        dump("screen-list-scrolled.ppm");
+        assert(mock_tileset[SLOT_DIALOG + 40 + 18][12 * 16 + 8] == PAL_SELECT_BG);  /* six, on line 5 */
+        screen_list_select(8);
+        settle(&uploads);
+        assert(box_complete());
+        screen_list_select(0);               /* back to the top */
+        settle(&uploads);
+        assert(mock_tileset[SLOT_DIALOG + 18][8 * 16 + 8] == PAL_SELECT_BG);        /* one, on line 1 */
+        screen_list_select(9);               /* out of range: ignored */
+        assert(screen_text_ready());
+    }
     printf("screen tests passed\n");
     return 0;
 }

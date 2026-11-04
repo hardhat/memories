@@ -125,6 +125,17 @@ static unsigned color_in_row0(uint8_t color)
     return n;
 }
 
+/* Selection-highlight pixels in one tile row of the box. */
+static unsigned selected_rows(uint8_t row)
+{
+    unsigned i, n = 0;
+
+    for (i = 0; i < 20u * 256; i++) {
+        n += mock_tileset[SLOT_DIALOG + row * 20][i] == PAL_SELECT_BG;
+    }
+    return n;
+}
+
 int main(void)
 {
     static const uint8_t dialog[] = {
@@ -237,20 +248,36 @@ int main(void)
 
     begin(menu, sizeof menu);
     game_update(16);
+    game_draw();
+    assert(!box_up() && memo_vars[0] == 0);   /* two rows to draw; the first is staged */
+    press(INPUT_A);                           /* too early: nothing is confirmed */
     game_update(16);
     assert(memo_vars[0] == 0 && ends == 0);
+    game_draw();
+    assert(box_up() && selected_rows(0) > 0);
     game_handle_input(INPUT_DOWN, true);
     game_handle_input(INPUT_DOWN, true); /* key repeat is not another selection */
     game_handle_input(INPUT_DOWN, false);
+    frame();
+    frame();
+    assert(box_up());
     press(INPUT_A);
     game_update(16);
     assert(memo_vars[0] == 2 && ends == 1);
+    game_draw();
+    assert(box_down());
 
+    /* The trigger picker lists the available places and names the goal. */
     begin(explore, sizeof explore);
-    game_update(16);
+    frame();
+    frame();
+    assert(box_up() && color_in_row0(PAL_NAME) > 0 && selected_rows(0) > 0);
     press(INPUT_A);
     game_update(16);
     assert(memo_vars[0] == 1 && ends == 0);
+    frame();
+    frame();
+    assert(box_up());
     game_update(16); /* pending XRET must retain the once-trigger mask */
     press(INPUT_A);
     game_update(16);

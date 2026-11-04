@@ -24,7 +24,7 @@ on hardware yet; timing figures are estimates until measured.
 | D9 | `gfx_initialize()` runs before `memo_host_initialize()`, because the host's screen module writes VRAM and opens `memo.dat`. |
 | D10 | **Sprites** carry `SPRITE_FLAG_PRIORITY` (the hardware "behind FG" bit) and flips through `add_sprite`'s `flags`. 16x32 characters use one hardware sprite (`SPRITE_FLAG_TALL`, tile and tile+1) instead of two. |
 | D11 | **The map's `above` layer** shares layer 1 with the dialog overlay. While a dialog is open the camera must be tile-aligned; the overlay cells are restored from the map data when the box is hidden. If the `above` tiles on a map are sparse enough, drawing them as sprites instead is to be evaluated per map. |
-| D12 | Speaker names come from the `CHARS` block (`dat_load_char`), not from a table compiled into the engine. |
+| D12 | Speaker names come from the `CHARS` block (`dat_load_char`), not from a table compiled into the engine. The placeholder trigger picker is the exception: its place names come from `MEMO_TRIGGER_NAMES` in `memo_ids.h`, because they exist only for play-testing before the maps do. |
 
 ### Why the CG and the box overlap (D5)
 
@@ -99,19 +99,39 @@ because `draw_text_char` does not clip aligned writes.
 
 Behaviour (`screen.c`):
 
-* **First showing**: rows are composed one per frame and uploaded into slots 1-60 while
-  the layer 1 cells stay empty. A row that is blank now and already blank in VRAM is
-  skipped, so a one-line text needs one upload. When the last row is staged the cells
-  appear at once.
-* **Replacing visible text**: the box stays up. Each changed row is blanked, uploaded and
-  revealed in a single frame, so the text wipes in from the top.
+* **Line model.** Every content call lays out the six lines, compares them with the lines
+  already in VRAM, and marks only the rows that differ. Identical text costs nothing, even
+  after the box was hidden.
+* **First showing**: changed rows are composed one per frame and uploaded into slots 1-60
+  while the layer 1 cells stay empty. A one-line text needs one upload. When the last row
+  is staged the cells appear at once.
+* **Replacing visible content**: the box stays up. Each changed row is blanked, uploaded
+  and revealed in a single frame, so the text wipes in from the top.
+* **Moving a selection** updates in place: the changed rows are uploaded without being
+  blanked, so the box does not flicker. This relies on the upload finishing before the
+  raster reaches the box (rows 12-14 are the last fifth of the frame, and the estimated
+  upload is about 11 ms into a 16.7 ms frame). It must be confirmed on an emulator, and it
+  will not hold for the CG-mode box in rows 9-11 without a second look.
 * **Hiding** clears the layer 1 cells only; the art underneath is not touched.
-* A dialog ignores input until every row is on screen, then waits for A or Start.
-* The box is up while the host is in a dialog or tutorial, so back-to-back lines never
-  drop it; any other script step takes it down.
+* A dialog, menu or list ignores confirm input until every row is on screen.
+* The box is up while the host is in a dialog, tutorial, choice or trigger pick, so
+  back-to-back content never drops it; any other script step takes it down.
 
-Choices and the trigger picker still print to the serial port (planned: same box, up to
-six lines, selected line highlighted).
+### Choice menu
+
+The prompt (may be empty) comes first, then each option, up to six lines in all. Prompt
+and option text are split at `\n`. The selected option's lines get a full-width highlight
+(palette 7) and a `>` in the left margin. If the content needs more than six lines the
+prompt gives way first, and every option keeps at least one line. Up/Left and Down/Right
+move the selection and wrap; A or Start confirms.
+
+### Trigger picker (placeholder)
+
+A stand-in for walking the map, until maps exist: a header ("Go where? Goal: <place>")
+over a list of the places currently available, five at a time, scrolling to keep the
+selection visible, with " k/n" appended to the header when the list scrolls. The names are
+the trigger names from `maps.json`, emitted by the compiler as `MEMO_TRIGGER_NAMES` in
+`memo_ids.h` (underscores shown as spaces).
 
 ## 5. Frame protocol (done for the box)
 
@@ -140,14 +160,15 @@ anchor, are assumed from the SDK header and **must be checked on an emulator**.
 |---|---|---|
 | 0 | Slot, row and palette constants; init order; remove test code; baked-index tooling | Constants, init order and cleanup **done**; asset tools **planned** |
 | 1 | Dialog and tutorial box in map mode, names from `CHARS`, marker | **done** |
-| 2 | Choice menu and trigger picker in the box | planned |
+| 2 | Choice menu and trigger picker in the box | **done** |
 | 3 | Portraits (stream, palette slice, expression cells) | planned |
 | 4 | CG mode (stream, box over rows 9-11, restore on hide) | planned |
 | 5 | Map layers, scroll, sprites, `above` policy | planned |
 
-Tests: `engine/test/screen_main.c` (box against a video model, one-upload budget,
-invisible staging, clipping), `engine/test/frame_main.c` (real host, screen and VM against
-a mock DAT), `engine/test/chars_main.c` (loader against the Python reader). The model
+Tests: `engine/test/screen_main.c` (box against a video model: one-upload budget,
+invisible staging, in-place selection updates, scrolling, clipping, overflow layout),
+`engine/test/frame_main.c` (real host, screen and VM against a mock DAT, including menus
+and the picker), `engine/test/chars_main.c` (loader against the Python reader). The model
 ([gfx_mock.c](../engine/test/gfx_mock.c)) renders screens to PPM for review. Run
 `python -m unittest discover -s script/tests -p test_engine.py`.
 

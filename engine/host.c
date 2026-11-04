@@ -9,19 +9,32 @@ enum {
     HOST_IDLE, HOST_DIALOG, HOST_TUTORIAL, HOST_TIMER, HOST_CHOICE, HOST_EXPLORE
 };
 
+#define EXPLORE_HEADER_MAX 28   /* leaves room for the " k/n" scroll position */
+
+static const char *const trigger_names[TRIG_COUNT] = MEMO_TRIGGER_NAMES;
+
 static uint8_t state;
 static uint16_t ms_left;
 static uint8_t selected, count;
-static bool confirmed, dirty;
-static const char *prompt;
-static const char *options[CHOICE_OPTIONS_MAX];
-static uint8_t triggers[EXPLORE_TRIGGERS_MAX];
+static bool confirmed;
+static const char *trigger_labels[EXPLORE_TRIGGERS_MAX];
+static char explore_header[EXPLORE_HEADER_MAX + 1];
+
+/* Append src to dst after len characters, never past EXPLORE_HEADER_MAX; returns the new length. */
+static uint8_t append_text(char *dst, uint8_t len, const char *src)
+{
+    while (*src != '\0' && len < EXPLORE_HEADER_MAX) {
+        dst[len++] = *src++;
+    }
+    dst[len] = '\0';
+    return len;
+}
 
 void memo_host_initialize(void)
 {
     state = HOST_IDLE;
     ms_left = 0;
-    confirmed = dirty = false;
+    confirmed = false;
     screen_init();
     game_initialize();
 }
@@ -46,6 +59,8 @@ void game_host_update(uint16_t elapsed)
 
 void game_host_input(uint8_t input)
 {
+    uint8_t before = selected;
+
     if (state == HOST_DIALOG || state == HOST_TUTORIAL) {
         /* Input is ignored until every row of the text is on screen. */
         if (screen_text_ready() && (input == INPUT_A || input == INPUT_START)) {
@@ -54,44 +69,34 @@ void game_host_input(uint8_t input)
     } else if (state == HOST_CHOICE || state == HOST_EXPLORE) {
         if (input == INPUT_UP || input == INPUT_LEFT) {
             selected = selected == 0 ? count-1 : selected-1;
-            dirty = true;
         } else if (input == INPUT_DOWN || input == INPUT_RIGHT) {
             selected = (selected+1) % count;
-            dirty = true;
         } else if (input == INPUT_A || input == INPUT_START) {
-            confirmed = true;
+            if (screen_text_ready()) {
+                confirmed = true;
+            }
+        }
+        if (selected != before) {
+            if (state == HOST_CHOICE) {
+                screen_menu_select(selected);
+            } else {
+                screen_list_select(selected);
+            }
         }
     }
 }
 
 void game_host_draw(void)
 {
-    uint8_t i;
     bool text = state == HOST_DIALOG || state == HOST_TUTORIAL;
 
-    /* The box stays up while a dialog waits, and also across back-to-back lines:
-     * the VM replaces the text in the same frame the previous one is dismissed. */
-    if (!text) {
+    /* The box stays up while anything waits for the player, and across back-to-back
+     * lines: the VM replaces the content in the same frame the previous one is dismissed. */
+    if (!text && state != HOST_CHOICE && state != HOST_EXPLORE) {
         screen_text_hide();
     }
     screen_text_marker(text && screen_text_ready());
     screen_draw();
-
-    if (!dirty) {
-        return;
-    }
-    dirty = false;
-    /* Choices and trigger picks are still serial-only until the box draws menus. */
-    if (state == HOST_CHOICE) {
-        debug_log(prompt);
-        for (i = 0; i < count; i++) {
-            debug_logf("%c %u: %s", i == selected ? '>' : ' ', i, options[i]);
-        }
-    } else if (state == HOST_EXPLORE) {
-        for (i = 0; i < count; i++) {
-            debug_logf("%c trigger %u", i == selected ? '>' : ' ', triggers[i]);
-        }
-    }
 }
 
 void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
@@ -159,17 +164,14 @@ void host_end(void)
 
 uint8_t host_choose(const char *text, const char *const *choices, uint8_t n)
 {
-    uint8_t i, result;
+    uint8_t result;
+
     if (state != HOST_CHOICE) {
-        prompt = text;
         count = n;
         selected = 0;
         confirmed = false;
-        for (i = 0; i < n; i++) {
-            options[i] = choices[i];
-        }
+        screen_menu_show(text, choices, n);
         state = HOST_CHOICE;
-        dirty = true;
     }
     if (!confirmed) {
         return HOST_PENDING;
@@ -183,18 +185,25 @@ uint8_t host_choose(const char *text, const char *const *choices, uint8_t n)
 uint8_t host_pick_trigger(uint8_t objective, const uint8_t *table_idx,
                           const uint8_t *trig_id, uint8_t n)
 {
-    uint8_t i, result;
+    uint8_t i, result, id, len;
+
     (void)table_idx;
     if (state != HOST_EXPLORE) {
-        debug_logf("Explore objective %u (serial trigger selection)", objective);
         count = n;
         selected = 0;
         confirmed = false;
         for (i = 0; i < n; i++) {
-            triggers[i] = trig_id[i];
+            id = trig_id[i];
+            trigger_labels[i] = id < TRIG_COUNT ? trigger_names[id] : "?";
         }
+        /* A placeholder for walking the map: pick a place from a list. */
+        len = append_text(explore_header, 0, "Go where?");
+        if (objective < TRIG_COUNT) {
+            len = append_text(explore_header, len, " Goal: ");
+            append_text(explore_header, len, trigger_names[objective]);
+        }
+        screen_list_show(explore_header, trigger_labels, n, 0);
         state = HOST_EXPLORE;
-        dirty = true;
     }
     if (!confirmed) {
         return HOST_PENDING;

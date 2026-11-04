@@ -74,6 +74,14 @@ obj/dat_io_zos.rel: engine/dat_io_zos.c engine/dat_io.h
 obj/memo_dat.rel: engine/memo_dat.c engine/memo_dat.h engine/dat_io.h script/build/memo_ids.h
 obj/memo_vm.rel: engine/memo_vm.c engine/memo_vm.h engine/memo_dat.h engine/memo_host.h script/build/memo_ids.h
 
+# memo_ids.h and memo.dat are generated together by the script compiler; the engine checks
+# memo.dat against the CRC in this header, so rebuild both whenever the script data or the
+# compiler changes, and ship the new memo.dat with the new program.
+PYTHON ?= python
+SCRIPT_INPUTS=$(wildcard script/tools/memo_dat.py script/tools/memo/*.py script/common/*.json script/scenes/*.json script/assets/manifest.json)
+script/build/memo_ids.h: $(SCRIPT_INPUTS)
+	$(PYTHON) script/tools/memo_dat.py build
+
 clean:
 	-$(RM) $(call FIX_PATH,$(OBJ))
 	-$(RM) $(call FIX_PATH,$(BIN))
