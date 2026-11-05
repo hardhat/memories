@@ -165,7 +165,7 @@ class ZealBuild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             (d / "memo_ids.h").write_text(header, encoding="utf-8")
-            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen"):
+            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "title"):
                 src = ctrace.ENGINE / f"{name}.c"
                 r = subprocess.run(["sdcc", "-mz80", "--std-c2x", "-c", "-I", str(ctrace.ENGINE), "-I", str(d),
                                     "-I", str(self.ZOS), "--codeseg", "TEXT", "-o", str(d / f"{name}.rel"), str(src)],
@@ -227,6 +227,43 @@ class ScreenModel(unittest.TestCase):
             colours = set(box.get_flattened_data())
             self.assertGreaterEqual(len(colours), 3)                       # background, name, text
             self.assertEqual(shot.getpixel((0, 192)), shot.getpixel((319, 239)))
+
+
+@unittest.skipUnless(HAVE_CC, "no C compiler")
+class TitleScreen(unittest.TestCase):
+    """The startup title picture against a software model of the video board."""
+
+    def test_title_matches_the_gif(self):
+        from PIL import Image
+
+        p, data, header = full_game()
+        gif = Path(p.cgs["CG-title"]["file"])
+        gif = gif if gif.is_absolute() else Path(__file__).resolve().parents[2] / gif
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            exe = build_c(work, ("title.c", "memo_dat.c", "dat_io_stdio.c", "test/gfx_mock.c",
+                                 "test/title_main.c"), "title_test.exe", header)
+            (work / "memo.dat").write_bytes(data)
+            result = subprocess.run([str(exe), str(work / "title.ppm")], capture_output=True, text=True,
+                                    timeout=10, cwd=work)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("layer1 0", result.stdout)
+            with Image.open(work / "title.ppm") as image:
+                shot = image.convert("RGB")
+        with Image.open(gif) as image:
+            palette = image.getpalette()
+            pixels = image.load()
+
+            def rgb565(i):
+                r, g, b = palette[i * 3:i * 3 + 3]
+                return ((r >> 3) * 255 // 31, (g >> 2) * 255 // 63, (b >> 3) * 255 // 31)
+
+            for y in range(192):
+                for x in range(320):
+                    self.assertEqual(shot.getpixel((x, y)), rgb565(pixels[x, y]), (x, y))
+            below = {shot.getpixel((x, y)) for y in range(192, 240) for x in range(320)}
+        self.assertEqual(len(below), 1)
+        self.assertLess(sum(below.pop()), 24)                              # near black
 
 
 @unittest.skipUnless(HAVE_CC, "no C compiler")

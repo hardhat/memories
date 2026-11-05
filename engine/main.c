@@ -26,6 +26,7 @@
 #include "memo_host.h"
 #include "Nicety.h"
 #include "textaccel.h"
+#include "title.h"
 
 gfx_context ctx;
 
@@ -94,6 +95,32 @@ void clear_sprites(void)
     sprite_count=0;
 }
 
+// Returns true once a key has been pressed; Escape also sets quit.
+static bool title_key_pressed(void)
+{
+    unsigned char keys[32];
+    int size;
+    bool pressed = false;
+    bool released = false;
+
+    do {
+        size=32;
+        read(DEV_STDIN, &keys, &size);
+        for(int i=0;i<size;i++) {
+            unsigned char key = keys[i];
+            if(key == KB_RELEASED) {
+                released = true;
+            } else if(released) {
+                released = false;
+            } else {
+                if(key == KB_ESC) quit = true;
+                pressed = true;
+            }
+        }
+    } while(size>0);
+    return pressed;
+}
+
 void initialize_game()
 {
     // The graphics context must exist before the host initializes: the host's screen
@@ -101,6 +128,15 @@ void initialize_game()
     gfx_error err = gfx_initialize(ZVB_CTRL_VID_MODE_GFX_320_8BIT,&ctx);
     if(err != GFX_SUCCESS) {
         debug_logf("gfx_initialize failed: %u", err);
+    }
+
+    // The title uses VRAM that the host's screen module reinitializes, so it goes first.
+    if(title_show()) {
+        title_key_pressed();    // discard keys that were already down at startup
+        while(!quit && !title_key_pressed()) {
+            gfx_wait_vblank(&ctx);
+        }
+        if(quit) return;
     }
     memo_host_initialize();
 }

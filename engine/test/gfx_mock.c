@@ -167,6 +167,17 @@ void load_palette(const uint16_t *palette, uint8_t offset, uint8_t count)
     memcpy(&mock_palette[offset], palette, (size_t)count * 2);
 }
 
+void load_tileset(const uint8_t *tileset, uint16_t offset, uint16_t size, uint8_t palette_base)
+{
+    (void)palette_base;
+    if ((offset & 0xFF) != 0 || (size & 0xFF) != 0 || (offset >> 8) + (size >> 8) > 256) {
+        fail("load_tileset outside the tileset");
+    }
+    memcpy(mock_tileset[offset >> 8], tileset, size);
+    mock_upload_calls++;
+    mock_upload_bytes += size;
+}
+
 int mock_write_ppm(const char *path)
 {
     FILE *f = fopen(path, "wb");

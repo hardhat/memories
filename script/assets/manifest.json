@@ -20,7 +20,8 @@
     "CG-10d": { "gif": "../../art/cg-placeholders/CG-10d__B8C80.gif", "bpp": 8 },
     "CG-11": { "gif": "../../art/cg-placeholders/CG-11__B8C80.gif", "bpp": 8 },
     "CG-12": { "gif": "../../art/cg-placeholders/CG-12__B8C80.gif", "bpp": 8 },
-    "CG-13": { "gif": "../../art/cg-placeholders/CG-13__B8C80.gif", "bpp": 8 }
+    "CG-13": { "gif": "../../art/cg-placeholders/CG-13__B8C80.gif", "bpp": 8 },
+    "CG-title": { "gif": "../../art/cg-placeholders/CG-title__B8C80.gif", "bpp": 8 }
   },
   "tilesets": {},
   "maps": {}

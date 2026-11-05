@@ -137,5 +137,11 @@
     "desc": "Patricia Sweet ending: cocoa thermos exchange at the snowy farmhouse door, Patricia in her trench coat and ordinary glasses, Brad in his winter jacket",
     "file": "art/cg-placeholders/CG-10d-sweet__B8C80.gif",
     "bpp": 8
+  },
+  "CG-title": {
+    "scene": "title",
+    "desc": "Ravenwood College's gothic clock tower on a hill at dusk with lit windows, a big full moon, a raven perched on a stone gate pillar, an iron gate, glowing jack-o'-lanterns and a glowing pumpkin patch along the path, wide empty dusk sky in the upper left",
+    "file": "art/cg-placeholders/CG-title__B8C80.gif",
+    "bpp": 8
   }
 }
