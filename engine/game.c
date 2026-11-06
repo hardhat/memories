@@ -14,6 +14,9 @@ void game_initialize(void)
         held[i] = false;
     }
     result = dat_open("memo.dat", MEMO_CONTENT_CRC);
+    if(result != DAT_OK) {
+        result = dat_open("h:/memo.dat", MEMO_CONTENT_CRC);
+    }
     if (result != DAT_OK) {
         debug_logf("DAT initialization failed: %u", result);
         result = MEMO_ERR_DAT;

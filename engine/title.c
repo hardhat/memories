@@ -70,7 +70,10 @@ bool title_show(void)
     bool ok;
 
     if (dat_open("memo.dat", MEMO_CONTENT_CRC) != DAT_OK) {
-        return false;
+        if(dat_open("h:/memo.dat", MEMO_CONTENT_CRC) != DAT_OK) {
+            debug_log("Failed to open memo.dat");
+            return false;
+        }
     }
     ok = load_art();
     dat_close();

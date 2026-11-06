@@ -138,6 +138,7 @@ void initialize_game()
         }
         if(quit) return;
     }
+    debug_log("Initializing memo host");
     memo_host_initialize();
 }
 
@@ -360,12 +361,18 @@ void process_input(void)
 
 int main(int argc, char *argv[])
 {
+    (void)argc;
+    (void)argv;
     ser = open("#SER0",O_WRONLY);
     if (ser < 0) {
         printf("Failed to open serial port\n");
 	    exit(1);
     }
+    debug_log("Serial port opened");
 
+    /* Initialize the keyboard by setting it to raw and non-blocking */
+    void* arg = (void*) (KB_READ_NON_BLOCK | KB_MODE_RAW);
+    ioctl(DEV_STDIN, KB_CMD_SET_MODE, arg);
     initialize_game();
 
     while(!quit)
