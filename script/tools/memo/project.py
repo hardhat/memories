@@ -14,9 +14,11 @@ DEFAULT_CONFIG = {
               "night", "midnight", "snow"],
     "limits": {"code_buf": 4096, "code_warn": 3072, "call_depth": 8,
                "explore_triggers": 16, "strings_bytes": 65000},
-    # Portrait: base image and the alternate-head region, in 16x16 tiles (x, y, w, h for the head).
+    # Portrait: base image and the alternate-head region, in 16x16 tiles (x, y, w, h for the head), and
+    # the palette indices each side's portrait must use (baked into the art, screen-spec.md section 3).
     # CG modes: bits per pixel -> image size in tiles.
-    "art": {"portrait": {"base": [2, 5], "head": [0, 0, 2, 2], "max_colors": 32},
+    "art": {"portrait": {"base": [2, 4], "head": [0, 0, 2, 2],
+                         "palette": {"left": [32, 78], "right": [79, 125]}},
             "cg_modes": {"4": [20, 15], "8": [20, 12]}},
 }
 

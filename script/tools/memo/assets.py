@@ -126,8 +126,11 @@ def tiles_block_data(info, keep_compression):
     return struct.pack("<BBH", info["bpp"], 0, info["tile_count"]) + info["raw"]
 
 
-def palette_block_data(info):
-    return bytes([0, info["colors"] - 1]) + info["ztp"]
+def palette_block_data(info, first=0, last=None):
+    """PALETTE block: first, last (inclusive), then those RGB565 entries. Baked art (portraits)
+    stores only its own slice so loading it never touches other entries."""
+    last = info["colors"] - 1 if last is None else last
+    return bytes([first, last]) + info["ztp"][first * 2:(last + 1) * 2]
 
 
 # ---------------------------------------------------------------------------
@@ -143,6 +146,15 @@ def check_pixels(a, name, info):
     return True
 
 
+def portrait_range(p, cname):
+    """Palette indices a portrait must use, from its side (screen-spec.md section 3)."""
+    side = p.chars_raw[cname].get("side")
+    ranges = p.config["art"]["portrait"]["palette"]
+    if side not in ranges:
+        raise AssetError(f"{cname}: portrait characters need side left or right in characters.json")
+    return ranges[side]
+
+
 def check_portrait(a, p, cname, spec, info):
     art = p.config["art"]["portrait"]
     base = spec.get("base", art["base"])
@@ -151,10 +163,14 @@ def check_portrait(a, p, cname, spec, info):
     ok = check_pixels(a, cname, info)
     if info["bpp"] != 8:
         a.diag("error", cname, f"portraits are 8bpp, found {info['bpp']}bpp")
-        ok = False
-    if info["colors"] > art["max_colors"]:
-        a.diag("error", cname, f"palette has {info['colors']} colours (portrait limit {art['max_colors']}); "
-                               f"export with the C flag, e.g. name__B8C20.gif")
+        return False, base, head, None
+    lo, hi = portrait_range(p, cname)
+    used = sorted(set(info["raw"]) - {0})
+    stray = [i for i in used if not lo <= i <= hi]
+    if stray:
+        a.diag("error", cname, f"pixel indices {stray[0]}..{stray[-1]} are outside this portrait's palette range "
+                               f"{lo}-{hi} ({p.chars_raw[cname].get('side')} side). Portraits are baked: index 0 is "
+                               f"transparent and every colour sits at its final index (screen-spec.md section 3)")
         ok = False
     hx, hy, hw, hh = head
     if hx + hw > base[0] or hy + hh > base[1]:
@@ -167,7 +183,7 @@ def check_portrait(a, p, cname, spec, info):
                f"{n - 1} alternate heads of {hw}x{hh} (a {base[0] * 16} px wide sheet: base image on top, "
                f"each alternate head below it)")
         ok = False
-    return ok, base, head
+    return ok, base, head, (lo, max(used) if used else lo)
 
 
 def check_cg(a, p, name, spec, info):
@@ -229,18 +245,19 @@ def load_assets(p, manifest_path=None, convert=False, keep_compression=False):
         pbase, head = list(art["portrait"]["base"]), list(art["portrait"]["head"])
         spec = manifest.get("portraits", {}).get(cname)
         got = None
+        span = None
         if spec is None:
             a.missing.append(cname)
         else:
             try:
                 src = resolve_sources(spec, mdir, convert, tool, cname)
                 info = read_gfx(src, cname)
-                ok, pbase, head = check_portrait(a, p, cname, spec, info)
+                ok, pbase, head, span = check_portrait(a, p, cname, spec, info)
                 got = info if ok else None
             except AssetError as e:
                 a.diag("error", cname, str(e).split(": ", 1)[-1])
         if got:
-            tiles.data, pal.data = tiles_block_data(got, keep_compression), palette_block_data(got)
+            tiles.data, pal.data = tiles_block_data(got, keep_compression), palette_block_data(got, *span)
             check_size(a, cname, tiles, pal)
         else:
             mark_missing(tiles, pal)

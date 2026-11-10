@@ -47,7 +47,7 @@ def make_gif(path, w, h, colors, pixel=lambda x, y: 0):
         pal += [i, (i * 3) & 255, (255 - i) & 255]
     img.putpalette(pal)
     img.putdata([pixel(x, y) % colors for y in range(h) for x in range(w)])
-    img.save(path)
+    img.save(path, optimize=False)   # keep unused palette entries, so baked indices survive
 
 
 def build(p, manifest, folder, **kw):
@@ -168,34 +168,47 @@ class EndToEnd(unittest.TestCase):
         self.assertTrue(any("220" in e or "tiles" in e for e in errors(assets)), errors(assets))
 
     def test_portrait(self):
-        # 32 wide: 80 px base, then one 32 px alternate head
-        manifest = {"portraits": {"jane": {"gif": self.gif("jane__B8C20.gif", 32, 112, 32,
-                                                           lambda x, y: (x + y) % 32)}}}
+        # 32 wide, jane is a right-side portrait: 64 px base, then one 32 px alternate head, with
+        # every colour baked at indices 79-125 (index 0 transparent).
+        manifest = {"portraits": {"jane": {"gif": self.gif("jane__B8C7E.gif", 32, 96, 126,
+                                                           lambda x, y: 79 + (x + y) % 47)}}}
         assets, dat, _ = build(project(), manifest, self.dir, convert=True)
         self.assertEqual(errors(assets), [])
         desc = dat.portrait(dat.index["portraits"][1][0])
-        self.assertEqual(desc["base"], (2, 5))
+        self.assertEqual(desc["base"], (2, 4))
         self.assertEqual(desc["head"], (0, 0, 2, 2))
         self.assertEqual(desc["exprs"], 2)
         bpp, comp, count, data = dat.tileset(desc["tiles"])
-        self.assertEqual((bpp, count), (8, 14))
+        self.assertEqual((bpp, count), (8, 12))
         first, last, colors = dat.palette(desc["palette"])
-        self.assertEqual(last, 31)
+        self.assertEqual((first, last), (79, 125))      # only this portrait's slice is stored
+        self.assertEqual(len(colors), 47)
+
+    def test_portrait_palette_slice_ends_at_the_highest_used_index(self):
+        gif = self.gif("jane__B8C7E.gif", 32, 96, 126, lambda x, y: 79 + (x + y) % 5)
+        assets, dat, _ = build(project(), {"portraits": {"jane": {"gif": gif}}}, self.dir, convert=True)
+        self.assertEqual(errors(assets), [])
+        first, last, colors = dat.palette(dat.portrait(dat.index["portraits"][1][0])["palette"])
+        self.assertEqual((first, last), (79, 83))
 
     def test_portrait_checks(self):
         cases = {
-            "tile count": self.gif("a__B8C20.gif", 32, 80, 32),            # no alternate head
-            "colours": self.gif("b__B8.gif", 32, 112, 256, lambda x, y: x + y * 32),   # 256 colour palette
-            "bpp": self.gif("c__B4C10.gif", 32, 112, 16),
+            "tile count": self.gif("a__B8C7E.gif", 32, 64, 126, lambda x, y: 79 + x % 47),   # no alternate head
+            "colours": self.gif("b__B8.gif", 32, 96, 256, lambda x, y: x + y * 32),          # 256 colour palette
+            "bpp": self.gif("c__B4C10.gif", 32, 96, 16),
+            "unbaked": self.gif("d__B8C20.gif", 32, 96, 32, lambda x, y: (x + y) % 32),      # local indices 0-31
+            "wrong side": self.gif("e__B8C4F.gif", 32, 96, 79, lambda x, y: 32 + (x + y) % 47),   # left range
         }
         for label, gif in cases.items():
             with self.subTest(label):
                 assets, _, _ = build(project(), {"portraits": {"jane": {"gif": gif}}}, self.dir, convert=True)
                 self.assertTrue(errors(assets), label)
                 self.assertIn("jane", assets.missing + ["jane"])
+                if label in ("unbaked", "wrong side"):
+                    self.assertTrue(any("range 79-125" in e for e in errors(assets)), errors(assets))
 
     def test_palette_overflow(self):
-        gif = self.gif("jane__B8C10.gif", 32, 112, 64, lambda x, y: x + y)
+        gif = self.gif("jane__B8C10.gif", 32, 96, 64, lambda x, y: x + y)
         assets, dat, _ = build(project(), {"portraits": {"jane": {"gif": gif}}}, self.dir, convert=True)
         self.assertTrue(any("outside the palette" in e for e in errors(assets)), errors(assets))
         self.assertTrue(dat.is_missing(dat.index["portraits"][1][0] + 1))
@@ -228,12 +241,12 @@ class EndToEnd(unittest.TestCase):
         self.assertEqual(dat.tileset(tiles)[2], 128)
 
     def test_stale_output_needs_convert(self):
-        gif = self.gif("jane__B8C20.gif", 32, 112, 32)
+        gif = self.gif("jane__B8C7E.gif", 32, 96, 126, lambda x, y: 79 + (x + y) % 47)
         assets, _, _ = build(project(), {"portraits": {"jane": {"gif": gif}}}, self.dir)
         self.assertTrue(any("--convert" in e for e in errors(assets)), errors(assets))
 
     def test_unflagged_name_rejected(self):
-        gif = self.gif("jane.gif", 32, 112, 32)
+        gif = self.gif("jane.gif", 32, 96, 32)
         assets, _, _ = build(project(), {"portraits": {"jane": {"gif": gif}}}, self.dir, convert=True)
         self.assertTrue(any("flags" in e for e in errors(assets)), errors(assets))
 

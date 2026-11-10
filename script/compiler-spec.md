@@ -250,10 +250,10 @@ TILEMAP block:  u8 comp (0 none, 1 rle), u8 width, u8 height (tiles)            
 
 `-u` plus a `.ztm` index shrinks either, if the picture repeats tiles (index bytes cap the unique tile count at 256). Both modes are supported; the choice is per CG in the manifest (`bpp`).
 
-**Portraits.** 8bpp, a **32x80 pixel** base image (2 tiles wide, 5 tall) plus alternate heads per expression, with 32 colours per portrait including transparent. The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image** (`head` = `[0, 0, 2, 2]`, configurable in `config.json` under `art.portrait`). The `PORTRAIT` block (type 8) describes it so the engine can swap expressions by rewriting a few tile map entries:
+**Portraits.** 8bpp, a **32x64 pixel** base image (2 tiles wide, 4 tall) plus alternate heads per expression, with at most 47 colours per portrait plus the shared transparent index 0 (48 in all). The base image is a waist-up bust. The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image** (`head` = `[0, 0, 2, 2]`, configurable in `config.json` under `art.portrait`), so the face must lie inside the top 32 rows. The `PORTRAIT` block (type 8) describes it so the engine can swap expressions by rewriting a few tile map entries:
 
 ```text
-u8  base_w, base_h         tiles in the base image          (32x80 px = 2 x 5 tiles)
+u8  base_w, base_h         tiles in the base image          (32x64 px = 2 x 4 tiles)
 u8  head_x, head_y         tile position of the head inside the base image
 u8  head_w, head_h         tiles per expression head
 u8  expr_count             expressions, in characters.json order
@@ -261,20 +261,17 @@ u16 tiles_block            TILESET block
 u16 palette_block          PALETTE block for this portrait
 ```
 
-**Artist's sheet layout.** One GIF, 32 pixels wide: the 80-pixel base image (showing expression 0) at the top, then one 32x32 head per further expression stacked below it in `characters.json` order. A portrait with `n` expressions is `32 x (80 + 32 * (n - 1))` pixels (Jane: 8 expressions today, so 32x304; Brad has 10, so 32x368). Export it as `jane__B8C20.gif`.
+**Artist's sheet layout.** One GIF, 32 pixels wide: the 64-pixel base image (showing expression 0) at the top, then one 32x32 head per further expression stacked below it in `characters.json` order. A portrait with `n` expressions is `32 x (64 + 32 * (n - 1))` pixels (Jane: 8 expressions today, so 32x288; Brad has 10, so 32x352). A portrait therefore uses `8 + 4 * (n - 1)` tiles, at most 48 for the eleven-expression limit of the 50-tile slot region. **The pixels are baked:** index 0 is transparent and every other pixel uses its final hardware palette index, left side 32-78 and right side 79-125 (screen-spec.md section 3). Export it with enough colours to cover those indices, so a right-side portrait is `jane__B8C7E.gif` (`C7E` = 126 entries).
 
 Tile layout in the `.zts` (so no explicit tile map is stored): raster order of that sheet, which is the base image's tiles (`base_w * base_h`, including the head of expression 0) then each alternate head (`head_w * head_h` tiles). Expression `e` (1 or more) tile `j` is tile `base_w*base_h + (e-1)*head_w*head_h + j`. Total tiles: `base_w*base_h + (expr_count-1)*head_w*head_h`. The build checks this count against the GIF and reports the expected sheet size when it does not match.
 
-**Palettes (current tooling, legacy constraints).** The palette block holds
-the `.ztp` entries (`first` is 0 in practice; the header supports sub-ranges).
-Current checks require decoded pixel indices below the palette colour count,
-portraits at most 32 colours (`C20`), and 4bpp indices 0-15. These checks do
-not yet implement the exploration allocation below.
+**Palettes.** The palette block holds `first`, `last` and the RGB565 entries between them. For a portrait the compiler stores only the slice from the side's first index to the highest index the art uses (for example 79 to 125), so loading it never touches another entry. The build checks that every non-zero pixel index lies inside the side's range (from `characters.json` `side` and `config.json` `art.portrait.palette`), which also keeps a portrait within 47 colours. Other art still uses the legacy checks (decoded pixel indices below the palette colour count, 4bpp indices 0-15) until it is baked too.
 
 **Exploration target contract (2026-10-30).** Shared hardware tile slots:
 0 empty; 1-63 dialog; 64-113 left portrait; 114-163 right portrait;
 164-255 scenery, sprites and effects (92 tiles together). Each portrait
-reserves a 2x5 base and ten additional 2x2 expression heads (50 tiles).
+reserves a 2x4 base and up to ten additional 2x2 expression heads (48 tiles,
+two of the 50 slots spare).
 Walking sprites are 16x32, front/back/one side, two frames each, with X-mirroring
 for the opposite side: 12 unique tiles per moving character. A stationary
 single pose costs two tiles. Each 16x16 sprite tile supports independent X/Y
@@ -286,7 +283,8 @@ visible colour on layer 0. Budget 48 colours per portrait including shared 0,
 The ranges are assigned in [screen-spec.md](screen-spec.md) section 3: dialog 1-31,
 left portrait 32-78, right portrait 79-125, world or CG 126-252. Asset tools
 must bake these final slot and palette indices into the art (the engine does
-not remap); the converters and compiler checks have not been updated yet.
+not remap). The compiler enforces this for portraits only so far; the
+other converters and checks have not been updated yet.
 Preserve tile indices and semantic palette roles across lighting/season
 variants; use palette swaps where sufficient, replacement tiles where shapes
 change. See [art-todo.md](../art/art-todo.md#exploration-tiles-and-palettes-2026-10-30-decisions)
@@ -601,13 +599,13 @@ Measured with a throwaway analysis of the ten scenes using the opcode sizes in s
 | s10 | 1,167 | 319 | 159 | 8,510 | 1 |
 | **Total** | **12,633** | | **1,813 unique (of 1,830)** | **93,693** | |
 
-Script content totals about 106 KB, plus tables (under 1 KB) and a header of about 2 KB. Art will dominate the file, and is stored uncompressed by default: one CG is 38,400 bytes (320x240 4bpp) or 61,440 bytes (320x192 8bpp), so 19 CGs are 0.73 or 1.17 MB. A portrait base of 32x80 at 8bpp is 10 tiles = 2,560 bytes, plus 256 bytes per head tile per extra expression (a 2x2-tile head costs 1,024 bytes per expression). The palettes are small (32 bytes per 16 colours, 512 bytes for 256). Strings are the second largest part.
+Script content totals about 106 KB, plus tables (under 1 KB) and a header of about 2 KB. Art will dominate the file, and is stored uncompressed by default: one CG is 38,400 bytes (320x240 4bpp) or 61,440 bytes (320x192 8bpp), so 19 CGs are 0.73 or 1.17 MB. A portrait base of 32x64 at 8bpp is 8 tiles = 2,048 bytes, plus 256 bytes per head tile per extra expression (a 2x2-tile head costs 1,024 bytes per expression). The palettes are small (32 bytes per 16 colours, 512 bytes for 256). Strings are the second largest part.
 
 ## 12. Review decisions and open questions
 
 **Decided in review**
 
-1. **Art:** `gif2zeal.py` produces `.zts` (16x16 tiles) and `.ztp` (RGB565 little endian). CGs are 320x240 at 4bpp or 320x192 at 8bpp. Portraits are 8bpp, **32 pixels wide by 80 tall** (2 x 5 tiles), with alternate heads per expression and 32 colours each (including transparent).
+1. **Art:** `gif2zeal.py` produces `.zts` (16x16 tiles) and `.ztp` (RGB565 little endian). CGs are 320x240 at 4bpp or 320x192 at 8bpp. Portraits are 8bpp, **32 pixels wide by 64 tall** (2 x 4 tiles), with alternate heads per expression and at most 47 baked colours plus transparent each (section 5.7).
 2. **Palettes:** exploration shares hardware palette memory under the
    2026-10-30 allocation in section 5.7; the earlier independent-palette/no-slot-map
    assumption is superseded. Compiler/runtime support still needs updating.
@@ -615,7 +613,7 @@ Script content totals about 106 KB, plus tables (under 1 KB) and a header of abo
 4. **Maps:** Tiled (TMX, CSV) converted with `tiled2zeal.py`; spawns and triggers come from TMX object layers (section 5.8).
 5. **Code buffer:** a plain RAM array holding the scene's bytecode, not application paging (section 10).
 6. **Dialog area:** 6 lines tall, so every choice (at most 6 lines) fits and no script trimming is needed.
-7. **Portrait head:** the alternate head is a 2 x 2 tile (32x32 px) region at the top of the 2 x 5 tile base image. The artist's sheet is the 80 px base on top with each alternate head stacked below it (section 5.7).
+7. **Portrait head:** the alternate head is a 2 x 2 tile (32x32 px) region at the top of the 2 x 4 tile base image (changed from 2 x 5 on 2026-11-10, when the portraits became waist-up busts). The artist's sheet is the 64 px base on top with each alternate head stacked below it (section 5.7).
 8. **Screen layout (2026-11-03):** map full screen with the dialog box in rows 12-14; CGs in rows 0-11 with the box over their bottom three rows (a CG has 240 unique tiles, so it cannot share the 256 slots with the 60 dialog tiles); no portraits during CGs; text is not drawn onto CG images. Final slot and palette indices are baked into the art. Everything is in [screen-spec.md](screen-spec.md).
 
 **Open (deferred)**

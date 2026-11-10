@@ -16,7 +16,7 @@ on hardware yet; timing figures are estimates until measured.
 | D1 | One 320x240 8bpp mode: a 20x15 grid of 16x16 tiles, two tile layers (0 behind, 1 in front) and sprites. 8bpp tilemap entries are one byte, so there are exactly **256 tile slots** for everything. The layers have separate scroll registers. |
 | D2 | Slot map (section 2) and palette map (section 3) are fixed. Asset tools **bake** the final slot and palette indices into the art; the engine never remaps at run time (the SDK's `pal_offset` path is a per-byte loop and would also move index 0). |
 | D3 | **Map mode**: layer 0 shows the map full screen, 15 rows. The dialog box is three rows on layer 1 (rows 12-14). With no text, the map is simply full screen. |
-| D4 | **Portraits** are layer 1 tiles, 2 wide by 5 tall, in rows 7-11 (0-based; "rows 8-12" counting from 1), directly above the box: Brad on the left (columns 0-1), everyone else on the right (columns 18-19). `characters.json` fixes each character's side, so no horizontal flip is needed and tiles suffice. An expression change rewrites four tilemap cells; it uploads nothing. |
+| D4 | **Portraits** are layer 1 tiles, 2 wide by 4 tall (a 32x64 waist-up bust), in rows 8-11 (0-based), directly above the box: Brad on the left (columns 0-1), everyone else on the right (columns 18-19). `characters.json` fixes each character's side, so no horizontal flip is needed and tiles suffice. An expression change rewrites four tilemap cells (the 2x2 head at the top); it uploads nothing. A portrait with `n` expressions uses `8 + 4*(n-1)` tiles, at most 48 of its 50 slots. Changed from 2x5 on 2026-11-10: the generator makes busts, and a 2x4 base keeps the face large. |
 | D5 | **CG mode**: the 320x192 CG occupies tile rows 0-11 of layer 0. Rows 12-14 are black. The text box moves up to rows 9-11, **over the CG's bottom three rows**. |
 | D6 | **No portraits during a CG.** The speaker's name shows on the first text line instead. |
 | D7 | **Text is not drawn onto the CG image.** It would be too busy to read; the box replaces the pixels. |
@@ -50,14 +50,14 @@ only (D6), because a 50-tile portrait cannot fit beside 180 + 60 CG and text til
 | 1-60 | 60 | Text box tiles | Text box tiles, or CG rows 9-11 |
 | 61 | 1 | Continue arrow | Same |
 | 62-63 | 2 | Spare | Spare |
-| 64-113 | 50 | Left portrait (2x5 base + ten 2x2 heads) | CG rows 0-8 (slots 64-243) |
-| 114-163 | 50 | Right portrait | (CG) |
+| 64-113 | 50 | Left portrait (2x4 base + up to ten 2x2 heads, 48 tiles) | CG rows 0-8 (slots 64-243) |
+| 114-163 | 50 | Right portrait (same) | (CG) |
 | 164-255 | 92 | Scenery, sprites, effects | (CG up to 243, then 12 spare) |
 
 | Tile rows | Map mode | CG mode |
 |---|---|---|
-| 0-6 | Map | CG |
-| 7-8 | Map; portraits start | CG |
+| 0-7 | Map | CG |
+| 8 | Map; portraits start (2x4 tiles, rows 8-11) | CG |
 | 9-11 | Map; portraits | Text box, over the CG's bottom three rows |
 | 12-14 | Text box | Black |
 
@@ -78,9 +78,14 @@ layer 0. Budgets count it once.
 | 253-255 | 3 | Spare |
 
 The dialog palette is loaded once and never replaced, so text stays correct in every
-mode. A CG must be quantized to 127 colours plus black. This is **planned**: the current
-converters (`convert_cgs.py`, `export_farm_pilot.py`, the portrait export) still use local
-indices and must be changed to emit these ranges.
+mode. A CG must be quantized to 127 colours plus black.
+
+**Baking.** Art carries its final indices, so loading it is a plain copy. **Portraits are
+baked and checked by the compiler** (index 0 or the side's range, palette slice stored
+as `first`..`last`; compiler-spec.md section 5.7), and `script/tools/export_portrait.py`
+produces them from `art/portraits/<name>.png`. Jane is the first and is in `memo.dat`.
+CGs, the farm atlas and sprites are **planned**: `convert_cgs.py` and
+`export_farm_pilot.py` still use local indices and must be changed to emit these ranges.
 
 ## 4. Dialog box (done)
 

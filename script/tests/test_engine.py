@@ -55,9 +55,9 @@ class FullGame(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             make_gif(d / "cg01__B8C20.gif", 320, 192, 30, lambda x, y: (x // 16 + y // 16) % 30)
-            make_gif(d / "jane__B8C20.gif", 32, 304, 32, lambda x, y: (x + y) % 32)
+            make_gif(d / "jane__B8C7E.gif", 32, 288, 126, lambda x, y: 79 + (x + y) % 47)
             (d / "manifest.json").write_text(
-                '{"cgs": {"CG-01": {"gif": "cg01__B8C20.gif"}}, "portraits": {"jane": {"gif": "jane__B8C20.gif"}}}')
+                '{"cgs": {"CG-01": {"gif": "cg01__B8C20.gif"}}, "portraits": {"jane": {"gif": "jane__B8C7E.gif"}}}')
             p, data, header = full_game(d / "manifest.json", convert=True)
             self.assertGreater(len(data), 61440 + 10000)
             result = ctrace.compare_c(p, data, header, d / "work", range(3), ("uniform",))

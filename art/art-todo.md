@@ -60,8 +60,8 @@ Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.
 
 - [x] Tools: `gif2zeal.py` makes `.zts` (tiles) and `.ztp` (palette, RGB565 little endian); `tiled2zeal.py` makes `.ztm` from Tiled maps.
 - [x] Tile size 16x16. CGs are 320x192 at 8bpp (all 23); see the CG display decision below. (The 4bpp 320x240 option is not used.)
-- [x] Portraits: 8bpp, **32 pixels wide by 80 tall** (2 x 5 tiles) base image plus alternate heads per expression, 32 colours each including transparent.
-- [x] The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image**. One GIF per portrait, 32 px wide: the 80 px base image (expression 0) first, then one 32x32 head for each further expression stacked below it, in the order listed in `characters.json` (`have`, then `todo`). A character with `n` expressions is `32 x (80 + 32 * (n - 1))` px, exported as `name__B8C20.gif` (`C20` = 32 colours). The compiler rejects other sizes and says what it expected.
+- [x] Portraits: 8bpp, **32 pixels wide by 64 tall** (2 x 4 tiles, a waist-up bust; changed from 80 tall on 2026-11-10) base image plus alternate heads per expression, at most 47 colours plus transparent, baked to the side's palette range (left 32-78, right 79-125).
+- [x] The alternate head is a **2 x 2 tile (32x32 px) region at the top of the base image**, so the face must sit inside the top 32 rows. One GIF per portrait, 32 px wide: the 64 px base image (expression 0) first, then one 32x32 head for each further expression stacked below it, in the order listed in `characters.json` (`have`, then `todo`). A character with `n` expressions is `32 x (64 + 32 * (n - 1))` px, exported as `name__B8C7E.gif` for the right side (`C7E` = 126 palette entries; a left-side portrait needs `C4F`, 79 entries). The compiler rejects other sizes and says what it expected.
 - [x] Exploration uses the shared tile/palette budgets below, superseding the
   earlier independent-palette assumption. Art is stored uncompressed in the DAT.
 - [x] Files are GIFs with `__` filename flags for the converter (for example `cg01__B8C20.gif`); the compiler needs the flags in the name. Map tilesets must NOT use the unique flag (`U`), so tile order matches Tiled, and hold at most 255 tiles.
@@ -78,7 +78,7 @@ Still to confirm:
   exceptions were needed. 320x240 4bpp remains an available alternative.
 - [x] Walk-sprite size: 16x32; two animation frames per stored direction,
   with one reused as idle.
-- [ ] File naming: `<character>.gif` per portrait sheet (`jane__B8C20.gif`), `cg<id>__B8C<nn>.gif` for CGs, `sprite-<character>.gif` for walk sprites.
+- [ ] File naming: `<character>__B8C7E.gif` per right-side portrait sheet (`jane__B8C7E.gif`; left side `C4F`), `cg<id>__B8C<nn>.gif` for CGs, `sprite-<character>.gif` for walk sprites.
 - [ ] The existing turnaround sheets are high-resolution PNG. They need to be redrawn or downscaled and palette-reduced to the sizes above.
 
 ### Exploration tiles and palettes (2026-10-30 decisions)
@@ -97,8 +97,8 @@ The shared 256-tile memory layout retains both portraits:
 | 114-163 | 50 | Right portrait |
 | 164-255 | 92 | Location scenery, sprites and effects together |
 
-Each portrait reserves a 2x5-tile base plus up to ten additional 2x2 heads:
-10 + 10*4 = 50 tiles (up to eleven expressions including the base).
+Each portrait reserves a 2x4-tile base plus up to ten additional 2x2 heads:
+8 + 10*4 = 48 of its 50 slots (up to eleven expressions including the base).
 Keep both portraits as the baseline; reclaim portrait space only if story
 needs and a concrete location budget justify it. The existing portrait file
 layout remains unchanged; its old 32-colour export limit is a legacy tooling
@@ -332,7 +332,52 @@ checks before expanding to full locations.
   saved tile-order reconstruction. Pylance syntax service was unavailable;
   execution and focused tests passed.
 
+- [x] Game-ready portrait pilot: Jane (2026-11-10) works end to end. Her
+  eight expressions are exported as a baked GIF, compile into `memo.dat`, and
+  read back pixel-identical. **Not yet shown by the engine** (Phase 3 of
+  [screen-spec.md](../script/screen-spec.md)) and not yet reviewed on an
+  emulator. Source sheet: [art/portraits/jane.png](portraits/jane.png)
+  (32x288 RGBA: 32x64 base image, then seven 32x32 heads in `characters.json`
+  order smile, wink, serious, surprised, neutral, worried, laugh, candid).
+  Exported by `python script/tools/export_portrait.py jane` to
+  `script/assets/portraits/jane__B8C7E.gif` (36 tiles, palette 79-125, 47
+  colours; 59 colours at RGB565 precision were merged down, changing 92 of
+  6,255 opaque pixels), and listed in `script/assets/manifest.json`.
+  Layout decision: portraits are 2x4 tiles (32x64 waist-up bust), not 2x5.
+  **Method that worked** (repeat for the other characters):
+  1. Crop the neutral head from the character's expression supplement and
+     upload it to PixelLab. Plain downscales (nearest, box, Lanczos) lose the
+     eyes and mouth; `image_to_pixelart` keeps the face but leaves the
+     backdrop and ~45 colours and its faithful mode washes out; neither was used.
+  2. Creator Pro, 32x32, transparent, with the crop as the identity reference:
+     job `69b79472-860a-4d03-82fc-53a752cd471b` (64 head candidates). Pick
+     one head and save it as a reference.
+  3. Creator Pro, 32x64, with that head as the reference and the outfit from
+     the turnaround. Transparent-background batches `ef8fe0bc-7b06-4f79-ac18-afbb92e5516a`
+     put the figure low in the canvas (top row 18) so were not used. Asking
+     for a **flat magenta background** (job `ab2dc914-266a-4f79-bae8-2c85dc971018`,
+     25 candidates, `no_background` false) fills the canvas edge to edge; key
+     out the magenta (r>170, b>150, g<90) afterwards.
+  4. The face ran to row 33, past the 32-row head region, so shift the
+     figure up 4 rows and repeat the bottom (hem) row to refill. All eight
+     faces then lie inside the top two tiles.
+  5. Expressions by **face-window transplant**: take the base candidate and
+     paste the window x 8-24, y 12-30 from other candidates (smile 04 is the
+     base; wink 07, serious 12, surprised 14, neutral 00, worried 10, laugh 09,
+     candid 02). Candidates are not pixel-aligned elsewhere, but the window
+     lies on skin, so the hair and body stay identical across expressions.
+  Rejected: the 32x80 full-figure chibi (`cea157df-26b8-4d11-bef8-13f802f5fec1`)
+  and 32x80 waist-up bust (`0ee05ad8-8fbb-4e6b-83de-9d50d7a394d6`) batches
+  give a smaller face and need padding. Generation cost for Jane: 52 (five
+  Creator Pro batches at 10 plus two 1-generation converter tests); 1,888 of
+  2,000 remain this cycle. The selection and assembly steps above were done in
+  session storage and are not scripted yet.
+  **Open for the other six:** repeat the method (Brad is the left side,
+  palette 32-78, `C4F`), check each character's silhouette and costume
+  (Georgia's pie costume, Patricia's lab coat), and review on hardware.
+
 ## 1. Brad Bart (main character): P1
+
 
 Brad's original sheet has a turnaround; the expression supplement below adds
 the ten requested reference expressions. He appears on the left in every dialog

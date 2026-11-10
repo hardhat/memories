@@ -1,0 +1,16 @@
+{
+  "candidates": "source/jane",
+  "base": 4,
+  "shift": 4,
+  "window": [8, 12, 25, 31],
+  "expressions": {
+    "smile": 4,
+    "wink": 7,
+    "serious": 12,
+    "surprised": 14,
+    "neutral": 0,
+    "worried": 10,
+    "laugh": 9,
+    "candid": 2
+  }
+}
