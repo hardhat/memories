@@ -4,7 +4,7 @@
 #include "memo_vm.h"
 #include "game.h"
 #include "screen.h"
-
+#include "portrait.h"
 enum {
     HOST_IDLE, HOST_DIALOG, HOST_TUTORIAL, HOST_TIMER, HOST_CHOICE, HOST_EXPLORE
 };
@@ -36,6 +36,7 @@ void memo_host_initialize(void)
     ms_left = 0;
     confirmed = false;
     screen_init();
+    portrait_init();
     game_initialize();
 }
 
@@ -96,7 +97,13 @@ void game_host_draw(void)
         screen_text_hide();
     }
     screen_text_marker(text && screen_text_ready());
-    screen_draw();
+
+    /* Portraits stay up for a line and for a choice about it; anything else takes them down. */
+    if (state != HOST_DIALOG && state != HOST_CHOICE) {
+        portrait_hide();
+    }
+    /* The box has first call on the frame's one upload. */
+    portrait_draw(!screen_draw());
 }
 
 void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
@@ -104,11 +111,12 @@ void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
     char name[SCREEN_NAME_MAX + 1];
     uint8_t side, exprs;
 
-    (void)expr;   /* portraits are not bound yet */
     if (!dat_load_char(who, &side, &exprs, name, sizeof name)) {
         name[0] = '\0';
+        side = 0;
     }
     screen_text_show(name, text, style);
+    portrait_show(who, side, expr);
     state = HOST_DIALOG;
 }
 

@@ -21,8 +21,9 @@ void screen_init(void);
 /* Advance timers (marker blink). elapsed is in milliseconds. */
 void screen_update(uint16_t elapsed);
 
-/* Perform the pending VRAM work for this frame. */
-void screen_draw(void);
+/* Perform the pending VRAM work for this frame. Returns true if it uploaded tiles, so the
+ * caller can keep the frame to one upload (the portraits use what is left). */
+bool screen_draw(void);
 
 /* Dialog: name plate on line 0 (NULL or empty for none; ignored for style 2, credits) and
  * the text on lines 1-3, split at '\n'. */

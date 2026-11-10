@@ -1,6 +1,7 @@
 """Tests for the C engine (engine/): loader, VM, fault handling, and the Zeal (Z80) build.
 
 They need a C compiler (gcc, clang or CC); the Z80 test needs sdcc and the Zeal-8-bit-OS headers."""
+import json
 import shutil
 import subprocess
 import sys
@@ -165,7 +166,7 @@ class ZealBuild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             (d / "memo_ids.h").write_text(header, encoding="utf-8")
-            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "title"):
+            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "portrait", "title"):
                 src = ctrace.ENGINE / f"{name}.c"
                 r = subprocess.run(["sdcc", "-mz80", "--std-c2x", "-c", "-I", str(ctrace.ENGINE), "-I", str(d),
                                     "-I", str(self.ZOS), "--codeseg", "TEXT", "-o", str(d / f"{name}.rel"), str(src)],
@@ -195,7 +196,7 @@ class FrameLoop(unittest.TestCase):
         data, _ = build_dat(p, codes)
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "test/gfx_mock.c",
+            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "portrait.c", "test/gfx_mock.c",
                                  "test/frame_main.c"), "frame_test.exe", ids_header(p, data, codes))
             result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -264,6 +265,74 @@ class TitleScreen(unittest.TestCase):
             below = {shot.getpixel((x, y)) for y in range(192, 240) for x in range(320)}
         self.assertEqual(len(below), 1)
         self.assertLess(sum(below.pop()), 24)                              # near black
+
+
+@unittest.skipUnless(HAVE_CC and have_tool(), "no C compiler or SDK gif2zeal.py")
+class PortraitDisplay(unittest.TestCase):
+    """Streaming and showing portraits against the video model, using the real Brad and Jane."""
+
+    ART = Path(__file__).resolve().parents[1] / "assets" / "portraits"
+
+    @staticmethod
+    def rgb565(palette, i):
+        if i == 0:
+            return (0, 0, 0)
+        r, g, b = palette[i * 3:i * 3 + 3]
+        return ((r >> 3) * 255 // 31, (g >> 2) * 255 // 63, (b >> 3) * 255 // 31)
+
+    def expected(self, sheets, left, right):
+        """The screen the board should show: (sheet name, expression) for each side, or None."""
+        from PIL import Image
+
+        shot = Image.new("RGB", (320, 240), (0, 0, 0))
+        for x0, spec in ((0, left), (288, right)):
+            if spec is None:
+                continue
+            palette, pixels = sheets[spec[0]]
+            e = spec[1]
+            for y in range(64):
+                for x in range(32):
+                    sy = 64 + 32 * (e - 1) + y if e and y < 32 else y
+                    shot.putpixel((x0 + x, 128 + y), self.rgb565(palette, pixels[x, sy]))
+        return shot
+
+    def test_stream_and_show(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            for name in ("brad__B8C4F.gif", "jane__B8C7E.gif"):
+                shutil.copy(self.ART / name, work / name)
+            make_gif(work / "daniel__B8C7E.gif", 32, 160, 126,
+                     lambda x, y: 0 if (x + y) % 7 == 0 else 79 + (x // 3 + y // 5) % 47)
+            (work / "manifest.json").write_text(json.dumps({"portraits": {
+                "brad": {"gif": "brad__B8C4F.gif"}, "jane": {"gif": "jane__B8C7E.gif"},
+                "daniel": {"gif": "daniel__B8C7E.gif"}}}))
+            p, data, header = full_game(work / "manifest.json", convert=True)
+            ids = {c["name"]: i for i, c in enumerate(Dat(data).chars)}
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "portrait.c", "test/gfx_mock.c",
+                                 "test/portrait_main.c"), "portrait_test.exe", header)
+            (work / "memo.dat").write_bytes(data)
+            args = [str(exe), str(work / "memo.dat"), str(ids["Brad"]), str(ids["Jane"]), str(ids["Dad"]),
+                    str(ids["Gord"]), str(work)]
+            result = subprocess.run(args, capture_output=True, text=True, timeout=20)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("portrait tests passed", result.stdout)
+            sheets = {}
+            for key, name in (("brad", "brad__B8C4F.gif"), ("jane", "jane__B8C7E.gif"),
+                              ("daniel", "daniel__B8C7E.gif")):
+                with Image.open(work / name) as image:
+                    sheet = image.copy()
+                sheets[key] = (sheet.getpalette(), sheet.load())
+            cases = {"brad0": (("brad", 0), None), "brad5": (("brad", 5), None), "brad9": (("brad", 9), None),
+                     "both": (("brad", 0), ("jane", 2)), "jane7": (("brad", 0), ("jane", 7)),
+                     "daniel3": (("brad", 0), ("daniel", 3)), "jane0": (("brad", 0), ("jane", 0)),
+                     "daniel3b": (("brad", 0), ("daniel", 3))}
+            for name, (left, right) in cases.items():
+                with Image.open(work / f"portrait-{name}.ppm") as image:
+                    shot = image.convert("RGB")
+                want = self.expected(sheets, left, right)
+                self.assertEqual(shot.tobytes(), want.tobytes(), name)
 
 
 @unittest.skipUnless(HAVE_CC, "no C compiler")

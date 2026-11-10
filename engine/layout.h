@@ -23,6 +23,15 @@
 #define ROW_TEXT_MAP       12
 #define ROW_TEXT_CG        9
 
+/* Portraits: a 2x4 tile bust on layer 1 directly above the box, left or right. */
+#define PORTRAIT_COLS      2
+#define PORTRAIT_ROWS      4
+#define PORTRAIT_SLOTS     50
+#define ROW_PORTRAIT       8
+#define COL_PORTRAIT_LEFT  0
+#define COL_PORTRAIT_RIGHT 18
+#define PORTRAIT_CHUNK_TILES 8   /* tiles streamed per frame (2 KB) */
+
 /* Palette indices. 0 is shared: transparent on layer 1 and sprites, black on layer 0. */
 #define PAL_TRANSPARENT    0
 #define PAL_BOX_BG         1

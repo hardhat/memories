@@ -414,9 +414,10 @@ static void skip_clean(void)
 }
 
 /* Upload the next row that changed. At most one upload per frame. */
-static void build_step(void)
+static bool build_step(void)
 {
     uint8_t row;
+    bool uploaded = false;
 
     skip_clean();
     if (build_row < TEXT_ROWS) {
@@ -425,6 +426,7 @@ static void build_step(void)
             blank_rows(row, 1);
         }
         upload_row(row);
+        uploaded = true;
         row_dirty &= (uint8_t)~(1u << row);
         if (swap) {
             reveal_rows(row, 1);
@@ -442,9 +444,10 @@ static void build_step(void)
         state = TXT_SHOWN;
         marker_dirty = true;
     }
+    return uploaded;
 }
 
-void screen_draw(void)
+bool screen_draw(void)
 {
     uint8_t cell;
 
@@ -455,15 +458,15 @@ void screen_draw(void)
         swap = false;
         in_place = false;
         state = TXT_OFF;
-        return;
+        return false;
     }
     if (state == TXT_BUILD) {
-        build_step();
-        return;
+        return build_step();
     }
     if (state == TXT_SHOWN && marker_dirty) {
         cell = (marker_want && marker_phase && kind == KIND_TEXT) ? SLOT_MARKER : box_cells[DIALOG_TILES - 1];
         draw_fg(&cell, MARKER_COL, text_top() + TEXT_ROWS - 1, 1, 1);
         marker_dirty = false;
     }
+    return false;
 }

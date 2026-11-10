@@ -49,6 +49,57 @@ bool dat_load_char(uint8_t id, uint8_t *side, uint8_t *expr_count, char *name, u
     *expr_count = id == 1 ? 8 : 0;
     return true;
 }
+/* Jane's portrait (character 1): three expressions, so 16 tiles. Tile t is filled with t+1. */
+#define JANE_PORTRAIT 40
+#define JANE_TILES    41
+#define JANE_PALETTE  42
+#define JANE_TILE_COUNT 16
+static const uint8_t jane_head[11] = {2, 4, 0, 0, 2, 2, 3, JANE_TILES, 0, JANE_PALETTE, 0};
+
+static uint16_t jane_size(uint16_t id)
+{
+    return id == JANE_PORTRAIT ? sizeof jane_head : id == JANE_TILES ? 4 + JANE_TILE_COUNT * 256 : 2 + 4 * 2;
+}
+
+bool dat_entry(uint16_t id, DatEntry *out)
+{
+    if (id < JANE_PORTRAIT || id > JANE_PALETTE) {
+        return false;
+    }
+    out->offset = 0;
+    out->size = jane_size(id);
+    out->type = DAT_TYPE_PORTRAIT;
+    out->flags = 0;
+    return true;
+}
+bool dat_index_get(uint8_t table, uint8_t i, uint16_t *out)
+{
+    if (table != DAT_TABLE_PORTRAITS || i != 1) {
+        return false;
+    }
+    *out = JANE_PORTRAIT;
+    return true;
+}
+bool dat_read_block(uint16_t id, uint16_t offset, void *dst, uint16_t n)
+{
+    uint8_t *d = dst;
+    uint16_t k, pos;
+
+    if (id < JANE_PORTRAIT || id > JANE_PALETTE || (uint32_t)offset + n > jane_size(id)) {
+        return false;
+    }
+    for (k = 0; k < n; k++) {
+        pos = offset + k;
+        if (id == JANE_PORTRAIT) {
+            d[k] = jane_head[pos];
+        } else if (id == JANE_TILES) {
+            d[k] = pos < 4 ? (uint8_t[]){8, 0, JANE_TILE_COUNT, 0}[pos] : (uint8_t)((pos - 4) / 256 + 1);
+        } else {
+            d[k] = pos == 0 ? PAL_PORTRAIT_RIGHT : pos == 1 ? PAL_PORTRAIT_RIGHT + 3 : 0x1F;
+        }
+    }
+    return true;
+}
 uint8_t dat_load_scene(uint8_t scene)
 {
     static const uint8_t final[] = {OP_END};
@@ -136,6 +187,44 @@ static unsigned selected_rows(uint8_t row)
     return n;
 }
 
+/* A frame that also checks the screen as a whole keeps to one tile upload. */
+static void checked_frame(void)
+{
+    game_update(16);
+    mock_reset_counters();
+    game_draw();
+    assert(mock_upload_calls <= 1);
+}
+
+/* Jane (character 1, right side) is on screen showing expression `expr`. */
+static bool jane_up(uint8_t expr)
+{
+    uint8_t i, want;
+
+    for (i = 0; i < 8; i++) {
+        want = SLOT_PORTRAIT_RIGHT + i;
+        if (expr != 0 && i < 4) {
+            want = SLOT_PORTRAIT_RIGHT + 8 + (expr - 1) * 4 + i;
+        }
+        if (mock_fg[ROW_PORTRAIT + i / 2][COL_PORTRAIT_RIGHT + i % 2] != want) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool jane_down(void)
+{
+    uint8_t i;
+
+    for (i = 0; i < 8; i++) {
+        if (mock_fg[ROW_PORTRAIT + i / 2][COL_PORTRAIT_RIGHT + i % 2] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(void)
 {
     static const uint8_t dialog[] = {
@@ -162,6 +251,13 @@ int main(void)
         OP_END, OP_END, OP_END, OP_END, OP_END
     };
     static const uint8_t transition[] = {OP_SET, VAR_SCENE, 2, OP_END};
+    static const uint8_t jane_say[] = {OP_SAY, 1, 2, 0, 0, OP_END};
+    static const uint8_t jane_twice[] = {OP_SAY, 1, 0, 0, 0, OP_SAY, 1, 2, 0, 0, OP_END};
+    static const uint8_t jane_menu[] = {
+        OP_SAY, 1, 0, 0, 0,
+        OP_CHOICE, 0, 0, 2, 0, 0, 17, 0, 0, 0, 21, 0,
+        OP_SET, 0, 1, OP_END, OP_SET, 0, 2, OP_END
+    };
     static const uint8_t loop[] = {OP_JMP, 0, 0};
     static const uint8_t bad[] = {0x7f};
     uint8_t i;
@@ -282,6 +378,48 @@ int main(void)
     press(INPUT_A);
     game_update(16);
     assert(memo_vars[0] == 3 && ends == 1);
+
+    /* A speaker with a portrait: the box has the first upload of each frame, then the palette
+     * and tiles stream in, and the portrait goes away with the box. */
+    begin(jane_say, sizeof jane_say);
+    for (i = 0; i < 10; i++) {
+        checked_frame();
+    }
+    assert(box_up() && jane_up(2));
+    press(INPUT_A);
+    game_update(16);
+    assert(ends == 1);
+    game_draw();
+    assert(box_down() && jane_down());
+
+    /* The next line by the same speaker changes the head cells and uploads nothing. */
+    begin(jane_twice, sizeof jane_twice);
+    for (i = 0; i < 10; i++) {
+        checked_frame();
+    }
+    assert(jane_up(0));
+    press(INPUT_A);
+    mock_reset_counters();
+    game_update(16);
+    game_draw();
+    assert(box_up() && jane_up(2));
+    assert(mock_upload_calls == 0);                   /* the same text is already in VRAM */
+
+    /* A choice about the line keeps the portrait; the end of the scene removes it. */
+    begin(jane_menu, sizeof jane_menu);
+    for (i = 0; i < 10; i++) {
+        checked_frame();
+    }
+    press(INPUT_A);
+    for (i = 0; i < 6; i++) {
+        checked_frame();
+    }
+    assert(box_up() && jane_up(0));
+    press(INPUT_A);
+    game_update(16);
+    assert(memo_vars[0] == 1 && ends == 1);
+    game_draw();
+    assert(box_down() && jane_down());
 
     begin(transition, sizeof transition);
     game_update(16);

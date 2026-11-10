@@ -335,8 +335,9 @@ checks before expanding to full locations.
 - [ ] Game-ready portraits (2026-11-10): **Jane and Brad are done**; Daniel,
   Gord, Sandra, Georgia and Patricia remain. Each exports as a baked GIF,
   compiles into `memo.dat` and reads back pixel-identical (verified for both).
-  **Not yet shown by the engine** (Phase 3 of
-  [screen-spec.md](../script/screen-spec.md)) and not yet reviewed on an
+  **Shown by the engine in map mode** (Phase 3 of
+  [screen-spec.md](../script/screen-spec.md); the desktop test compares the screen
+  pixel-for-pixel with these sheets) but not yet reviewed on an
   emulator or hardware. Layout: portraits are 2x4 tiles (a 32x64 waist-up
   bust) plus 32x32 expression heads, not 2x5.
 

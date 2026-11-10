@@ -25,6 +25,9 @@ on hardware yet; timing figures are estimates until measured.
 | D10 | **Sprites** carry `SPRITE_FLAG_PRIORITY` (the hardware "behind FG" bit) and flips through `add_sprite`'s `flags`. 16x32 characters use one hardware sprite (`SPRITE_FLAG_TALL`, tile and tile+1) instead of two. |
 | D11 | **The map's `above` layer** shares layer 1 with the dialog overlay. While a dialog is open the camera must be tile-aligned; the overlay cells are restored from the map data when the box is hidden. If the `above` tiles on a map are sparse enough, drawing them as sprites instead is to be evaluated per map. |
 | D12 | Speaker names come from the `CHARS` block (`dat_load_char`), not from a table compiled into the engine. The placeholder trigger picker is the exception: its place names come from `MEMO_TRIGGER_NAMES` in `memo_ids.h`, because they exist only for play-testing before the maps do. |
+| D13 | **Who is shown (2026-11-10).** A speaker's portrait appears on their `CHARS` side and **stays up while the other side speaks**, so a conversation shows both partners. A line by a character with no side (the narrator) takes both down, as do tutorials, waits and the trigger picker; a choice keeps what was showing. The box and the portraits go away together. |
+| D14 | **Portraits yield the frame to the box.** The text box has first call on the frame's one upload; portrait streaming uses the frames the box leaves free. A portrait appears as soon as the tiles its expression needs are resident and goes on streaming the rest in the background. |
+| D15 | **Never rewrite what is visible.** A different character on a side is blanked, then streamed, then revealed. An expression whose head is not resident yet waits, and the previous expression stays up. A character's tiles and palette stay resident when hidden, so coming back costs only tilemap writes. |
 
 ### Why the CG and the box overlap (D5)
 
@@ -142,13 +145,49 @@ selection visible, with " k/n" appended to the header when the list scrolls. The
 the trigger names from `maps.json`, emitted by the compiler as `MEMO_TRIGGER_NAMES` in
 `memo_ids.h` (underscores shown as spaces).
 
-## 5. Frame protocol (done for the box)
+## 4a. Portraits (done in map mode)
+
+`portrait.c` owns the two portrait regions (slots 64-113 and 114-163) and the 2x4 tile cells
+above the box (rows 8-11, columns 0-1 or 18-19). The host asks for them with
+`portrait_show(who, side, expr)` from `host_say`, and `game_host_draw` calls
+`portrait_draw` after `screen_draw`, giving it the frame if the box did not upload (D14).
+
+Per side the module tracks three things: **resident** (the character whose tiles and
+palette are in VRAM and how many tiles have arrived), **wanted** (character and expression
+to display) and **shown** (what the cells say now). Each frame:
+
+1. A side whose shown character is no longer wanted is blanked (four cells, no upload).
+2. If the frame is free, one step runs: first a side that wants tiles it does not have,
+   else a side still finishing its resident character. A step is the palette (the stored slice, loaded
+   at its baked indices) or one chunk of `PORTRAIT_CHUNK_TILES` (8) tiles, read with
+   `dat_read_block` straight into the tileset at slot base + tiles loaded.
+3. A side whose wanted character and expression are resident is revealed: all eight cells for
+   a new character, or just the four head cells for an expression change.
+
+Tile order is the file order (compiler-spec.md section 5.7): base tiles 0-7, then head `e`
+at `8 + 4(e-1)`. The cells of expression 0 are the base; expression `e` replaces the top
+2x2 cells with head `e`. `expr` is clamped: `EXPR_NONE` keeps the character's current
+expression (0 for a new one), and an expression the portrait lacks shows the base.
+
+Cost: Brad (44 tiles) is the palette frame plus six chunk frames, and is on screen after the
+second (base tiles in); a head late in the file appears when its chunk lands. Everything
+after that is tilemap writes. The 2 KB chunk buffer is the only large static (the whole
+program now ends near 0xEB50, leaving about 5 KB for the stack; measure on hardware).
+
+**Validation.** The descriptor is checked before any VRAM write: a 2x4 base, a 2-wide head
+inside it, at most 50 tiles, an 8bpp uncompressed tileset block large enough for the tiles, and a
+palette slice inside the side's range (32-78 left, 79-125 right, at most 48 entries,
+block size exactly `2 + 2n`). A character without usable art logs once per line and shows
+nothing; the other side is unaffected.
+
+## 5. Frame protocol (done for the box and portraits)
 
 Main loop order: input, `gfx_wait_end_vblank`, `game_update` (VM and host), `gfx_wait_vblank`,
 `render_sprites`, `game_draw` (all VRAM writes). Estimated cost: a 20-tile upload is
 5,120 bytes, about 11 ms at 10 MHz with `LDIR`; this must be measured. Hence one upload
-per frame, and larger transfers (portraits, CGs) are streamed in 4 KB chunks of whole
-tiles, one chunk per frame, using `dat_read_block`.
+per frame, and larger transfers (portraits, CGs) are streamed in chunks of whole tiles, one
+chunk per frame, using `dat_read_block`. Portraits use 2 KB chunks (8 tiles), less than the box's
+5 KB row, since a chunk also costs a file read from the card or disk in the same frame.
 
 A residency table (planned) records what each slot region holds (text, CG bottom,
 portrait character, map tileset) so nothing is streamed twice.
@@ -170,14 +209,18 @@ anchor, are assumed from the SDK header and **must be checked on an emulator**.
 | 0 | Slot, row and palette constants; init order; remove test code; baked-index tooling | Constants, init order and cleanup **done**; asset tools **planned** |
 | 1 | Dialog and tutorial box in map mode, names from `CHARS`, marker | **done** |
 | 2 | Choice menu and trigger picker in the box | **done** |
-| 3 | Portraits (stream, palette slice, expression cells) | planned |
+| 3 | Portraits (stream, palette slice, expression cells) | **done** for map mode (CG mode hides them: phase 4) |
 | 4 | CG mode (stream, box over rows 9-11, restore on hide) | planned |
 | 5 | Map layers, scroll, sprites, `above` policy | planned |
 
 Tests: `engine/test/screen_main.c` (box against a video model: one-upload budget,
 invisible staging, in-place selection updates, scrolling, clipping, overflow layout),
-`engine/test/frame_main.c` (real host, screen and VM against a mock DAT, including menus
-and the picker), `engine/test/chars_main.c` (loader against the Python reader). The model
+`engine/test/frame_main.c` (real host, screen, portraits and VM against a mock DAT, including
+menus, the picker and a mock portrait), `engine/test/portrait_main.c` (the portrait module against
+a real `memo.dat` with Brad, Jane and a synthetic Daniel: streaming order, one upload per frame,
+expression cells, swaps on one side, hide and return; the test then compares every screen
+pixel-for-pixel with the artists' sheets), `engine/test/chars_main.c` (loader against the Python
+reader). The model
 ([gfx_mock.c](../engine/test/gfx_mock.c)) renders screens to PPM for review. Run
 `python -m unittest discover -s script/tests -p test_engine.py`.
 
@@ -188,4 +231,6 @@ and the picker), `engine/test/chars_main.c` (loader against the Python reader). 
 * Decide the `above` layer policy per map (D11), including the sprite alternative.
 * Rework the converters to emit baked slot and palette indices, with CGs at 127 colours plus black.
 * Fade: palette fading needs a 512-byte staging copy; for now a fade is only a timer.
-* The compiler still checks portraits against 32 colours and has no slot or palette-range check.
+* Measure the portrait chunk (file read plus 2 KB upload) against the frame, and the stack headroom
+  above the 0xEB50 end of the program's data.
+* Phase 4 must suppress portraits in CG mode (D6) and, when the CG leaves, show the speaker again.
