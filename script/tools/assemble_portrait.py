@@ -16,7 +16,13 @@ art/portraits/<name>.png (the sheet export_portrait.py bakes). Steps, in order:
 
 Spec (art/portraits/<name>.json):
   {"candidates": "source/jane", "base": 4, "shift": 4, "window": [8, 12, 25, 31],
+   "defringe": 20,                                    # optional, see below
    "expressions": {"smile": 4, "wink": 7, ...}}      # candidate file c<NN>.png per expression
+`defringe` removes the partly blended magenta pixels along the silhouette (red and blue both more
+than that much above green); it refuses if any such pixel lies inside the figure.
+`edits` (optional) sets hand-placed pixels in one expression's head, as {"embarrassed": [[x, y, [r, g, b]], ...]}
+with x, y in the 32x32 head; each must land on an opaque pixel. Used for details the generator cannot
+draw at this size, such as a blush.
 The expression names must be exactly the character's list in characters.json (have, then todo).
 The base expression (the first) must name the base candidate.
 """
@@ -55,6 +61,36 @@ def key_magenta(image):
     return out
 
 
+def defringe(image, tint):
+    """Remove the partly blended magenta left along the silhouette: pixels whose red and blue both
+    exceed green by more than `tint`. Natural colours (hair, skin, eyes, black) never do. Every removed
+    pixel must connect to the background through other removed pixels; one inside the figure is a
+    real colour, so this refuses rather than punching a hole."""
+    out = image.copy()
+    pixels = out.load()
+    w, h = out.size
+    tinted = {(x, y) for y in range(h) for x in range(w)
+              if pixels[x, y][3] and pixels[x, y][0] - pixels[x, y][1] > tint and pixels[x, y][2] - pixels[x, y][1] > tint}
+    reached, frontier = set(), [(x, y) for y in range(h) for x in range(w) if not pixels[x, y][3]]
+    seen = set(frontier)
+    while frontier:
+        x, y = frontier.pop()
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                n = (x + dx, y + dy)
+                if n in tinted and n not in seen:
+                    seen.add(n)
+                    reached.add(n)
+                    frontier.append(n)
+    inner = tinted - reached
+    if inner:
+        raise AssembleError(f"{len(inner)} tinted pixel(s) lie inside the figure (first at {min(inner)}); they are "
+                            f"real colours, so raise the defringe threshold above {tint}")
+    for x, y in tinted:
+        pixels[x, y] = (0, 0, 0, 0)
+    return out
+
+
 def shift_up(image, rows):
     """Move the figure up, dropping the top rows and repeating the last row at the bottom."""
     out = Image.new("RGBA", image.size)
@@ -65,17 +101,22 @@ def shift_up(image, rows):
     return out
 
 
-def prepare(path, shift):
+def prepare(path, shift, tint=None):
     with Image.open(path) as opened:
         image = opened.convert("RGBA")
     if image.size != SIZE:
         raise AssembleError(f"{path.name} is {image.width}x{image.height}; candidates must be 32x64")
-    return shift_up(key_magenta(image), shift)
+    image = key_magenta(image)
+    if tint is not None:
+        image = defringe(image, tint)
+    return shift_up(image, shift)
 
 
-def assemble(base, donors, window):
+def assemble(base, donors, window, edits=None):
     """base: prepared 32x64 base candidate; donors: prepared candidates in expression order,
-    starting with the base itself. Returns the 32 x (64 + 32 * (n - 1)) sheet."""
+    starting with the base itself. edits maps an expression position (0 is the base) to a list of
+    (x, y, (r, g, b)) pixels set inside that expression's 32x32 head region, each on an opaque pixel.
+    Returns the 32 x (64 + 32 * (n - 1)) sheet."""
     x0, y0, x1, y1 = window
     if not (0 <= x0 < x1 <= 32 and 0 <= y0 < y1 <= 32):
         raise AssembleError(f"face window {list(window)} must lie inside the 32x32 head region")
@@ -85,6 +126,16 @@ def assemble(base, donors, window):
         head = base.crop((0, 0, 32, 32))
         head.paste(donor.crop(window), (x0, y0))
         sheet.paste(head, (0, 64 + 32 * k))
+    for position, pixels in (edits or {}).items():
+        if not 0 <= position < len(donors):
+            raise AssembleError(f"edit for expression position {position}, but there are {len(donors)}")
+        top = 0 if position == 0 else 64 + 32 * (position - 1)
+        for x, y, color in pixels:
+            if not (0 <= x < 32 and 0 <= y < 32):
+                raise AssembleError(f"edit pixel ({x}, {y}) is outside the 32x32 head region")
+            if sheet.getpixel((x, top + y))[3] != 255:
+                raise AssembleError(f"edit pixel ({x}, {y}) is not on an opaque pixel")
+            sheet.putpixel((x, top + y), (*color, 255))
     return sheet
 
 
@@ -102,11 +153,16 @@ def build(name):
     folder = PORTRAITS / spec["candidates"]
 
     def load(index):
-        return prepare(folder / f"c{index:02}.png", spec["shift"])
+        return prepare(folder / f"c{index:02}.png", spec["shift"], spec.get("defringe"))
 
     base = load(spec["base"])
     donors = [base if index == spec["base"] else load(index) for index in spec["expressions"].values()]
-    return assemble(base, donors, tuple(spec["window"]))
+    edits = {}
+    for expression, pixels in spec.get("edits", {}).items():
+        if expression not in wanted:
+            raise AssembleError(f"edits name {expression!r}, which is not one of {wanted}")
+        edits[wanted.index(expression)] = [(x, y, tuple(color)) for x, y, color in pixels]
+    return assemble(base, donors, tuple(spec["window"]), edits)
 
 
 def main(argv=None):

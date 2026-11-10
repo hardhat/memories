@@ -332,49 +332,84 @@ checks before expanding to full locations.
   saved tile-order reconstruction. Pylance syntax service was unavailable;
   execution and focused tests passed.
 
-- [x] Game-ready portrait pilot: Jane (2026-11-10) works end to end. Her
-  eight expressions are exported as a baked GIF, compile into `memo.dat`, and
-  read back pixel-identical. **Not yet shown by the engine** (Phase 3 of
+- [ ] Game-ready portraits (2026-11-10): **Jane and Brad are done**; Daniel,
+  Gord, Sandra, Georgia and Patricia remain. Each exports as a baked GIF,
+  compiles into `memo.dat` and reads back pixel-identical (verified for both).
+  **Not yet shown by the engine** (Phase 3 of
   [screen-spec.md](../script/screen-spec.md)) and not yet reviewed on an
-  emulator. Source sheet: [art/portraits/jane.png](portraits/jane.png)
-  (32x288 RGBA: 32x64 base image, then seven 32x32 heads in `characters.json`
-  order smile, wink, serious, surprised, neutral, worried, laugh, candid).
-  Exported by `python script/tools/export_portrait.py jane` to
-  `script/assets/portraits/jane__B8C7E.gif` (36 tiles, palette 79-125, 47
-  colours; 59 colours at RGB565 precision were merged down, changing 92 of
-  6,255 opaque pixels), and listed in `script/assets/manifest.json`.
-  Layout decision: portraits are 2x4 tiles (32x64 waist-up bust), not 2x5.
-  **Method that worked** (repeat for the other characters):
+  emulator or hardware. Layout: portraits are 2x4 tiles (a 32x64 waist-up
+  bust) plus 32x32 expression heads, not 2x5.
+
+  | | Sheet | Source candidates | Side, palette | Expressions | Tiles |
+  |---|---|---|---|---|---|
+  | Jane | [jane.png](portraits/jane.png) 32x288 | [source/jane](portraits/source/jane) | right, 79-125 | 8 | 36 |
+  | Brad | [brad.png](portraits/brad.png) 32x352 | [source/brad](portraits/source/brad) | left, 32-78 | 10 | 44 |
+
+  Each sheet is a 32x64 base image then one 32x32 head per further expression
+  in `characters.json` order (Jane: smile, wink, serious, surprised, neutral,
+  worried, laugh, candid; Brad: neutral, smile, laugh, surprised, embarrassed,
+  worried, determined, confused, candid, sad). Both are in
+  `script/assets/manifest.json` and exported to `script/assets/portraits/`.
+
+  **Repeatable pipeline.** After picking candidates in PixelLab, record them in
+  `art/portraits/<name>.json`, copy the chosen raw candidates (`c<NN>.png`) to
+  `art/portraits/source/<name>/`, then run
+  `python script/tools/assemble_portrait.py <name>` (sheet from candidates:
+  key, defringe, shift, face-window transplant, optional edits) and
+  `python script/tools/export_portrait.py <name>` (bake to the side's palette
+  range). `--check` on either validates without writing. Tests reproduce both
+  sheets from their sources, so a change to a source or spec shows up.
+
+  **Generation method that worked:**
   1. Crop the neutral head from the character's expression supplement and
-     upload it to PixelLab. Plain downscales (nearest, box, Lanczos) lose the
-     eyes and mouth; `image_to_pixelart` keeps the face but leaves the
-     backdrop and ~45 colours and its faithful mode washes out; neither was used.
-  2. Creator Pro, 32x32, transparent, with the crop as the identity reference:
-     job `69b79472-860a-4d03-82fc-53a752cd471b` (64 head candidates). Pick
-     one head and save it as a reference.
-  3. Creator Pro, 32x64, with that head as the reference and the outfit from
-     the turnaround. Transparent-background batches `ef8fe0bc-7b06-4f79-ac18-afbb92e5516a`
-     put the figure low in the canvas (top row 18) so were not used. Asking
-     for a **flat magenta background** (job `ab2dc914-266a-4f79-bae8-2c85dc971018`,
-     25 candidates, `no_background` false) fills the canvas edge to edge; key
-     out the magenta (r>170, b>150, g<90) afterwards.
-  4. The face ran to row 33, past the 32-row head region, so shift the
-     figure up 4 rows and repeat the bottom (hem) row to refill. All eight
-     faces then lie inside the top two tiles.
+     upload it to PixelLab (and the front figure from the turnaround for the
+     outfit). Plain downscales (nearest, box, Lanczos) lose the eyes and mouth;
+     `image_to_pixelart` keeps the face but leaves the backdrop and ~45 colours
+     and its faithful mode washes out; neither is used.
+  2. Creator Pro, 32x64, asking for a **flat magenta background**
+     (`no_background` false). It then fills the canvas edge to edge; a
+     transparent request puts the figure low in the canvas (top row 18). One
+     batch gives 25 candidates for 10 generations. Jane needed a 32x32 head
+     batch first to set the head size (`69b79472-860a-4d03-82fc-53a752cd471b`);
+     Brad did not: the crop plus the turnaround as references were enough.
+  3. Key out the magenta. Brad's batch left a purple fringe of blended pixels,
+     so his spec sets `defringe` 20 (red and blue both more than 20 above
+     green); the tool refuses if such a pixel lies inside the figure, so a
+     real colour is never removed. Jane's batch needed none.
+  4. Shift the figure up so the whole face lies inside the top 32 rows (the
+     swappable head region), repeating the bottom row to refill: 4 rows for
+     Jane, 6 for Brad (his hair started at row 8, chin at 32).
   5. Expressions by **face-window transplant**: take the base candidate and
-     paste the window x 8-24, y 12-30 from other candidates (smile 04 is the
-     base; wink 07, serious 12, surprised 14, neutral 00, worried 10, laugh 09,
-     candid 02). Candidates are not pixel-aligned elsewhere, but the window
-     lies on skin, so the hair and body stay identical across expressions.
-  Rejected: the 32x80 full-figure chibi (`cea157df-26b8-4d11-bef8-13f802f5fec1`)
-  and 32x80 waist-up bust (`0ee05ad8-8fbb-4e6b-83de-9d50d7a394d6`) batches
-  give a smaller face and need padding. Generation cost for Jane: 52 (five
-  Creator Pro batches at 10 plus two 1-generation converter tests); 1,888 of
-  2,000 remain this cycle. The selection and assembly steps above were done in
-  session storage and are not scripted yet.
-  **Open for the other six:** repeat the method (Brad is the left side,
-  palette 32-78, `C4F`), check each character's silhouette and costume
-  (Georgia's pie costume, Patricia's lab coat), and review on hardware.
+     paste the window from other candidates (Jane x 8-24, y 12-30; Brad x 8-24,
+     y 14-27). Candidates are not pixel-aligned elsewhere, but the window lies on
+     skin, so hair and body stay identical across expressions (tested).
+  6. The generator cannot draw everything at 32 px. Brad's embarrassed head is
+     a glancing-eyes candidate plus four hand-placed blush pixels (`edits` in
+     `brad.json`).
+
+  **Palette.** Colours are first rounded to RGB565, then merged to the side's 47.
+  Jane: 59 colours, 92 of 6,255 opaque pixels changed. Brad: 111 colours (his
+  candidates came from different generator palettes), 530 of 5,732 pixels
+  changed, but only 8 moved more than 30 colour units and none more than 41;
+  the laugh mouth interior and teeth are visibly intact. Tests keep the
+  worst shift under 45.
+
+  **Picks.** Jane: base 04; wink 07, serious 12, surprised 14, neutral 00,
+  worried 10, laugh 09, candid 02, from job `ab2dc914-266a-4f79-bae8-2c85dc971018`.
+  Brad: base 02; smile 05, laugh 12, surprised 03, embarrassed 18, worried 08,
+  determined 04, confused 20, candid 13, sad 19, from job
+  `378d0867-b11f-4124-ba80-92c5f8e3a3ab`. Brad's separate 32x32 head batch
+  `0c8ed292-dbda-4071-b58f-a4e65f5b9692` was not needed. Rejected for Jane:
+  32x80 full-figure and waist-up batches (`cea157df-26b8-4d11-bef8-13f802f5fec1`,
+  `0ee05ad8-8fbb-4e6b-83de-9d50d7a394d6`) gave a smaller face and needed padding.
+  Cost: Jane 52 generations, Brad 20; 1,868 of 2,000 remain this cycle.
+
+  **Open for the other five:** repeat the pipeline (Daniel, Gord, Sandra,
+  Georgia and Patricia are all right side, 79-125, `C7E`), check each
+  character's silhouette and costume (Georgia's pie costume, Patricia's lab
+  coat), and review everything on hardware. Brad's face is a little smaller
+  than Jane's in the 32 px head; a larger head could be requested in the
+  prompt if it reads too small in play.
 
 ## 1. Brad Bart (main character): P1
 

@@ -82,8 +82,12 @@ mode. A CG must be quantized to 127 colours plus black.
 
 **Baking.** Art carries its final indices, so loading it is a plain copy. **Portraits are
 baked and checked by the compiler** (index 0 or the side's range, palette slice stored
-as `first`..`last`; compiler-spec.md section 5.7), and `script/tools/export_portrait.py`
-produces them from `art/portraits/<name>.png`. Jane is the first and is in `memo.dat`.
+as `first`..`last`; compiler-spec.md section 5.7). Two tools produce them:
+`script/tools/assemble_portrait.py` (candidates to `art/portraits/<name>.png`) and
+`script/tools/export_portrait.py` (sheet to the baked GIF). Brad (left) and Jane
+(right) are done and in `memo.dat`; the other five are right-side. Their tile counts
+are Daniel 20, Gord 28, Sandra 36, Georgia 36, Patricia 40, Jane 36, Brad 44, so
+each fits its 50-slot region.
 CGs, the farm atlas and sprites are **planned**: `convert_cgs.py` and
 `export_farm_pilot.py` still use local indices and must be changed to emit these ranges.
 

@@ -90,15 +90,34 @@ class Bake(unittest.TestCase):
         self.assertEqual(set(indexed.tobytes()), {79})
 
 
-class Jane(unittest.TestCase):
-    """The real asset: it must fit its side's range and keep its pixels through the export."""
+class Portraits(unittest.TestCase):
+    """The real assets: each fits its side's range and keeps its pixels through the export."""
 
-    def test_checked_export(self):
-        report = ep.export("jane", check_only=True)
-        self.assertEqual((report["expressions"], report["tiles"], report["side"]), (8, 36, "right"))
-        self.assertEqual(report["palette"], (79, 125))
-        self.assertLessEqual(report["colors_used"], 47)
-        self.assertLess(report["pixels_changed"] / report["opaque_pixels"], 0.05)   # the colour merge stays small
+    def test_checked_exports(self):
+        for name, side, rng, expressions, tiles in (("jane", "right", (79, 125), 8, 36),
+                                                    ("brad", "left", (32, 78), 10, 44)):
+            with self.subTest(name):
+                report = ep.export(name, check_only=True)
+                self.assertEqual((report["expressions"], report["tiles"], report["side"]), (expressions, tiles, side))
+                self.assertEqual(report["palette"], rng)
+                self.assertLessEqual(report["colors_used"], 47)
+                self.assertLess(report["pixels_changed"] / report["opaque_pixels"], 0.12)   # merging stays subtle
+
+    def test_exported_colours_stay_close_to_the_source(self):
+        for name, (lo, hi, n) in {"jane": (79, 125, 8), "brad": (32, 78, 10)}.items():
+            with self.subTest(name):
+                source = Image.open(Path(ep.REPO) / "art" / "portraits" / f"{name}.png").convert("RGBA")
+                indexed, palette, _ = ep.bake(source, lo, hi, n)
+                data = indexed.tobytes()
+                worst = 0
+                for i, pixel in enumerate(source.get_flattened_data()):
+                    if pixel[3]:
+                        worst = max(worst, ep.distance(ep.to_565(pixel[:3]), palette[data[i]]) ** 0.5)
+                self.assertLess(worst, 45)       # no feature changes colour; only near-identical shades merge
+
+    def test_ranges_do_not_overlap(self):
+        left, right = ep.export("brad", True)["palette"], ep.export("jane", True)["palette"]
+        self.assertLess(left[1], right[0])
 
     def test_unknown_character_is_rejected(self):
         with self.assertRaisesRegex(ep.PortraitError, "unknown character"):

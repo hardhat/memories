@@ -1,0 +1,23 @@
+{
+  "candidates": "source/brad",
+  "base": 2,
+  "shift": 6,
+  "window": [8, 14, 25, 28],
+  "defringe": 20,
+  "expressions": {
+    "neutral": 2,
+    "smile": 5,
+    "laugh": 12,
+    "surprised": 3,
+    "embarrassed": 18,
+    "worried": 8,
+    "determined": 4,
+    "confused": 20,
+    "candid": 13,
+    "sad": 19
+  },
+  "edits": {
+    "embarrassed": [[10, 22, [224, 140, 126]], [11, 22, [224, 140, 126]],
+                    [20, 22, [224, 140, 126]], [21, 22, [224, 140, 126]]]
+  }
+}
