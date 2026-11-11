@@ -5,8 +5,10 @@
 #include "game.h"
 #include "screen.h"
 #include "portrait.h"
+#include "cg.h"
+
 enum {
-    HOST_IDLE, HOST_DIALOG, HOST_TUTORIAL, HOST_TIMER, HOST_CHOICE, HOST_EXPLORE
+    HOST_IDLE, HOST_DIALOG, HOST_TUTORIAL, HOST_TIMER, HOST_CHOICE, HOST_EXPLORE, HOST_CG_LOAD
 };
 
 #define EXPLORE_HEADER_MAX 28   /* leaves room for the " k/n" scroll position */
@@ -37,17 +39,21 @@ void memo_host_initialize(void)
     confirmed = false;
     screen_init();
     portrait_init();
+    cg_init();
     game_initialize();
 }
 
 bool host_busy(void)
 {
-    return state == HOST_DIALOG || state == HOST_TUTORIAL || state == HOST_TIMER;
+    return state == HOST_DIALOG || state == HOST_TUTORIAL || state == HOST_TIMER || state == HOST_CG_LOAD;
 }
 
 void game_host_update(uint16_t elapsed)
 {
     screen_update(elapsed);
+    if (state == HOST_CG_LOAD && cg_ready()) {
+        state = HOST_IDLE;     /* the script resumes once the picture is on screen */
+    }
     if (state == HOST_TIMER) {
         if (elapsed >= ms_left) {
             ms_left = 0;
@@ -90,6 +96,7 @@ void game_host_input(uint8_t input)
 void game_host_draw(void)
 {
     bool text = state == HOST_DIALOG || state == HOST_TUTORIAL;
+    bool up, portraits_up;
 
     /* The box stays up while anything waits for the player, and across back-to-back
      * lines: the VM replaces the content in the same frame the previous one is dismissed. */
@@ -102,8 +109,12 @@ void game_host_draw(void)
     if (state != HOST_DIALOG && state != HOST_CHOICE) {
         portrait_hide();
     }
-    /* The box has first call on the frame's one upload. */
-    portrait_draw(!screen_draw());
+    /* The box has first call on the frame's one upload, then the CG, then the portraits. A CG
+     * overwrites the portrait slots, so it waits until the portraits are down. */
+    up = screen_draw();
+    portraits_up = portrait_visible(PORTRAIT_LEFT, 0, 0) || portrait_visible(PORTRAIT_RIGHT, 0, 0);
+    up = cg_draw(!up && !portraits_up) || up;
+    portrait_draw(!up);
 }
 
 void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
@@ -116,7 +127,11 @@ void host_say(uint8_t who, uint8_t expr, uint8_t style, const char *text)
         side = 0;
     }
     screen_text_show(name, text, style);
-    portrait_show(who, side, expr);
+    if (cg_active()) {
+        portrait_hide();      /* no portraits over a CG: the name plate says who speaks */
+    } else {
+        portrait_show(who, side, expr);
+    }
     state = HOST_DIALOG;
 }
 
@@ -144,12 +159,15 @@ void host_sfx(uint8_t id)
 
 void host_cg(uint8_t id)
 {
-    debug_logf("CG %u (renderer not bound)", id);
+    if (cg_show(id)) {
+        portrait_forget();     /* the CG takes over the portrait slots */
+        state = HOST_CG_LOAD;  /* the script waits for the picture */
+    }
 }
 
 void host_cg_off(void)
 {
-    debug_log("CG off (renderer not bound)");
+    cg_hide();
 }
 
 void host_tutorial(uint8_t id, const char *text)

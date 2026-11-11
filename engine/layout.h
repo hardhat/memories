@@ -30,7 +30,15 @@
 #define ROW_PORTRAIT       8
 #define COL_PORTRAIT_LEFT  0
 #define COL_PORTRAIT_RIGHT 18
-#define PORTRAIT_CHUNK_TILES 8   /* tiles streamed per frame (2 KB) */
+
+/* CG mode: a 320x192 8bpp picture of 240 tiles in raster order. The top nine rows (180 tiles)
+ * live in slots 64-243; the bottom three rows (60 tiles) share the text box slots 1-60. */
+#define CG_TILES           240
+#define CG_ROWS            12
+#define CG_TOP_ROWS        9
+#define CG_TOP_TILES       (CG_TOP_ROWS * SCREEN_COLS)
+#define CG_BOTTOM_TILES    (CG_TILES - CG_TOP_TILES)
+#define SLOT_CG_TOP        64
 
 /* Palette indices. 0 is shared: transparent on layer 1 and sprites, black on layer 0. */
 #define PAL_TRANSPARENT    0
@@ -48,5 +56,6 @@
 #define PAL_PORTRAIT_LEFT  32     /* 32-78 */
 #define PAL_PORTRAIT_RIGHT 79     /* 79-125 */
 #define PAL_WORLD          126    /* 126-252: map, sprites, effects or CG */
+#define PAL_WORLD_LAST     252
 
 #endif

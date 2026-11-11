@@ -5,6 +5,7 @@
 #include "layout.h"
 #include "memo_dat.h"
 #include "portrait.h"
+#include "stream.h"
 
 #define NONE         255
 #define HEADER_SIZE  11     /* PORTRAIT block: 7 geometry bytes, tiles block u16, palette block u16 */
@@ -27,8 +28,6 @@ typedef struct {
 } Side;
 
 static Side sides[2];
-static uint8_t chunk[PORTRAIT_CHUNK_TILES * TILE_BYTES];
-static uint16_t palette[PAL_MAX];
 static const uint8_t blank[PORTRAIT_COLS * PORTRAIT_ROWS];
 
 static uint16_t le16(const uint8_t *p)
@@ -153,6 +152,19 @@ void portrait_hide(void)
     sides[1].want_who = NONE;
 }
 
+void portrait_forget(void)
+{
+    uint8_t s;
+
+    portrait_hide();
+    for (s = 0; s < 2; s++) {
+        sides[s].who = NONE;
+        sides[s].loaded = 0;
+        sides[s].pal_done = false;
+        sides[s].want_expr = 0;
+    }
+}
+
 /* The next load step of side s: the palette, then one chunk of tiles. */
 static bool step(uint8_t s)
 {
@@ -160,22 +172,19 @@ static bool step(uint8_t s)
     uint8_t n;
 
     if (!p->pal_done) {
-        if (!dat_read_block(p->pal_block, 2, palette, (uint16_t)p->pal_count * 2)) {
+        if (!stream_palette(p->pal_block, p->pal_first, (uint8_t)(p->pal_first + p->pal_count - 1))) {
             goto failed;
         }
-        load_palette(palette, p->pal_first, p->pal_count);
         p->pal_done = true;
         return true;
     }
     n = p->total - p->loaded;
-    if (n > PORTRAIT_CHUNK_TILES) {
-        n = PORTRAIT_CHUNK_TILES;
+    if (n > STREAM_CHUNK_TILES) {
+        n = STREAM_CHUNK_TILES;
     }
-    if (!dat_read_block(p->tiles_block, TILES_HEADER + (uint16_t)p->loaded * TILE_BYTES, chunk,
-                        (uint16_t)n * TILE_BYTES)) {
+    if (!stream_tiles(p->tiles_block, p->loaded, n, (uint16_t)(slot_base(s) + p->loaded))) {
         goto failed;
     }
-    load_tileset(chunk, (uint16_t)(slot_base(s) + p->loaded) << 8, (uint16_t)n * TILE_BYTES, 0);
     p->loaded += n;
     return true;
 

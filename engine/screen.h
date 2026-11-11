@@ -45,6 +45,18 @@ void screen_text_hide(void);
 /* True once everything requested is on screen. */
 bool screen_text_ready(void);
 
+/* True when the box is hidden and nothing is pending, so the text slots (1-60) hold no
+ * content that matters and may be overwritten (by a CG). */
+bool screen_text_idle(void);
+
+/* Forget what the text slots hold, after something else wrote to them: the next content
+ * re-uploads every row. */
+void screen_invalidate(void);
+
+/* Put the box over the bottom three rows of a CG (true) or at the bottom of the screen (false).
+ * A box that is on screen moves at once. Draw phase only. */
+void screen_set_layout(bool cg);
+
 /* Show or hide the blinking continue arrow (only visible while the text is ready). */
 void screen_text_marker(bool on);
 

@@ -55,6 +55,7 @@ static char    list_header[LINE_CAP];
 
 static uint8_t state;
 static bool    visible;      /* box cells are on the FG layer */
+static bool    in_cg;        /* the box sits over a CG (rows 9-11) instead of rows 12-14 */
 static bool    swap;         /* rebuilding content that is already visible */
 static bool    in_place;     /* upload visible rows without blanking them first */
 static bool    hide_pending;
@@ -163,7 +164,7 @@ static void upload_row(uint8_t row)
 
 static uint8_t text_top(void)
 {
-    return ROW_TEXT_MAP;
+    return in_cg ? ROW_TEXT_CG : ROW_TEXT_MAP;
 }
 
 static void reveal_rows(uint8_t first, uint8_t count)
@@ -218,6 +219,7 @@ void screen_init(void)
     kind = KIND_TEXT;
     state = TXT_OFF;
     visible = false;
+    in_cg = false;
     swap = false;
     in_place = false;
     hide_pending = false;
@@ -390,6 +392,35 @@ void screen_text_marker(bool on)
         marker_dirty = true;
         marker_phase = true;
         marker_ms = 0;
+    }
+}
+
+bool screen_text_idle(void)
+{
+    return state == TXT_OFF && !hide_pending;
+}
+
+void screen_invalidate(void)
+{
+    /* Colour 0xFF is never a real one, so every line differs from what the next content asks for. */
+    memset(line_buf, 0, sizeof(line_buf));
+    memset(line_color, 0xFF, sizeof(line_color));
+    memset(line_bg, 0, sizeof(line_bg));
+    memset(line_mark, 0, sizeof(line_mark));
+}
+
+void screen_set_layout(bool cg)
+{
+    if (cg == in_cg) {
+        return;
+    }
+    if (visible) {
+        blank_rows(0, TEXT_ROWS);
+    }
+    in_cg = cg;
+    if (visible) {
+        reveal_rows(0, TEXT_ROWS);
+        marker_dirty = true;
     }
 }
 

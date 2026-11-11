@@ -7,7 +7,7 @@
  *
  * A side keeps its character's tiles and palette resident after the portrait is hidden,
  * so a returning speaker costs only tilemap writes. A different character on the same
- * side is hidden, then streamed in (PORTRAIT_CHUNK_TILES per frame), then revealed. An
+ * side is hidden, then streamed in (STREAM_CHUNK_TILES per frame), then revealed. An
  * expression change rewrites the head cells and uploads nothing, as long as the head is
  * resident; the old expression stays up until it is. */
 
@@ -28,6 +28,10 @@ void portrait_show(uint8_t who, uint8_t side, uint8_t expr);
 
 /* Hide both sides at the next portrait_draw(). The tiles stay resident. */
 void portrait_hide(void);
+
+/* Hide both sides and forget what is resident, because something else (a CG) is about to
+ * overwrite their tile slots. The next portrait_show() streams the art again. */
+void portrait_forget(void);
 
 /* Do this frame's VRAM work: hide, stream one chunk if upload_ok, reveal what is ready.
  * Returns true if it uploaded. */

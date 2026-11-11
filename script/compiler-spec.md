@@ -298,6 +298,8 @@ CG. Details and the slot map: [screen-spec.md](screen-spec.md).
 
 **CG checks.** 4bpp or 8bpp only. Without a tile map the tile count must be 300 (4bpp) or 240 (8bpp). With `U` and `M` flags the `.ztm` must have 300 or 240 entries, each below the tile count. A tileset used by maps may hold at most 255 tiles (map entries are one byte and 255 means empty).
 
+**Baked CGs.** A manifest CG entry with `"baked": true` (8bpp only) declares that its pixels already carry their final hardware indices: 0 (black, shared with the dialog palette) or inside `art.cg_palette` in `config.json` (126-252, the world range, screen-spec.md section 3). The compiler checks every pixel and stores only the used slice (`first` = lowest index above 0, `last` = highest) in the PALETTE block, so loading it never touches the dialog or portrait palettes. Without the flag the CG keeps the legacy local indices and a full palette from entry 0, and the engine refuses to show it (screen-spec.md section 4b). Export a baked CG as `cg01__B8CFD.gif` (`CFD` = 253 entries, 0-252).
+
 **Manifest** (`assets/manifest.json`; paths relative to it; keys must be existing character or CG names, anything else is a warning):
 
 ```json
@@ -559,9 +561,8 @@ are 16 ms each and fade units are 10 ms each.
 text are drawn in the dialog box by `screen.c`, with the speaker's name from
 `dat_load_char`. Choice menus and the placeholder trigger picker use the same box
 (a highlighted selection, a scrolling list; [screen-spec.md](screen-spec.md) section 4).
-Map, CG, fade, sprite and audio output are logged as not bound. Portraits are drawn
-([screen-spec.md](screen-spec.md) section 4a). Exploration movement and
-CG loading are not implemented yet.
+Map, fade, sprite and audio output are logged as not bound. Portraits and baked CGs are drawn
+([screen-spec.md](screen-spec.md) sections 4a and 4b). Exploration movement is not implemented yet.
 
 **What the "resident code buffer" is.** It is not application paging. The scene bytecode is just *data*: about 1.2-1.7 KB per scene that the script VM (part of the normal program) interprets. "Resident" means the whole scene's bytecode is read once into a fixed RAM array when the scene starts, so jumps and calls are plain array indexing. The alternative, closer to Wyvern, is to keep only the current block in RAM (at most 320 bytes today) and re-read the caller's block after each `call`. That would save about 3.5 KB of RAM at the cost of more reads, and is a reasonable fallback if RAM turns out tight. The spec keeps the resident buffer as the default because it is simpler and the cost is tiny; `limits.code_buf` in `config.json` (it becomes `CODE_BUF_SIZE` in `memo_ids.h`) can be lowered to 2048 (the largest scene is 1,764 bytes).
 

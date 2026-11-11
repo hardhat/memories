@@ -10,6 +10,7 @@
 #include "layout.h"
 #include "memo_dat.h"
 #include "portrait.h"
+#include "stream.h"
 #include "gfx_mock.h"
 
 #define LEFT_COL  COL_PORTRAIT_LEFT
@@ -66,7 +67,7 @@ static unsigned frame(bool budget)
 {
     mock_reset_counters();
     portrait_draw(budget);
-    assert(mock_upload_calls <= 1 && mock_upload_bytes <= PORTRAIT_CHUNK_TILES * 256u);
+    assert(mock_upload_calls <= 1 && mock_upload_bytes <= STREAM_CHUNK_TILES * 256u);
     return mock_upload_calls;
 }
 

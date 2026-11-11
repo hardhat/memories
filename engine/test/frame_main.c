@@ -56,36 +56,53 @@ bool dat_load_char(uint8_t id, uint8_t *side, uint8_t *expr_count, char *name, u
 #define JANE_TILE_COUNT 16
 static const uint8_t jane_head[11] = {2, 4, 0, 0, 2, 2, 3, JANE_TILES, 0, JANE_PALETTE, 0};
 
-static uint16_t jane_size(uint16_t id)
+/* CG 0: a baked picture of 240 tiles (tile t filled with t+1) and a palette slice 126-130. */
+#define CG0_TILES   60
+#define CG0_PALETTE 62
+
+static uint16_t block_size(uint16_t id)
 {
-    return id == JANE_PORTRAIT ? sizeof jane_head : id == JANE_TILES ? 4 + JANE_TILE_COUNT * 256 : 2 + 4 * 2;
+    switch (id) {
+    case JANE_PORTRAIT: return sizeof jane_head;
+    case JANE_TILES:    return 4 + JANE_TILE_COUNT * 256;
+    case JANE_PALETTE:  return 2 + 4 * 2;
+    case CG0_TILES:     return 4 + CG_TILES * 256u;
+    case CG0_PALETTE:   return 2 + 5 * 2;
+    default:            return 0;
+    }
 }
 
 bool dat_entry(uint16_t id, DatEntry *out)
 {
-    if (id < JANE_PORTRAIT || id > JANE_PALETTE) {
+    if (block_size(id) == 0) {
         return false;
     }
     out->offset = 0;
-    out->size = jane_size(id);
-    out->type = DAT_TYPE_PORTRAIT;
+    out->size = block_size(id);
+    out->type = id == JANE_PORTRAIT ? DAT_TYPE_PORTRAIT : id == JANE_TILES || id == CG0_TILES ? DAT_TYPE_TILESET : DAT_TYPE_PALETTE;
     out->flags = 0;
     return true;
 }
 bool dat_index_get(uint8_t table, uint8_t i, uint16_t *out)
 {
-    if (table != DAT_TABLE_PORTRAITS || i != 1) {
-        return false;
+    if (table == DAT_TABLE_PORTRAITS && i == 1) {
+        *out = JANE_PORTRAIT;
+        return true;
     }
-    *out = JANE_PORTRAIT;
-    return true;
+    if (table == DAT_TABLE_CGS && i == 0) {
+        out[0] = CG0_TILES;
+        out[1] = 0;
+        out[2] = CG0_PALETTE;
+        return true;
+    }
+    return false;
 }
 bool dat_read_block(uint16_t id, uint16_t offset, void *dst, uint16_t n)
 {
     uint8_t *d = dst;
     uint16_t k, pos;
 
-    if (id < JANE_PORTRAIT || id > JANE_PALETTE || (uint32_t)offset + n > jane_size(id)) {
+    if (block_size(id) == 0 || (uint32_t)offset + n > block_size(id)) {
         return false;
     }
     for (k = 0; k < n; k++) {
@@ -94,13 +111,16 @@ bool dat_read_block(uint16_t id, uint16_t offset, void *dst, uint16_t n)
             d[k] = jane_head[pos];
         } else if (id == JANE_TILES) {
             d[k] = pos < 4 ? (uint8_t[]){8, 0, JANE_TILE_COUNT, 0}[pos] : (uint8_t)((pos - 4) / 256 + 1);
+        } else if (id == CG0_TILES) {
+            d[k] = pos < 4 ? (uint8_t[]){8, 0, CG_TILES, 0}[pos] : (uint8_t)((pos - 4) / 256 % 250 + 1);
+        } else if (id == CG0_PALETTE) {
+            d[k] = pos == 0 ? PAL_WORLD : pos == 1 ? PAL_WORLD + 4 : 0x1F;
         } else {
             d[k] = pos == 0 ? PAL_PORTRAIT_RIGHT : pos == 1 ? PAL_PORTRAIT_RIGHT + 3 : 0x1F;
         }
     }
     return true;
-}
-uint8_t dat_load_scene(uint8_t scene)
+}uint8_t dat_load_scene(uint8_t scene)
 {
     static const uint8_t final[] = {OP_END};
     loads++;
@@ -196,6 +216,23 @@ static void checked_frame(void)
     assert(mock_upload_calls <= 1);
 }
 
+/* The top row of the right portrait (row 8; the CG box covers only rows 9-11) is empty. */
+static bool portrait_row_clear(void)
+{
+    return mock_fg[ROW_PORTRAIT][COL_PORTRAIT_RIGHT] == 0 && mock_fg[ROW_PORTRAIT][COL_PORTRAIT_RIGHT + 1] == 0;
+}
+
+static bool box_over_cg(void)
+{
+    return mock_fg[ROW_TEXT_CG][0] == SLOT_DIALOG && mock_fg[ROW_TEXT_CG + 2][0] == SLOT_DIALOG + 40
+        && mock_fg[ROW_TEXT_MAP][0] == 0;
+}
+
+static bool cg_up(void)
+{
+    return mock_bg[0][0] == SLOT_CG_TOP && mock_bg[8][19] == SLOT_CG_TOP + 179
+        && mock_bg[9][0] == SLOT_DIALOG && mock_bg[11][19] == SLOT_DIALOG + 59 && mock_bg[12][0] == 0;
+}
 /* Jane (character 1, right side) is on screen showing expression `expr`. */
 static bool jane_up(uint8_t expr)
 {
@@ -250,6 +287,8 @@ int main(void)
         OP_ADD, 0, 2, OP_XEXIT,
         OP_END, OP_END, OP_END, OP_END, OP_END
     };
+    static const uint8_t cg_say[] = {OP_CG, 0, OP_SAY, 1, 0, 0, 0, OP_CG_OFF, OP_SAY, 1, 2, 0, 0, OP_END};
+    static const uint8_t cg_bad[] = {OP_CG, 5, OP_SET, 0, 7, OP_END};
     static const uint8_t transition[] = {OP_SET, VAR_SCENE, 2, OP_END};
     static const uint8_t jane_say[] = {OP_SAY, 1, 2, 0, 0, OP_END};
     static const uint8_t jane_twice[] = {OP_SAY, 1, 0, 0, 0, OP_SAY, 1, 2, 0, 0, OP_END};
@@ -421,6 +460,33 @@ int main(void)
     game_draw();
     assert(box_down() && jane_down());
 
+    /* A CG: the script waits until it is on screen; the box then sits over its bottom rows and
+     * no portrait shows, even for a speaker who has one. Taking the CG down brings both back. */
+    begin(cg_say, sizeof cg_say);
+    for (i = 0; i < 5; i++) {
+        checked_frame();
+    }
+    assert(box_down() && portrait_row_clear() && mock_bg[0][0] == 0);
+    for (i = 0; i < 80 && !box_over_cg(); i++) {
+        checked_frame();
+    }
+    for (i = 0; i < 12; i++) {
+        checked_frame();                  /* long enough for a portrait to stream in, were it wanted */
+    }
+    assert(box_over_cg() && cg_up() && portrait_row_clear());
+    press(INPUT_A);
+    for (i = 0; i < 40; i++) {
+        checked_frame();
+    }
+    assert(mock_bg[0][0] == 0 && mock_bg[11][19] == 0 && box_up() && jane_up(2));
+    press(INPUT_A);
+    game_update(16);
+    assert(ends == 1);
+
+    /* A CG that cannot be shown is skipped and the script goes on. */
+    begin(cg_bad, sizeof cg_bad);
+    game_update(16);
+    assert(memo_vars[0] == 7 && ends == 1 && mock_bg[0][0] == 0);
     begin(transition, sizeof transition);
     game_update(16);
     assert(loads == 2 && ends == 1);

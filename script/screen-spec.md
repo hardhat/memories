@@ -28,6 +28,7 @@ on hardware yet; timing figures are estimates until measured.
 | D13 | **Who is shown (2026-11-10).** A speaker's portrait appears on their `CHARS` side and **stays up while the other side speaks**, so a conversation shows both partners. A line by a character with no side (the narrator) takes both down, as do tutorials, waits and the trigger picker; a choice keeps what was showing. The box and the portraits go away together. |
 | D14 | **Portraits yield the frame to the box.** The text box has first call on the frame's one upload; portrait streaming uses the frames the box leaves free. A portrait appears as soon as the tiles its expression needs are resident and goes on streaming the rest in the background. |
 | D15 | **Never rewrite what is visible.** A different character on a side is blanked, then streamed, then revealed. An expression whose head is not resident yet waits, and the previous expression stays up. A character's tiles and palette stay resident when hidden, so coming back costs only tilemap writes. |
+| D16 | **CG (2026-11-10).** `cg X` makes the script wait until the picture is on screen (about half a second), so text after it never appears over the old screen. A CG is invisible while it streams and appears in one frame. A baked CG (palette 126-252) is required; anything else is refused and skipped. The box sits over the CG's bottom rows and wipes in and out; a replaced CG cuts through black. See section 4b. |
 
 ### Why the CG and the box overlap (D5)
 
@@ -171,8 +172,10 @@ expression (0 for a new one), and an expression the portrait lacks shows the bas
 
 Cost: Brad (44 tiles) is the palette frame plus six chunk frames, and is on screen after the
 second (base tiles in); a head late in the file appears when its chunk lands. Everything
-after that is tilemap writes. The 2 KB chunk buffer is the only large static (the whole
-program now ends near 0xEB50, leaving about 5 KB for the stack; measure on hardware).
+after that is tilemap writes. All art streaming (title, portraits, CGs) shares the single
+2 KB buffer in `stream.c`, which is only used inside one call; the program's data now ends
+near 0xE7EC, leaving about 6 KB for the stack (measure on hardware). `portrait_forget()`
+drops what is resident when a CG is about to overwrite the portrait slots.
 
 **Validation.** The descriptor is checked before any VRAM write: a 2x4 base, a 2-wide head
 inside it, at most 50 tiles, an 8bpp uncompressed tileset block large enough for the tiles, and a
@@ -180,17 +183,54 @@ palette slice inside the side's range (32-78 left, 79-125 right, at most 48 entr
 block size exactly `2 + 2n`). A character without usable art logs once per line and shows
 nothing; the other side is unaffected.
 
+## 4b. CG mode (done)
+
+`cg.c` shows a CG (`host_cg`) and takes it down (`host_cg_off`). The host sequences it:
+
+1. `host_cg` asks `cg_show()`, which checks the art without touching VRAM: an 8bpp uncompressed
+   240 tile picture with no tile map and a palette slice inside **126-252**. Anything else (a
+   missing CG, or one whose palette is not baked yet) is logged and refused, and the script simply
+   goes on without a picture. On success `portrait_forget()` runs and the host enters a
+   `CG_LOAD` state in which **the script waits**, so `cg X` followed by `say` shows the picture
+   first and the text after it (D16).
+2. Each frame the box has first call on the upload; then `cg_draw` streams one chunk (8 tiles):
+   the top nine rows (180 tiles, 23 chunks) into slots 64-243, then the bottom three rows
+   (60 tiles, 8 chunks) into slots 1-60. About 31 frames, roughly half a second.
+3. Nothing visible points at changing slots: the layer 0 cells stay as they were until the
+   last chunk is in. Then, in one frame, the palette (126-252) is loaded, all fifteen layer 0
+   rows are written (rows 0-8 slots 64-243, rows 9-11 slots 1-60, rows 12-14 empty), and the box
+   moves to rows 9-11 (`screen_set_layout`).
+4. **The text box over a CG.** Slots 1-60 hold either the CG's bottom rows or the box. When the box
+   is shown it uploads its rows there, so the picture's bottom wipes into the box row by
+   row. When it is hidden, `cg_draw` streams the bottom rows back (8 chunks, one per free frame)
+   and the box wipes back into the picture. A text request that arrives mid-restore wins and
+   the restore starts over later. The first restore chunk calls `screen_invalidate()`, so
+   identical text asked for again is uploaded again.
+5. **Replacing a CG.** The cells go blank (black) before the first tile of the new CG is
+   written, because no double buffer fits in 256 slots; the new picture then appears as in step 3.
+   `host_cg_off` clears the layer and moves the box back to rows 12-14; `host_say` shows
+   portraits again.
+6. **No portraits over a CG** (D6): `host_say` hides them while a CG is wanted. A CG waits until
+   any portraits are down, because it overwrites their slots.
+
+Palette: the CG uses 126-252 only, so the dialog palette (0-31) and the portrait palettes (32-125)
+stay resident. A baked CG is one whose pixels are 0 (black, shared) or 126-252: set
+`"baked": true` on its manifest entry (compiler-spec.md section 5.7); the compiler then checks the
+range and stores just the used slice. The 23 placeholder CGs are **not baked yet** (local
+indices 0-127), so the engine refuses them until the converters are reworked.
+
 ## 5. Frame protocol (done for the box and portraits)
 
 Main loop order: input, `gfx_wait_end_vblank`, `game_update` (VM and host), `gfx_wait_vblank`,
 `render_sprites`, `game_draw` (all VRAM writes). Estimated cost: a 20-tile upload is
 5,120 bytes, about 11 ms at 10 MHz with `LDIR`; this must be measured. Hence one upload
 per frame, and larger transfers (portraits, CGs) are streamed in chunks of whole tiles, one
-chunk per frame, using `dat_read_block`. Portraits use 2 KB chunks (8 tiles), less than the box's
-5 KB row, since a chunk also costs a file read from the card or disk in the same frame.
+chunk per frame, using `dat_read_block` through the shared buffer in `stream.c`. Chunks are 2 KB
+(8 tiles), less than the box's 5 KB row, since a chunk also costs a file read from the card or disk
+in the same frame. Each frame the box goes first, then the CG, then the portraits.
 
-A residency table (planned) records what each slot region holds (text, CG bottom,
-portrait character, map tileset) so nothing is streamed twice.
+There is no general residency table. Each module tracks its own slots: `portrait.c` per side, `cg.c`
+for the CG tiles, and the box's line cache (which a CG restore invalidates).
 
 ## 6. Sprites
 
@@ -209,8 +249,8 @@ anchor, are assumed from the SDK header and **must be checked on an emulator**.
 | 0 | Slot, row and palette constants; init order; remove test code; baked-index tooling | Constants, init order and cleanup **done**; asset tools **planned** |
 | 1 | Dialog and tutorial box in map mode, names from `CHARS`, marker | **done** |
 | 2 | Choice menu and trigger picker in the box | **done** |
-| 3 | Portraits (stream, palette slice, expression cells) | **done** for map mode (CG mode hides them: phase 4) |
-| 4 | CG mode (stream, box over rows 9-11, restore on hide) | planned |
+| 3 | Portraits (stream, palette slice, expression cells) | **done** |
+| 4 | CG mode (stream, box over rows 9-11, restore on hide) | **done** for baked CGs (the placeholders are not baked yet) |
 | 5 | Map layers, scroll, sprites, `above` policy | planned |
 
 Tests: `engine/test/screen_main.c` (box against a video model: one-upload budget,
@@ -220,7 +260,12 @@ menus, the picker and a mock portrait), `engine/test/portrait_main.c` (the portr
 a real `memo.dat` with Brad, Jane and a synthetic Daniel: streaming order, one upload per frame,
 expression cells, swaps on one side, hide and return; the test then compares every screen
 pixel-for-pixel with the artists' sheets), `engine/test/chars_main.c` (loader against the Python
-reader). The model
+reader), `engine/test/cg_main.c` (CG mode against a real `memo.dat` with synthetic baked CGs: invisible
+streaming and its frame count, one upload per frame, the box over the bottom rows, restore after the
+text hides, stale-cache invalidation, a restore interrupted by text, replacing and removing a CG, a CG
+requested while the box is up, and refusal of unbaked or missing art; the test compares the screens
+pixel-for-pixel with the GIFs). `frame_main.c` also covers the host side: the script waits for the
+CG, no portrait over it, and the box and portraits return after `cg_off`. The model
 ([gfx_mock.c](../engine/test/gfx_mock.c)) renders screens to PPM for review. Run
 `python -m unittest discover -s script/tests -p test_engine.py`.
 
@@ -229,8 +274,11 @@ reader). The model
 * Measure upload and read speed on the emulator and hardware; confirm one upload per frame holds.
 * Check a tall sprite's anchor and flips, and the `PRIORITY` flag, on an emulator.
 * Decide the `above` layer policy per map (D11), including the sprite alternative.
-* Rework the converters to emit baked slot and palette indices, with CGs at 127 colours plus black.
+* Rework the converters to emit baked slot and palette indices, with CGs at 127 colours plus black
+  (index 0 black, colours at 126-252), then set `"baked": true` on every CG in the manifest. Until
+  then the engine refuses the placeholder CGs and the script runs without pictures.
 * Fade: palette fading needs a 512-byte staging copy; for now a fade is only a timer.
-* Measure the portrait chunk (file read plus 2 KB upload) against the frame, and the stack headroom
-  above the 0xEB50 end of the program's data.
-* Phase 4 must suppress portraits in CG mode (D6) and, when the CG leaves, show the speaker again.
+* Measure the streaming chunk (file read plus 2 KB upload) against the frame, how long a CG really
+  takes (estimated 31 frames), and the stack headroom above the 0xE7EC end of the program's data.
+* A CG replaced by another cuts through black for the load time. A fade (palette) could hide it.
+* The map (`host_map`) is not bound, so `host_cg_off` leaves layer 0 black.

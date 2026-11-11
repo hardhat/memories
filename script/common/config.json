@@ -7,6 +7,7 @@
   "limits": {"code_buf": 4096, "code_warn": 3072, "call_depth": 8, "explore_triggers": 16, "strings_bytes": 65000},
   "art": {
     "portrait": {"base": [2, 4], "head": [0, 0, 2, 2], "palette": {"left": [32, 78], "right": [79, 125]}},
-    "cg_modes": {"4": [20, 15], "8": [20, 12]}
+    "cg_modes": {"4": [20, 15], "8": [20, 12]},
+    "cg_palette": [126, 252]
   }
 }

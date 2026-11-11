@@ -166,7 +166,7 @@ class ZealBuild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             (d / "memo_ids.h").write_text(header, encoding="utf-8")
-            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "portrait", "title"):
+            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "portrait", "cg", "stream", "title"):
                 src = ctrace.ENGINE / f"{name}.c"
                 r = subprocess.run(["sdcc", "-mz80", "--std-c2x", "-c", "-I", str(ctrace.ENGINE), "-I", str(d),
                                     "-I", str(self.ZOS), "--codeseg", "TEXT", "-o", str(d / f"{name}.rel"), str(src)],
@@ -196,7 +196,7 @@ class FrameLoop(unittest.TestCase):
         data, _ = build_dat(p, codes)
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "portrait.c", "test/gfx_mock.c",
+            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "portrait.c", "cg.c", "stream.c", "test/gfx_mock.c",
                                  "test/frame_main.c"), "frame_test.exe", ids_header(p, data, codes))
             result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -242,7 +242,7 @@ class TitleScreen(unittest.TestCase):
         gif = gif if gif.is_absolute() else Path(__file__).resolve().parents[2] / gif
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            exe = build_c(work, ("title.c", "memo_dat.c", "dat_io_stdio.c", "test/gfx_mock.c",
+            exe = build_c(work, ("title.c", "memo_dat.c", "dat_io_stdio.c", "stream.c", "test/gfx_mock.c",
                                  "test/title_main.c"), "title_test.exe", header)
             (work / "memo.dat").write_bytes(data)
             result = subprocess.run([str(exe), str(work / "title.ppm")], capture_output=True, text=True,
@@ -310,7 +310,7 @@ class PortraitDisplay(unittest.TestCase):
                 "daniel": {"gif": "daniel__B8C7E.gif"}}}))
             p, data, header = full_game(work / "manifest.json", convert=True)
             ids = {c["name"]: i for i, c in enumerate(Dat(data).chars)}
-            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "portrait.c", "test/gfx_mock.c",
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "portrait.c", "stream.c", "test/gfx_mock.c",
                                  "test/portrait_main.c"), "portrait_test.exe", header)
             (work / "memo.dat").write_bytes(data)
             args = [str(exe), str(work / "memo.dat"), str(ids["Brad"]), str(ids["Jane"]), str(ids["Dad"]),
@@ -333,6 +333,89 @@ class PortraitDisplay(unittest.TestCase):
                     shot = image.convert("RGB")
                 want = self.expected(sheets, left, right)
                 self.assertEqual(shot.tobytes(), want.tobytes(), name)
+
+
+@unittest.skipUnless(HAVE_CC and have_tool(), "no C compiler or SDK gif2zeal.py")
+class CgDisplay(unittest.TestCase):
+    """CG mode against the video model, with synthetic baked CGs built through the real compiler."""
+
+    @staticmethod
+    def rgb565(palette, i):
+        if i == 0:
+            return (0, 0, 0)
+        r, g, b = palette[i * 3:i * 3 + 3]
+        return ((r >> 3) * 255 // 31, (g >> 2) * 255 // 63, (b >> 3) * 255 // 31)
+
+    def picture(self, gif):
+        """The 320x240 screen showing the CG (index 0 is black) above three black rows."""
+        from PIL import Image
+
+        shot = Image.new("RGB", (320, 240), (0, 0, 0))
+        with Image.open(gif) as image:
+            sheet = image.copy()
+        palette, pixels = sheet.getpalette(), sheet.load()
+        for y in range(192):
+            for x in range(320):
+                shot.putpixel((x, y), self.rgb565(palette, pixels[x, y]))
+        return shot
+
+    def test_stream_show_and_text_over_the_cg(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            make_gif(work / "cga__B8CFD.gif", 320, 192, 253,
+                     lambda x, y: 0 if (x * 7 + y * 3) % 53 == 0 else 126 + (x // 5 + y // 3 + (x // 16) * (y // 16)) % 127)
+            make_gif(work / "cgb__B8CFD.gif", 320, 192, 253,
+                     lambda x, y: 126 + (x * 3 + y * 5 + (y // 16) * 11) % 127)
+            make_gif(work / "cgu__B8C80.gif", 320, 192, 128, lambda x, y: (x // 4 + y // 4) % 128)
+            (work / "manifest.json").write_text(json.dumps({"cgs": {
+                "CG-01": {"gif": "cga__B8CFD.gif", "bpp": 8, "baked": True},
+                "CG-02": {"gif": "cgb__B8CFD.gif", "bpp": 8, "baked": True},
+                "CG-03": {"gif": "cgu__B8C80.gif", "bpp": 8}}}))
+            p, data, header = full_game(work / "manifest.json", convert=True)
+            dat = Dat(data)
+            palette = dat.palette(dat.index["cgs"][0][2])
+            self.assertEqual(palette[0], 126)                       # only the baked slice is stored
+            self.assertEqual(dat.palette(dat.index["cgs"][2][2])[0], 0)
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "screen.c", "cg.c", "stream.c",
+                                 "test/gfx_mock.c", "test/cg_main.c"), "cg_test.exe", header)
+            (work / "memo.dat").write_bytes(data)
+            names = p.cg_names
+            args = [str(exe), str(work / "memo.dat"), str(names.index("CG-01")), str(names.index("CG-02")),
+                    str(names.index("CG-03")), str(work)]
+            result = subprocess.run(args, capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("cg tests passed", result.stdout)
+
+            def shot(name):
+                with Image.open(work / f"cg-{name}.ppm") as image:
+                    return image.convert("RGB")
+
+            a, b = self.picture(work / "cga__B8CFD.gif"), self.picture(work / "cgb__B8CFD.gif")
+            for name in ("a", "restored", "restored2"):
+                self.assertEqual(shot(name).tobytes(), a.tobytes(), name)
+            self.assertEqual(shot("b").tobytes(), b.tobytes())
+            box = shot("box")
+            for name in ("box2", "box3", "box4"):
+                self.assertEqual(shot(name).tobytes(), box.tobytes(), name)
+            # The box covers only the CG's bottom three rows: above it the picture, below it black.
+            self.assertEqual(box.crop((0, 0, 320, 144)).tobytes(), a.crop((0, 0, 320, 144)).tobytes())
+            self.assertEqual(set(box.crop((0, 192, 320, 240)).get_flattened_data()), {(0, 0, 0)})
+            self.assertNotEqual(box.crop((0, 144, 320, 192)).tobytes(), a.crop((0, 144, 320, 192)).tobytes())
+            box_colour = ((16 >> 3) * 255 // 31, (20 >> 2) * 255 // 63, (48 >> 3) * 255 // 31)   # dialog palette 1
+            self.assertIn(box_colour, box.crop((0, 144, 320, 192)).get_flattened_data())
+
+    def test_a_baked_cg_outside_the_world_palette_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            make_gif(work / "bad__B8C80.gif", 320, 192, 128, lambda x, y: (x // 4 + y // 4) % 128)
+            (work / "manifest.json").write_text(json.dumps({"cgs": {
+                "CG-01": {"gif": "bad__B8C80.gif", "bpp": 8, "baked": True}}}))
+            p = load_project()
+            assets = load_assets(p, work / "manifest.json", convert=True)
+            errors = [d.msg for d in assets.diags if d.level == "error"]
+            self.assertTrue(any("outside the world palette range 126-252" in e for e in errors), errors)
 
 
 @unittest.skipUnless(HAVE_CC, "no C compiler")

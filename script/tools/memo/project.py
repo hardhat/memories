@@ -16,10 +16,12 @@ DEFAULT_CONFIG = {
                "explore_triggers": 16, "strings_bytes": 65000},
     # Portrait: base image and the alternate-head region, in 16x16 tiles (x, y, w, h for the head), and
     # the palette indices each side's portrait must use (baked into the art, screen-spec.md section 3).
-    # CG modes: bits per pixel -> image size in tiles.
+    # CG modes: bits per pixel -> image size in tiles. A baked CG (manifest "baked": true) must use
+    # index 0 (black) or the world palette range cg_palette (screen-spec.md section 3).
     "art": {"portrait": {"base": [2, 4], "head": [0, 0, 2, 2],
                          "palette": {"left": [32, 78], "right": [79, 125]}},
-            "cg_modes": {"4": [20, 15], "8": [20, 12]}},
+            "cg_modes": {"4": [20, 15], "8": [20, 12]},
+            "cg_palette": [126, 252]},
 }
 
 

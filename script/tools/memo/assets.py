@@ -189,10 +189,26 @@ def check_portrait(a, p, cname, spec, info):
 def check_cg(a, p, name, spec, info):
     modes = p.config["art"]["cg_modes"]
     ok = check_pixels(a, name, info)
+    span = None
     mode = modes.get(str(info["bpp"]))
     if mode is None:
         a.diag("error", name, f"CGs must be {', '.join(modes)}bpp, found {info['bpp']}bpp")
-        return False, None
+        return False, None, None
+    if spec.get("baked"):
+        lo, hi = p.config["art"]["cg_palette"]
+        if info["bpp"] != 8:
+            a.diag("error", name, f"baked CGs are 8bpp, found {info['bpp']}bpp")
+            ok = False
+        else:
+            used = sorted(set(info["raw"]) - {0})
+            stray = [i for i in used if not lo <= i <= hi]
+            if stray:
+                a.diag("error", name, f"pixel indices {stray[0]}..{stray[-1]} are outside the world palette range "
+                                      f"{lo}-{hi}. A baked CG uses index 0 (black) and colours at their final "
+                                      f"indices (screen-spec.md section 3)")
+                ok = False
+            elif used:
+                span = (min(used), max(used))
     grid = mode[0] * mode[1]
     if info["ztm"] is not None:
         if len(info["ztm"]) != grid:
@@ -208,7 +224,7 @@ def check_cg(a, p, name, spec, info):
         elif info["tile_count"] != grid:
             a.diag("error", name, f"{info['tile_count']} tiles; a {mode[0] * 16}x{mode[1] * 16} image has {grid}")
             ok = False
-    return ok, mode
+    return ok, mode, span
 
 
 # ---------------------------------------------------------------------------
@@ -275,7 +291,7 @@ def load_assets(p, manifest_path=None, convert=False, keep_compression=False):
             if cg_entry and cg_entry.get("file"):
                 spec = {"gif": cg_entry["file"], "bpp": cg_entry.get("bpp", 8)}
                 base_dir = ROOT.parent
-        got, mode = None, None
+        got, mode, span = None, None, None
         if spec is None:
             a.missing.append(cg)
         else:
@@ -284,12 +300,13 @@ def load_assets(p, manifest_path=None, convert=False, keep_compression=False):
                 info = read_gfx(src, cg)
                 if "bpp" in spec and spec["bpp"] != info["bpp"]:
                     raise AssetError(f"{cg}: manifest says {spec['bpp']}bpp but the art is {info['bpp']}bpp")
-                ok, mode = check_cg(a, p, cg, spec, info)
+                ok, mode, span = check_cg(a, p, cg, spec, info)
                 got = info if ok else None
             except AssetError as e:
                 a.diag("error", cg, str(e).split(": ", 1)[-1])
         if got:
-            tiles.data, pal.data = tiles_block_data(got, keep_compression), palette_block_data(got)
+            tiles.data = tiles_block_data(got, keep_compression)
+            pal.data = palette_block_data(got, *span) if span else palette_block_data(got)
             if got["ztm"] is not None:
                 tmap.data = bytes([0, mode[0], mode[1]]) + got["ztm"]
                 a.index["cgs"].append((tiles.id, tmap.id, pal.id))
