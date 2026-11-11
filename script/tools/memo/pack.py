@@ -45,7 +45,7 @@ def index_block(p, assets):
     return (table(zeros(len(p.map_names), 1), 1)                 # mapdef block per map (M6)
             + table(assets.index["cgs"], 3)                      # tiles, tilemap, palette per CG
             + table(assets.index["portraits"], 1)                # portrait descriptor per character
-            + table(zeros(len(p.char_names), 2), 2)              # sprite tiles, palette per character
+            + table(assets.index["sprites"] or zeros(len(p.char_names), 2), 2)   # sprite tiles, palette per character
             + table(assets.index["tilesets"], 2)                 # map tilesets (tiles, palette)
             + table(zeros(len(p.music), 1), 1)
             + table(zeros(len(p.sfx), 1), 1))

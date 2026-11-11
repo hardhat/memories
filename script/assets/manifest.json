@@ -10,27 +10,32 @@
     "sandra": { "gif": "portraits/sandra__B8C7E.gif" }
   },
   "cgs": {
-    "CG-01": { "gif": "../../art/cg-placeholders/CG-01__B8C80.gif", "bpp": 8 },
-    "CG-02": { "gif": "../../art/cg-placeholders/CG-02__B8C80.gif", "bpp": 8 },
-    "CG-03": { "gif": "../../art/cg-placeholders/CG-03__B8C80.gif", "bpp": 8 },
-    "CG-04a": { "gif": "../../art/cg-placeholders/CG-04a__B8C80.gif", "bpp": 8 },
-    "CG-04b": { "gif": "../../art/cg-placeholders/CG-04b__B8C80.gif", "bpp": 8 },
-    "CG-04c": { "gif": "../../art/cg-placeholders/CG-04c__B8C80.gif", "bpp": 8 },
-    "CG-04d": { "gif": "../../art/cg-placeholders/CG-04d__B8C80.gif", "bpp": 8 },
-    "CG-05": { "gif": "../../art/cg-placeholders/CG-05__B8C80.gif", "bpp": 8 },
-    "CG-06": { "gif": "../../art/cg-placeholders/CG-06__B8C80.gif", "bpp": 8 },
-    "CG-07": { "gif": "../../art/cg-placeholders/CG-07__B8C80.gif", "bpp": 8 },
-    "CG-08": { "gif": "../../art/cg-placeholders/CG-08__B8C80.gif", "bpp": 8 },
-    "CG-09": { "gif": "../../art/cg-placeholders/CG-09__B8C80.gif", "bpp": 8 },
-    "CG-10a": { "gif": "../../art/cg-placeholders/CG-10a__B8C80.gif", "bpp": 8 },
-    "CG-10b": { "gif": "../../art/cg-placeholders/CG-10b__B8C80.gif", "bpp": 8 },
-    "CG-10c": { "gif": "../../art/cg-placeholders/CG-10c__B8C80.gif", "bpp": 8 },
-    "CG-10d": { "gif": "../../art/cg-placeholders/CG-10d__B8C80.gif", "bpp": 8 },
-    "CG-11": { "gif": "../../art/cg-placeholders/CG-11__B8C80.gif", "bpp": 8 },
-    "CG-12": { "gif": "../../art/cg-placeholders/CG-12__B8C80.gif", "bpp": 8 },
-    "CG-13": { "gif": "../../art/cg-placeholders/CG-13__B8C80.gif", "bpp": 8 },
+    "CG-01": { "gif": "../../art/cg-placeholders/CG-01__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-02": { "gif": "../../art/cg-placeholders/CG-02__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-03": { "gif": "../../art/cg-placeholders/CG-03__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-04a": { "gif": "../../art/cg-placeholders/CG-04a__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-04b": { "gif": "../../art/cg-placeholders/CG-04b__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-04c": { "gif": "../../art/cg-placeholders/CG-04c__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-04d": { "gif": "../../art/cg-placeholders/CG-04d__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-05": { "gif": "../../art/cg-placeholders/CG-05__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-06": { "gif": "../../art/cg-placeholders/CG-06__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-07": { "gif": "../../art/cg-placeholders/CG-07__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-08": { "gif": "../../art/cg-placeholders/CG-08__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-09": { "gif": "../../art/cg-placeholders/CG-09__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-10a": { "gif": "../../art/cg-placeholders/CG-10a__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-10b": { "gif": "../../art/cg-placeholders/CG-10b__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-10c": { "gif": "../../art/cg-placeholders/CG-10c__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-10d": { "gif": "../../art/cg-placeholders/CG-10d__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-11": { "gif": "../../art/cg-placeholders/CG-11__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-12": { "gif": "../../art/cg-placeholders/CG-12__B8CFD.gif", "bpp": 8, "baked": true },
+    "CG-13": { "gif": "../../art/cg-placeholders/CG-13__B8CFD.gif", "bpp": 8, "baked": true },
     "CG-title": { "gif": "../../art/cg-placeholders/CG-title__B8C80.gif", "bpp": 8 }
   },
-  "tilesets": {},
+  "tilesets": {
+    "farm": { "gif": "../../art/exploration/farm-pilot/farm__B8CFD.gif", "bpp": 8, "baked": true }
+  },
+  "sprites": {
+    "brad": { "gif": "../../art/exploration/farm-pilot/brad-farm__B8CFD.gif", "bpp": 8, "baked": true }
+  },
   "maps": {}
 }

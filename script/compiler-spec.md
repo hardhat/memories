@@ -190,7 +190,7 @@ char names[...]   packed NUL-terminated (name_offset is from the start of this p
 
 Expression ids are indices into the character's list in `characters.json` (`have` first, then `todo`). The art pipeline fills expressions in that order; a missing expression renders as expression 0, matching the "engine falls back" note in characters.json. Names are limited to 16 characters (check enforces; "Icebreaker Leader" was shortened to "Leader").
 
-**INDEX** (id 2): maps logical ids to block ids (`0` means there is no block: sprites, maps and music until their milestones). Art that is not supplied still has a block id, flagged `MISSING` (section 5.7).
+**INDEX** (id 2): maps logical ids to block ids (`0` means there is no block: maps and music until their milestones, sprites for characters without a sheet). Art that is not supplied still has a block id, flagged `MISSING` (section 5.7).
 
 ```text
 u8  map_count      u16 mapdef_block[map_count]                              (all 0 until M6)
@@ -298,19 +298,22 @@ CG. Details and the slot map: [screen-spec.md](screen-spec.md).
 
 **CG checks.** 4bpp or 8bpp only. Without a tile map the tile count must be 300 (4bpp) or 240 (8bpp). With `U` and `M` flags the `.ztm` must have 300 or 240 entries, each below the tile count. A tileset used by maps may hold at most 255 tiles (map entries are one byte and 255 means empty).
 
-**Baked CGs.** A manifest CG entry with `"baked": true` (8bpp only) declares that its pixels already carry their final hardware indices: 0 (black, shared with the dialog palette) or inside `art.cg_palette` in `config.json` (126-252, the world range, screen-spec.md section 3). The compiler checks every pixel and stores only the used slice (`first` = lowest index above 0, `last` = highest) in the PALETTE block, so loading it never touches the dialog or portrait palettes. Without the flag the CG keeps the legacy local indices and a full palette from entry 0, and the engine refuses to show it (screen-spec.md section 4b). Export a baked CG as `cg01__B8CFD.gif` (`CFD` = 253 entries, 0-252).
+**Baked art.** An entry with `"baked": true` (8bpp only) declares that its pixels already carry their final hardware indices: 0 (black, or transparent for sprites and map tiles, shared with the dialog palette) or inside `art.cg_palette` in `config.json` (126-252, the world range, screen-spec.md section 3). It applies to CGs, tilesets and sprite sheets. The compiler checks every pixel and stores only the used slice (`first` = lowest index above 0, `last` = highest) in the PALETTE block, so loading it never touches the dialog or portrait palettes (nor, for a sprite sheet, the part of the world palette that only the atlas uses). Without the flag the art keeps the legacy local indices and a full palette from entry 0; the engine refuses to show such a CG (screen-spec.md section 4b). Export baked art as `name__B8CFD.gif` (`CFD` = 253 entries, 0-252). `convert_cgs.py` and `export_farm_pilot.py` do this for the story CGs, the farm atlas and Brad's sprites; CG-title is the one unbaked CG (shown before the palettes exist).
+
+**Sprite sheets** are the `"sprites"` manifest section, keyed by character: one tileset block and one palette block each, filed in the INDEX sprites table at the character's id (`0, 0` for characters without one). Tilesets (`"tilesets"`) hold at most 255 tiles; sprite sheets have no such limit.
 
 **Manifest** (`assets/manifest.json`; paths relative to it; keys must be existing character or CG names, anything else is a warning):
 
 ```json
 {
   "tools": { "gif2zeal": "../../Zeal-VideoBoard-SDK/tools/zeal2gif/gif2zeal.py" },
-  "tilesets": { "town": { "gif": "img/town__B8.gif" } },
+  "tilesets": { "town": { "gif": "img/town__B8CFD.gif", "baked": true } },
+  "sprites": { "brad": { "gif": "img/brad-walk__B8CFD.gif", "baked": true } },
   "portraits": {
     "brad": { "gif": "img/brad__B8C20.gif" }
   },
   "cgs": {
-    "CG-01": { "gif": "img/cg01__B8C20.gif", "bpp": 8 },
+    "CG-01": { "gif": "img/cg01__B8CFD.gif", "bpp": 8, "baked": true },
     "CG-02": { "gif": "img/cg02__B4UMC10.gif" }
   },
   "maps": {

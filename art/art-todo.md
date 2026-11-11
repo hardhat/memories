@@ -68,13 +68,17 @@ Decided (see [../script/compiler-spec.md](../script/compiler-spec.md) section 5.
 - [x] Save GIFs with every palette entry you use at the index you want: the pixel index is stored as is, and the build checks it is inside the palette.
 - [x] CG production workflow: request 1280x768 source PNGs (5:3), then downsize
   and palette-limit locally with [convert_cgs.py](../script/tools/convert_cgs.py).
-  Its current output is 320x192, 8bpp, 128 colours (`__B8C80.gif`), plus
-  `.ztp` and `.zts`. Verify actual generated dimensions; the OpenArt CG-02
+  Its output (2026-11-11) is 320x192, 8bpp, **127 colours baked at palette
+  indices 126-252** (`CG-xx__B8CFD.gif`, 253 palette entries); the compiler
+  runs gif2zeal, so no `.ztp`/`.zts` is written. CG-title keeps the legacy
+  128 colour `__B8C80.gif` because it is shown before the palettes exist.
+  Verify actual generated dimensions; the OpenArt CG-02
   pilot was 1600x960, which has the same aspect ratio.
 
 Still to confirm:
 
-- [x] All 23 required CGs use 320x192 8bpp/128 colours; no output-mode
+- [x] All 23 required CGs use 320x192 8bpp; baked into 127 colours at 126-252
+  (2026-11-11, was 128 local colours); no output-mode
   exceptions were needed. 320x240 4bpp remains an available alternative.
 - [x] Walk-sprite size: 16x32; two animation frames per stored direction,
   with one reused as idle.
@@ -120,9 +124,13 @@ constraint, not the new hardware budget.
 - [x] Palette ranges assigned (2026-11-03, [screen-spec.md](../script/screen-spec.md)
   section 3): shared 0; dialog 1-31; left portrait 32-78; right portrait
   79-125; world or CG 126-252; 253-255 spare. Exports must bake these final
-  indices (the engine does not remap, for speed). **Open:** the converters
-  still write local indices (`export_farm_pilot.py`, `convert_cgs.py`, the
-  portrait export); a CG must be quantized to 127 colours plus black.
+  indices (the engine does not remap, for speed). **Done (2026-11-11):** the
+  portraits, the 23 story CGs, the farm atlas and Brad's walk sprites are all
+  baked (`export_portrait.py`, `convert_cgs.py`, `export_farm_pilot.py`);
+  the compiler checks the ranges and stores each sheet's palette slice.
+  CG-title stays at palette 0-127 (shown at startup). The farm pilot uses
+  117 of the 127 world colours (126-242); later world art must join that
+  shared palette.
 - [x] CG display (2026-11-03): CGs are 320x192 8bpp in tile rows 0-11; the
   dialog box covers their bottom three rows, because a CG has 240 unique
   tiles and cannot coexist with the 60 dialog tiles in 256 slots. No portraits
@@ -309,24 +317,27 @@ checks before expanding to full locations.
   South/north/east motion is approved and north width revision reviewed;
   source sheet and local-palette pilot exports are installed, not runtime-bound.
 
-- [x] Prepare shared farm/Brad local-palette pilot with
+- [x] Prepare shared farm/Brad pilot with
   [export_farm_pilot.py](../script/tools/export_farm_pilot.py).
   Run `python script\tools\export_farm_pilot.py` to reproduce
-  [exports](exploration/farm-pilot/): farm and Brad indexed GIFs,
-  raster-order `.zts` files, one shared 128-entry RGB565 little-endian
-  `.ztp`, and [frame/allocation manifest](exploration/farm-pilot/manifest.json).
+  [exports](exploration/farm-pilot/): farm and Brad indexed GIFs
+  (**baked to the world palette 2026-11-11**: transparent 0, colours at
+  126-242, `__B8CFD.gif`), raster-order `.zts` files, and a
+  [frame/allocation manifest](exploration/farm-pilot/manifest.json).
+  They are in the compiler manifest as the tileset `farm` and the sprite
+  sheet of `brad`, so they are packed into `memo.dat` (palette slices 126-211
+  and 212-242).
   Uses 118 entries: transparent 0, 86 terrain/prop RGB colours, then
-  31 sprite RGB colours. Ten palette entries remain for this pilot;
+  31 sprite RGB colours. Ten of the 127 world entries remain;
   other actors/effects still need budgeting. No dithering/quantization
   or tile deduplication; GIF palette/indices and visible RGB/alpha
   round-trip exactly. RGB565 hardware precision still applies.
-  Farm has 40 tiles (10,240 bytes), Brad twelve (3,072 bytes);
-  shared palette is 256 bytes. Manifest assigns local tiles 40-51
+  Farm has 40 tiles (10,240 bytes), Brad twelve (3,072 bytes).
+  Manifest assigns local tiles 40-51
   to Brad (target hardware slots 204-215), preserving scenery IDs 0-39.
   West mirrors both vertically stacked east tiles independently.
-  These indices are local, not a finalized physical shared palette.
-  Palette placement, map relocation/empty handling and runtime loading
-  remain unimplemented; do not treat these as a ready DAT integration.
+  Map relocation/empty handling and runtime loading
+  remain unimplemented (Phase 5).
   Four focused unit tests cover transparency including opaque black,
   palette overflow, partial-alpha rejection, palette encoding and
   saved tile-order reconstruction. Pylance syntax service was unavailable;

@@ -418,6 +418,97 @@ class CgDisplay(unittest.TestCase):
             self.assertTrue(any("outside the world palette range 126-252" in e for e in errors), errors)
 
 
+@unittest.skipUnless(HAVE_CC and have_tool(), "no C compiler or SDK gif2zeal.py")
+class RealCgs(unittest.TestCase):
+    """The game's own CGs: baked into palette 126-252, packed into memo.dat as the art says, and shown."""
+
+    rgb565 = staticmethod(CgDisplay.rgb565)
+    picture = CgDisplay.picture
+    ROOT = Path(__file__).resolve().parents[2]
+    MANIFEST = ROOT / "script" / "assets" / "manifest.json"
+
+    def test_every_cg_is_baked_and_packs_exactly(self):
+        from PIL import Image
+
+        p, data, _ = full_game(self.MANIFEST)
+        dat = Dat(data)
+        for number, name in enumerate(p.cg_names):
+            with self.subTest(name):
+                entry = p.cgs[name]
+                gif = self.ROOT / entry["file"]
+                tiles_id, map_id, pal_id = dat.index["cgs"][number]
+                tiles, palette = dat.tileset(tiles_id), dat.palette(pal_id)
+                self.assertIsNotNone(tiles, "art missing from memo.dat")
+                with Image.open(gif) as image:
+                    sheet = image.copy()
+                pixels = sheet.load()
+                if name == "CG-title":                       # shown before the palettes exist: entries 0-127
+                    self.assertEqual((palette[0], palette[1]), (0, 127))
+                    continue
+                self.assertTrue(entry.get("baked"), "cgs.json must say baked")
+                self.assertLessEqual(126, palette[0])
+                self.assertLessEqual(palette[1], 252)
+                bpp, comp, count, raw = tiles
+                self.assertEqual((bpp, comp, count), (8, 0, 240))
+                used = set(raw)
+                self.assertGreaterEqual(min(used), 126)
+                self.assertLessEqual(max(used), 252)
+                for t in range(240):
+                    tx, ty = t % 20 * 16, t // 20 * 16
+                    for y in range(0, 16, 5):
+                        for x in range(16):
+                            self.assertEqual(raw[t * 256 + y * 16 + x], pixels[tx + x, ty + y])
+                gif_palette = sheet.getpalette()
+                for i in range(palette[0], palette[1] + 1):
+                    r, g, b = gif_palette[i * 3:i * 3 + 3]
+                    self.assertEqual(palette[2][i - palette[0]], (r >> 3) << 11 | (g >> 2) << 5 | (b >> 3))
+
+    def test_farm_atlas_and_brad_pack_exactly(self):
+        import json
+        import struct
+
+        p, data, _ = full_game(self.MANIFEST)
+        dat = Dat(data)
+        pilot = self.ROOT / "art" / "exploration" / "farm-pilot"
+        manifest = json.loads((pilot / "manifest.json").read_text())
+        brad = p.char_index["brad"]
+        for label, (tiles_id, pal_id), stem, count in (("farm", dat.index["tilesets"][0], "farm", 40),
+                                                       ("brad", dat.index["sprites"][brad], "brad-farm", 12)):
+            with self.subTest(label):
+                bpp, comp, n, raw = dat.tileset(tiles_id)
+                self.assertEqual((bpp, comp, n), (8, 0, count))
+                self.assertEqual(raw, (pilot / f"{stem}.zts").read_bytes())
+                first, last, words = dat.palette(pal_id)
+                lo, hi = manifest["palette_first_index"], manifest["palette_last_index"]
+                self.assertTrue(lo <= first <= last <= hi)              # only the slice this sheet uses
+                self.assertEqual(set(raw) - {0} >= {first, last}, True)
+                self.assertEqual(words, [(r >> 3) << 11 | (g >> 2) << 5 | (b >> 3)
+                                         for r, g, b in manifest["palette_rgb"][1 + first - lo:2 + last - lo]])
+        for row in dat.index["sprites"][:brad] + dat.index["sprites"][brad + 1:]:
+            self.assertEqual(row, (0, 0))
+
+    def test_the_engine_shows_the_real_cgs_and_refuses_the_title(self):
+        from PIL import Image
+
+        p, data, header = full_game(self.MANIFEST)
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "screen.c", "cg.c", "stream.c",
+                                 "test/gfx_mock.c", "test/cg_main.c"), "cg_test.exe", header)
+            (work / "memo.dat").write_bytes(data)
+            n = p.cg_names
+            args = [str(exe), str(work / "memo.dat"), str(n.index("CG-01")), str(n.index("CG-02")),
+                    str(n.index("CG-title")), str(work)]
+            result = subprocess.run(args, capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("cg tests passed", result.stdout)
+            for shot, name in (("a", "CG-01"), ("b", "CG-02")):
+                with Image.open(work / f"cg-{shot}.ppm") as image:
+                    got = image.convert("RGB")
+                want = self.picture(self.ROOT / p.cgs[name]["file"])
+                self.assertEqual(got.tobytes(), want.tobytes(), name)
+
+
 @unittest.skipUnless(HAVE_CC, "no C compiler")
 class CharsBlock(unittest.TestCase):
     def test_loader_matches_python_reader(self):

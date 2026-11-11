@@ -3,7 +3,8 @@
 Block ids for art are allocated in a fixed order that does not depend on which art exists, so
 adding a file never renumbers anything: for each character with expressions three blocks
 (portrait descriptor, tiles, palette), for each CG three blocks (tiles, tile map, palette), then
-the map tilesets in manifest order (tiles, palette).
+the map tilesets in manifest order (tiles, palette), then the sprite sheets of the characters that have
+one, in character order (tiles, palette).
 """
 import json
 import os
@@ -31,7 +32,7 @@ class AssetError(Exception):
 class AssetSet:
     def __init__(self):
         self.blocks = []
-        self.index = {"cgs": [], "portraits": [], "tilesets": []}
+        self.index = {"cgs": [], "portraits": [], "tilesets": [], "sprites": []}
         self.diags = []
         self.missing = []
 
@@ -186,6 +187,24 @@ def check_portrait(a, p, cname, spec, info):
     return ok, base, head, (lo, max(used) if used else lo)
 
 
+def check_baked(a, p, name, info):
+    """Baked world art (a CG, tileset or sprite sheet marked "baked": true): 8bpp, every pixel is 0 (black or
+    transparent, shared) or inside the world palette range. Returns (ok, span) where span is the
+    (lowest, highest) index used above 0, the slice of the palette to store."""
+    lo, hi = p.config["art"]["cg_palette"]
+    if info["bpp"] != 8:
+        a.diag("error", name, f"baked art is 8bpp, found {info['bpp']}bpp")
+        return False, None
+    used = sorted(set(info["raw"]) - {0})
+    stray = [i for i in used if not lo <= i <= hi]
+    if stray:
+        a.diag("error", name, f"pixel indices {stray[0]}..{stray[-1]} are outside the world palette range "
+                              f"{lo}-{hi}. Baked art uses index 0 (black or transparent) and colours at their "
+                              f"final indices (screen-spec.md section 3)")
+        return False, None
+    return True, ((min(used), max(used)) if used else None)
+
+
 def check_cg(a, p, name, spec, info):
     modes = p.config["art"]["cg_modes"]
     ok = check_pixels(a, name, info)
@@ -195,20 +214,8 @@ def check_cg(a, p, name, spec, info):
         a.diag("error", name, f"CGs must be {', '.join(modes)}bpp, found {info['bpp']}bpp")
         return False, None, None
     if spec.get("baked"):
-        lo, hi = p.config["art"]["cg_palette"]
-        if info["bpp"] != 8:
-            a.diag("error", name, f"baked CGs are 8bpp, found {info['bpp']}bpp")
-            ok = False
-        else:
-            used = sorted(set(info["raw"]) - {0})
-            stray = [i for i in used if not lo <= i <= hi]
-            if stray:
-                a.diag("error", name, f"pixel indices {stray[0]}..{stray[-1]} are outside the world palette range "
-                                      f"{lo}-{hi}. A baked CG uses index 0 (black) and colours at their final "
-                                      f"indices (screen-spec.md section 3)")
-                ok = False
-            elif used:
-                span = (min(used), max(used))
+        baked_ok, span = check_baked(a, p, name, info)
+        ok = ok and baked_ok
     grid = mode[0] * mode[1]
     if info["ztm"] is not None:
         if len(info["ztm"]) != grid:
@@ -289,7 +296,7 @@ def load_assets(p, manifest_path=None, convert=False, keep_compression=False):
         if spec is None:
             cg_entry = p.cgs.get(cg)
             if cg_entry and cg_entry.get("file"):
-                spec = {"gif": cg_entry["file"], "bpp": cg_entry.get("bpp", 8)}
+                spec = {"gif": cg_entry["file"], "bpp": cg_entry.get("bpp", 8), "baked": cg_entry.get("baked", False)}
                 base_dir = ROOT.parent
         got, mode, span = None, None, None
         if spec is None:
@@ -318,25 +325,46 @@ def load_assets(p, manifest_path=None, convert=False, keep_compression=False):
             mark_missing(tiles, tmap, pal)
             a.index["cgs"].append((tiles.id, tmap.id, pal.id))
 
-    # Map tilesets, in manifest order.
-    for name, spec in manifest.get("tilesets", {}).items():
+    # Map tilesets (in manifest order) and per-character sprite sheets (one row per character).
+    def world_art(name, spec, is_tileset):
+        """Tiles and palette blocks of a tileset or sprite sheet. Returns the two blocks."""
         tiles, pal = a.alloc(T_TILESET, f"TILES {name}"), a.alloc(T_PALETTE, f"PAL {name}")
-        a.index["tilesets"].append((tiles.id, pal.id))
         try:
             src = resolve_sources(spec, mdir, convert, tool, name)
             info = read_gfx(src, name)
             ok = check_pixels(a, name, info)
-            if info["tile_count"] > 255:
+            span = None
+            if spec.get("baked"):
+                baked_ok, span = check_baked(a, p, name, info)
+                ok = ok and baked_ok
+            if is_tileset and info["tile_count"] > 255:
                 a.diag("error", name, f"{info['tile_count']} tiles; tile map entries are one byte and 255 means empty, "
                                       f"so a tileset can hold at most 255 tiles")
                 ok = False
             if ok:
-                tiles.data, pal.data = tiles_block_data(info, keep_compression), palette_block_data(info)
+                tiles.data = tiles_block_data(info, keep_compression)
+                pal.data = palette_block_data(info, *span) if span else palette_block_data(info)
                 check_size(a, name, tiles, pal)
-                continue
+                return tiles, pal
         except AssetError as e:
             a.diag("error", name, str(e).split(": ", 1)[-1])
         mark_missing(tiles, pal)
+        return tiles, pal
+
+    for name, spec in manifest.get("tilesets", {}).items():
+        tiles, pal = world_art(name, spec, True)
+        a.index["tilesets"].append((tiles.id, pal.id))
+
+    for cname in p.char_names:
+        spec = manifest.get("sprites", {}).get(cname)
+        if spec is None:
+            a.index["sprites"].append((0, 0))
+        else:
+            tiles, pal = world_art(f"{cname} sprites", spec, False)
+            a.index["sprites"].append((tiles.id, pal.id))
+    for name in manifest.get("sprites", {}):
+        if name not in p.char_names:
+            a.diag("warn", name, "manifest sprites entry is not a known character")
 
     if manifest.get("maps"):
         a.diag("warn", "maps", "the manifest has maps; map packing is not implemented yet and they are ignored")

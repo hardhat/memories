@@ -1,6 +1,5 @@
 import importlib.util
 from pathlib import Path
-import struct
 import sys
 import unittest
 
@@ -20,9 +19,12 @@ class FarmPilotTests(unittest.TestCase):
         image.putpixel((1, 0), (20, 40, 60, 255))
         colours = exporter.make_palette([image])
         indexed = exporter.index_image(image, colours)
-        self.assertEqual(indexed.getpixel((0, 0)), 1)
-        self.assertEqual(indexed.getpixel((1, 0)), 2)
+        self.assertEqual(indexed.getpixel((0, 0)), 126)      # opaque black is a colour, not transparency
+        self.assertEqual(indexed.getpixel((1, 0)), 127)
         self.assertEqual(indexed.getpixel((2, 0)), 0)
+        palette = indexed.getpalette()
+        self.assertEqual(palette[126 * 3:128 * 3], [0, 0, 0, 20, 40, 60])
+        self.assertEqual(set(palette[:126 * 3]), {0})
 
     def test_palette_overflow_rejected(self):
         image = Image.new("RGBA", (16, 16))
@@ -45,15 +47,14 @@ class FarmPilotTests(unittest.TestCase):
 
         manifest = json.loads((exporter.OUTPUT / "manifest.json").read_text())
         self.assertLessEqual(manifest["palette_entries_used_including_transparency"], 128)
-        expected_palette = b"".join(struct.pack(
-            "<H", (r >> 3) << 11 | (g >> 2) << 5 | (b >> 3))
-            for r, g, b in manifest["palette_rgb"])
-        self.assertEqual((exporter.OUTPUT / "farm-shared.ztp").read_bytes(),
-                         expected_palette.ljust(256, b"\0"))
+        first, last = manifest["palette_first_index"], manifest["palette_last_index"]
+        self.assertEqual((first, last), (126, 126 + manifest["palette_entries_used_including_transparency"] - 2))
+        self.assertLessEqual(last, 252)
+        palettes = []
         for stem, count in (("farm", 40), ("brad-farm", 12)):
             raw = (exporter.OUTPUT / f"{stem}.zts").read_bytes()
             self.assertEqual(len(raw), count*256)
-            with Image.open(exporter.OUTPUT / f"{stem}__B8C80.gif") as image:
+            with Image.open(exporter.OUTPUT / f"{stem}__B8CFD.gif") as image:
                 rebuilt = Image.new("P", image.size)
                 for index in range(count):
                     tile = Image.frombytes("P", (16, 16), raw[index*256:(index+1)*256])
@@ -61,7 +62,15 @@ class FarmPilotTests(unittest.TestCase):
                     rebuilt.paste(tile, (index % columns*16, index//columns*16))
                 self.assertEqual(rebuilt.tobytes(), image.tobytes())
                 self.assertEqual(image.info["transparency"], 0)
-                self.assertLess(max(raw), 128)
+                # baked: transparent 0, every colour inside the slice of the world range
+                used = set(raw) - {0}
+                self.assertGreaterEqual(min(used), first)
+                self.assertLessEqual(max(used), last)
+                palettes.append(image.getpalette())
+        # both images share one palette, and it holds exactly the manifest's colours at their indices
+        self.assertEqual(palettes[0], palettes[1])
+        for n, colour in enumerate(manifest["palette_rgb"][1:]):
+            self.assertEqual(tuple(palettes[0][(first + n) * 3:(first + n) * 3 + 3]), tuple(colour))
         self.assertEqual([frame["local_tiles"] for frame in manifest["frames"]],
                          [[40, 41], [42, 43], [44, 45], [46, 47], [48, 49], [50, 51]])
 

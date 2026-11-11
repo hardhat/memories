@@ -1,5 +1,5 @@
 {
-  "status": "local-palette pilot; physical palette remapping/runtime integration pending",
+  "status": "baked into world palette 126-252; map/sprite runtime integration pending (Phase 5)",
   "palette_entries_used_including_transparency": 118,
   "palette_rgb": [
     [
@@ -594,14 +594,15 @@
     ]
   ],
   "transparency_index": 0,
-  "palette_entries_exported": 128,
-  "palette_format": "RGB565 little-endian",
+  "palette_first_index": 126,
+  "palette_last_index": 242,
+  "palette_format": "RGB565 (the compiler stores the used slice); GIF palettes carry the 8-bit colours",
   "tile_size": 16,
   "scenery_tiles": 40,
   "brad_tiles": 12,
   "resident_tiles": 52,
   "remaining_world_slots": 40,
-  "tile_order": "farm.zts then brad-farm.zts; no deduplication",
+  "tile_order": "farm then brad-farm; no deduplication",
   "frames": [
     {
       "direction": "south",

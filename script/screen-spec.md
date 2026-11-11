@@ -92,8 +92,24 @@ as `first`..`last`; compiler-spec.md section 5.7). Two tools produce them:
 (Brad on the left, the other six on the right) are done and in `memo.dat`. Their tile counts
 are Daniel 20, Gord 28, Sandra 36, Georgia 36, Patricia 40, Jane 36, Brad 44, so
 each fits its 50-slot region.
-CGs, the farm atlas and sprites are **planned**: `convert_cgs.py` and
-`export_farm_pilot.py` still use local indices and must be changed to emit these ranges.
+CGs, the farm atlas and Brad's walk sprites are baked too (2026-11-11), into the world range:
+
+* **CGs** (`convert_cgs.py`): 320x192, quantized to 127 colours (median cut with k-means
+  refinement, snapped to RGB565) at indices 126-252, written as `CG-xx__B8CFD.gif` (253 palette
+  entries). Index 0 (black) is unused by the picture and shows below it. At hardware precision
+  this is as good as the old 128 colour local palettes or better (about +1 dB); there is no
+  dithering. All 23 story CGs are baked and flagged `"baked": true` in `cgs.json` and the manifest.
+  **CG-title is the exception**: it is shown at startup, before the dialog and portrait palettes
+  exist, so it keeps palette entries 0-127 (`CG-title__B8C80.gif`, `title.c`).
+* **Farm atlas and Brad** (`export_farm_pilot.py`): transparent 0 and the pilot's 117 shared
+  colours at 126-242, written as `farm__B8CFD.gif` and `brad-farm__B8CFD.gif`. They are in the
+  manifest as the tileset `farm` and the sprite sheet of `brad`; the compiler stores each sheet's own
+  slice of the palette (the atlas 126-211, Brad 212-242). 10 of the 127 world entries (243-252)
+  remain for other actors and effects. The next batch of world art must be exported **with
+  this palette** (add its colours to `make_palette`) because map, sprites and effects share the one range.
+* **Tile slots are not baked into pixels.** A tile's slot is where the engine loads the sheet
+  (world art starts at slot 164), and its position in the sheet; the pilot manifest lists the
+  target slot of every sprite tile. Tilemap values are the map converter's job (Phase 5).
 
 ## 4. Dialog box (done)
 
@@ -216,8 +232,8 @@ nothing; the other side is unaffected.
 Palette: the CG uses 126-252 only, so the dialog palette (0-31) and the portrait palettes (32-125)
 stay resident. A baked CG is one whose pixels are 0 (black, shared) or 126-252: set
 `"baked": true` on its manifest entry (compiler-spec.md section 5.7); the compiler then checks the
-range and stores just the used slice. The 23 placeholder CGs are **not baked yet** (local
-indices 0-127), so the engine refuses them until the converters are reworked.
+range and stores just the used slice. All 23 story CGs are baked (section 3); only CG-title is not,
+and the engine refuses it in CG mode because `title.c` shows it at startup.
 
 ## 5. Frame protocol (done for the box and portraits)
 
@@ -246,11 +262,11 @@ anchor, are assumed from the SDK header and **must be checked on an emulator**.
 
 | Phase | Content | State |
 |---|---|---|
-| 0 | Slot, row and palette constants; init order; remove test code; baked-index tooling | Constants, init order and cleanup **done**; asset tools **planned** |
+| 0 | Slot, row and palette constants; init order; remove test code; baked-index tooling | **done** (portraits, CGs, farm atlas and Brad's sprites baked; section 3) |
 | 1 | Dialog and tutorial box in map mode, names from `CHARS`, marker | **done** |
 | 2 | Choice menu and trigger picker in the box | **done** |
 | 3 | Portraits (stream, palette slice, expression cells) | **done** |
-| 4 | CG mode (stream, box over rows 9-11, restore on hide) | **done** for baked CGs (the placeholders are not baked yet) |
+| 4 | CG mode (stream, box over rows 9-11, restore on hide) | **done**; the 23 story CGs are baked |
 | 5 | Map layers, scroll, sprites, `above` policy | planned |
 
 Tests: `engine/test/screen_main.c` (box against a video model: one-upload budget,
@@ -274,9 +290,11 @@ CG, no portrait over it, and the box and portraits return after `cg_off`. The mo
 * Measure upload and read speed on the emulator and hardware; confirm one upload per frame holds.
 * Check a tall sprite's anchor and flips, and the `PRIORITY` flag, on an emulator.
 * Decide the `above` layer policy per map (D11), including the sprite alternative.
-* Rework the converters to emit baked slot and palette indices, with CGs at 127 colours plus black
-  (index 0 black, colours at 126-252), then set `"baked": true` on every CG in the manifest. Until
-  then the engine refuses the placeholder CGs and the script runs without pictures.
+* Future world art (NPC sprites, props, effects, more tilesets) must be exported with the shared
+  palette: 10 of the 127 entries remain, so decide the final world colour budget before the next
+  batch (re-quantize the shared set to leave room if needed).
+* **Title screen.** CG-title uses palette 0-127 at startup. If it should also be shown by `cg_show`
+  (for example on returning to the title), it needs a baked twin.
 * Fade: palette fading needs a 512-byte staging copy; for now a fade is only a timer.
 * Measure the streaming chunk (file read plus 2 KB upload) against the frame, how long a CG really
   takes (estimated 31 frames), and the stack headroom above the 0xE7EC end of the program's data.

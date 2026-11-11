@@ -240,6 +240,43 @@ class EndToEnd(unittest.TestCase):
         tiles, pal = dat.index["tilesets"][0]
         self.assertEqual(dat.tileset(tiles)[2], 128)
 
+    def test_baked_tileset_stores_only_its_slice(self):
+        gif = self.gif("town__B8CFD.gif", 64, 32, 253, lambda x, y: 0 if x < 16 else 126 + (x // 16) * 5 % 127)
+        assets, dat, _ = build(project(), {"tilesets": {"town": {"gif": gif, "baked": True}}}, self.dir, convert=True)
+        self.assertEqual(errors(assets), [])
+        tiles, pal = dat.index["tilesets"][0]
+        first, last, colors = dat.palette(pal)
+        self.assertEqual(first, 131)
+        self.assertEqual(last, 126 + 3 * 5)
+        self.assertEqual(len(colors), last - first + 1)
+        self.assertEqual(set(dat.tileset(tiles)[3]) - {0}, {131, 136, 141})
+
+    def test_baked_art_below_the_world_range_is_rejected(self):
+        gif = self.gif("town__B8C80.gif", 32, 32, 128, lambda x, y: 1 + x % 100)
+        assets, _, _ = build(project(), {"tilesets": {"town": {"gif": gif, "baked": True}}}, self.dir, convert=True)
+        self.assertTrue(any("world palette range 126-252" in e for e in errors(assets)), errors(assets))
+
+    def test_unbaked_tileset_keeps_the_whole_palette(self):
+        gif = self.gif("town__B8C10.gif", 32, 32, 8, lambda x, y: x % 8)
+        assets, dat, _ = build(project(), {"tilesets": {"town": {"gif": gif}}}, self.dir, convert=True)
+        self.assertEqual(errors(assets), [])
+        self.assertEqual(dat.palette(dat.index["tilesets"][0][1])[:2], (0, 15))
+
+    def test_sprite_sheet_goes_to_its_characters_row(self):
+        gif = self.gif("jane__B8CFD.gif", 16, 64, 253, lambda x, y: 0 if y < 16 else 200 + x % 10)
+        assets, dat, _ = build(project(), {"sprites": {"jane": {"gif": gif, "baked": True}}}, self.dir, convert=True)
+        self.assertEqual(errors(assets), [])
+        self.assertEqual(dat.index["sprites"][0], (0, 0))                       # the narrator has none
+        tiles, pal = dat.index["sprites"][1]
+        self.assertEqual(dat.tileset(tiles)[2], 4)
+        self.assertEqual(dat.palette(pal)[:2], (200, 209))
+
+    def test_unknown_sprite_owner_is_a_warning(self):
+        gif = self.gif("x__B8CFD.gif", 16, 16, 253, lambda x, y: 130)
+        assets, dat, _ = build(project(), {"sprites": {"nobody": {"gif": gif, "baked": True}}}, self.dir, convert=True)
+        self.assertTrue(any(d.level == "warn" and d.where == "art:nobody" for d in assets.diags))
+        self.assertEqual(dat.index["sprites"], [(0, 0), (0, 0)])
+
     def test_stale_output_needs_convert(self):
         gif = self.gif("jane__B8C7E.gif", 32, 96, 126, lambda x, y: 79 + (x + y) % 47)
         assets, _, _ = build(project(), {"portraits": {"jane": {"gif": gif}}}, self.dir)
