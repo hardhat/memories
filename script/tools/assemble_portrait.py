@@ -19,7 +19,11 @@ Spec (art/portraits/<name>.json):
    "defringe": 20,                                    # optional, see below
    "expressions": {"smile": 4, "wink": 7, ...}}      # candidate file c<NN>.png per expression
 `defringe` removes the partly blended magenta pixels along the silhouette (red and blue both more
-than that much above green); it refuses if any such pixel lies inside the figure.
+than that much above green); for the base it refuses if any such pixel lies inside the figure. Donor
+candidates (only their window is used) are defringed leniently, keeping tinted pixels that are real colours,
+unless `"donor_defringe": false`. Donor pixels that are transparent leave the base's pixel in place.
+`offsets` (optional) moves a donor candidate by [dx, dy] before its window is taken, to line its face up
+with the base: {"smile": [1, 0]}.
 `edits` (optional) sets hand-placed pixels in one expression's head, as {"embarrassed": [[x, y, [r, g, b]], ...]}
 with x, y in the 32x32 head; each must land on an opaque pixel. Used for details the generator cannot
 draw at this size, such as a blush.
@@ -61,11 +65,12 @@ def key_magenta(image):
     return out
 
 
-def defringe(image, tint):
+def defringe(image, tint, strict=True):
     """Remove the partly blended magenta left along the silhouette: pixels whose red and blue both
     exceed green by more than `tint`. Natural colours (hair, skin, eyes, black) never do. Every removed
     pixel must connect to the background through other removed pixels; one inside the figure is a
-    real colour, so this refuses rather than punching a hole."""
+    real colour, so a strict call refuses rather than punching a hole. A lenient call (donor
+    candidates, of which only a window is used) removes the connected ones and keeps the rest."""
     out = image.copy()
     pixels = out.load()
     w, h = out.size
@@ -83,10 +88,10 @@ def defringe(image, tint):
                     reached.add(n)
                     frontier.append(n)
     inner = tinted - reached
-    if inner:
+    if inner and strict:
         raise AssembleError(f"{len(inner)} tinted pixel(s) lie inside the figure (first at {min(inner)}); they are "
                             f"real colours, so raise the defringe threshold above {tint}")
-    for x, y in tinted:
+    for x, y in reached:
         pixels[x, y] = (0, 0, 0, 0)
     return out
 
@@ -101,14 +106,14 @@ def shift_up(image, rows):
     return out
 
 
-def prepare(path, shift, tint=None):
+def prepare(path, shift, tint=None, strict=True):
     with Image.open(path) as opened:
         image = opened.convert("RGBA")
     if image.size != SIZE:
         raise AssembleError(f"{path.name} is {image.width}x{image.height}; candidates must be 32x64")
     image = key_magenta(image)
     if tint is not None:
-        image = defringe(image, tint)
+        image = defringe(image, tint, strict)
     return shift_up(image, shift)
 
 
@@ -124,7 +129,8 @@ def assemble(base, donors, window, edits=None):
     sheet.paste(base, (0, 0))
     for k, donor in enumerate(donors[1:]):
         head = base.crop((0, 0, 32, 32))
-        head.paste(donor.crop(window), (x0, y0))
+        piece = donor.crop(window)
+        head.paste(piece, (x0, y0), piece)   # transparent donor pixels leave the base's pixel in place
         sheet.paste(head, (0, 64 + 32 * k))
     for position, pixels in (edits or {}).items():
         if not 0 <= position < len(donors):
@@ -139,6 +145,13 @@ def assemble(base, donors, window, edits=None):
     return sheet
 
 
+def offset_image(image, dx, dy):
+    """The image moved by (dx, dy); what moves off the canvas is lost, what is uncovered is transparent."""
+    out = Image.new("RGBA", image.size)
+    out.paste(image, (dx, dy))
+    return out
+
+
 def build(name):
     project = load_project()
     if name not in project.char_exprs or not project.char_exprs[name]:
@@ -151,12 +164,22 @@ def build(name):
     if spec["expressions"][wanted[0]] != spec["base"]:
         raise AssembleError(f"the first expression ({wanted[0]}) must use the base candidate {spec['base']}")
     folder = PORTRAITS / spec["candidates"]
+    offsets = spec.get("offsets", {})
+    for expression in offsets:
+        if expression not in wanted[1:]:
+            raise AssembleError(f"offsets name {expression!r}, which is not one of {wanted[1:]}")
 
-    def load(index):
-        return prepare(folder / f"c{index:02}.png", spec["shift"], spec.get("defringe"))
+    def load(index, tint=spec.get("defringe"), strict=True):
+        return prepare(folder / f"c{index:02}.png", spec["shift"], tint, strict)
 
     base = load(spec["base"])
-    donors = [base if index == spec["base"] else load(index) for index in spec["expressions"].values()]
+    donor_tint = spec.get("defringe") if spec.get("donor_defringe", True) else None
+    donors = []
+    for expression, index in spec["expressions"].items():
+        donor = base if index == spec["base"] else load(index, donor_tint, strict=False)
+        if expression in offsets:
+            donor = offset_image(donor, *offsets[expression])
+        donors.append(donor)
     edits = {}
     for expression, pixels in spec.get("edits", {}).items():
         if expression not in wanted:

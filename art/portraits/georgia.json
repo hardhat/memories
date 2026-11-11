@@ -1,0 +1,54 @@
+{
+  "candidates": "source/georgia",
+  "base": 0,
+  "shift": 6,
+  "window": [
+    9,
+    16,
+    24,
+    29
+  ],
+  "defringe": 20,
+  "offsets": {
+    "surprised": [
+      1,
+      0
+    ],
+    "laugh": [
+      0,
+      -2
+    ],
+    "worried": [
+      -1,
+      0
+    ],
+    "embarrassed": [
+      0,
+      2
+    ],
+    "thinking": [
+      0,
+      -1
+    ]
+  },
+  "expressions": {
+    "neutral": 0,
+    "smile": 1,
+    "surprised": 2,
+    "wink": 3,
+    "laugh": 4,
+    "worried": 5,
+    "embarrassed": 6,
+    "thinking": 7
+  },
+  "origin": {
+    "c00": "neutral: batch 'neutral' candidate 00",
+    "c01": "smile: batch 'neutral' candidate 06",
+    "c02": "surprised: batch 'surprised' candidate 04",
+    "c03": "wink: batch 'neutral' candidate 01",
+    "c04": "laugh: batch 'laugh' candidate 17",
+    "c05": "worried: batch 'worried' candidate 07",
+    "c06": "embarrassed: batch 'embarrassed' candidate 17",
+    "c07": "thinking: batch 'thinking' candidate 07"
+  }
+}

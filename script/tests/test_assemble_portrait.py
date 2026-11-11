@@ -81,6 +81,14 @@ class Defringe(unittest.TestCase):
         out = ap.defringe(image, 20)
         self.assertEqual((out.getpixel((3, 20))[3], out.getpixel((4, 20))[3]), (0, 0))
 
+    def test_a_lenient_defringe_keeps_a_tinted_pixel_inside_the_figure(self):
+        image = ap.key_magenta(figure(10))
+        image.putpixel((3, 20), (150, 40, 130, 255))     # halo: removed
+        image.putpixel((15, 30), (200, 60, 190, 255))    # a real colour deep inside: kept
+        out = ap.defringe(image, 20, strict=False)
+        self.assertEqual(out.getpixel((3, 20))[3], 0)
+        self.assertEqual(out.getpixel((15, 30)), (200, 60, 190, 255))
+
     def test_natural_colours_are_never_tinted(self):
         for colour in ((140, 20, 20), (230, 170, 140), (110, 75, 50), (60, 120, 180), (25, 25, 30), (240, 240, 240)):
             image = Image.new("RGBA", (32, 64), (*colour, 255))
@@ -138,12 +146,27 @@ class Assemble(unittest.TestCase):
             with self.assertRaisesRegex(ap.AssembleError, "inside the 32x32 head region"):
                 ap.assemble(self.base, self.donors, window)
 
+    def test_transparent_donor_pixels_leave_the_base_in_place(self):
+        donor = ap.key_magenta(figure(2))
+        donor.putpixel((10, 20), (0, 0, 0, 0))
+        sheet = ap.assemble(self.base, [self.base, donor], (8, 12, 25, 31))
+        self.assertEqual(sheet.getpixel((10, 64 + 20)), self.base.getpixel((10, 20)))     # not a hole
+        self.assertEqual(sheet.getpixel((11, 64 + 20)), donor.getpixel((11, 20)))         # the rest is the donor's
+
+    def test_offset_image_moves_a_donor_and_leaves_transparency_behind(self):
+        donor = ap.key_magenta(figure(2))
+        moved = ap.offset_image(donor, 2, -3)
+        self.assertEqual(moved.getpixel((10, 10)), donor.getpixel((8, 13)))
+        self.assertEqual(moved.getpixel((10, 63))[3], 0)    # uncovered at the bottom
+        self.assertEqual(moved.getpixel((4, 10))[3], 0)     # uncovered at the left
+
 
 class Portraits(unittest.TestCase):
     """The checked-in sheets must be reproducible from their recorded sources."""
 
     def test_sheets_match_their_sources(self):
-        for name, size in (("jane", (32, 288)), ("brad", (32, 352))):
+        for name, size in (("jane", (32, 288)), ("brad", (32, 352)), ("daniel", (32, 160)), ("gord", (32, 224)),
+                           ("sandra", (32, 288)), ("georgia", (32, 288)), ("patricia", (32, 320))):
             with self.subTest(name):
                 sheet = ap.build(name)
                 with Image.open(ap.PORTRAITS / f"{name}.png") as existing:
@@ -151,7 +174,7 @@ class Portraits(unittest.TestCase):
                 self.assertEqual(sheet.size, size)
 
     def test_every_face_fits_inside_the_head_region(self):
-        for name in ("jane", "brad"):
+        for name in ("jane", "brad", "daniel", "gord", "sandra", "georgia", "patricia"):
             with self.subTest(name):
                 sheet = ap.build(name)
                 heads = [sheet.crop((0, 0, 32, 32))] + [sheet.crop((0, 64 + 32 * k, 32, 96 + 32 * k))

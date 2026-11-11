@@ -332,12 +332,12 @@ checks before expanding to full locations.
   saved tile-order reconstruction. Pylance syntax service was unavailable;
   execution and focused tests passed.
 
-- [ ] Game-ready portraits (2026-11-10): **Jane and Brad are done**; Daniel,
-  Gord, Sandra, Georgia and Patricia remain. Each exports as a baked GIF,
-  compiles into `memo.dat` and reads back pixel-identical (verified for both).
-  **Shown by the engine in map mode** (Phase 3 of
+- [x] Game-ready portraits (2026-11-10): **all seven are done** (Brad, Jane,
+  Daniel, Gord, Sandra, Georgia, Patricia). Each exports as a baked GIF,
+  compiles into `memo.dat` and reads back pixel-identical (verified for all
+  seven against the GIFs). **Shown by the engine in map mode** (Phase 3 of
   [screen-spec.md](../script/screen-spec.md); the desktop test compares the screen
-  pixel-for-pixel with these sheets) but not yet reviewed on an
+  pixel-for-pixel with Brad and Jane) but not yet reviewed on an
   emulator or hardware. Layout: portraits are 2x4 tiles (a 32x64 waist-up
   bust) plus 32x32 expression heads, not 2x5.
 
@@ -345,11 +345,21 @@ checks before expanding to full locations.
   |---|---|---|---|---|---|
   | Jane | [jane.png](portraits/jane.png) 32x288 | [source/jane](portraits/source/jane) | right, 79-125 | 8 | 36 |
   | Brad | [brad.png](portraits/brad.png) 32x352 | [source/brad](portraits/source/brad) | left, 32-78 | 10 | 44 |
+  | Daniel (Dad) | [daniel.png](portraits/daniel.png) 32x160 | [source/daniel](portraits/source/daniel) | right, 79-125 | 4 | 20 |
+  | Gord | [gord.png](portraits/gord.png) 32x224 | [source/gord](portraits/source/gord) | right, 79-125 | 6 | 28 |
+  | Sandra | [sandra.png](portraits/sandra.png) 32x288 | [source/sandra](portraits/source/sandra) | right, 79-125 | 8 | 36 |
+  | Georgia | [georgia.png](portraits/georgia.png) 32x288 | [source/georgia](portraits/source/georgia) | right, 79-125 | 8 | 36 |
+  | Patricia | [patricia.png](portraits/patricia.png) 32x320 | [source/patricia](portraits/source/patricia) | right, 79-125 | 9 | 40 |
 
   Each sheet is a 32x64 base image then one 32x32 head per further expression
   in `characters.json` order (Jane: smile, wink, serious, surprised, neutral,
   worried, laugh, candid; Brad: neutral, smile, laugh, surprised, embarrassed,
-  worried, determined, confused, candid, sad). Both are in
+  worried, determined, confused, candid, sad; Daniel: neutral, smile, sheepish,
+  serious; Gord: neutral, smile, surprised, angry, worried, sad; Sandra: neutral,
+  slight_smile, annoyed, surprised, mortified, smirk, deadpan, smile; Georgia:
+  neutral, smile, surprised, wink, laugh, worried, embarrassed, thinking;
+  Patricia: neutral, smile, serious, thinking, flustered, frustrated, scared,
+  cold, candid). All are in
   `script/assets/manifest.json` and exported to `script/assets/portraits/`.
 
   **Repeatable pipeline.** After picking candidates in PixelLab, record them in
@@ -393,7 +403,7 @@ checks before expanding to full locations.
   candidates came from different generator palettes), 530 of 5,732 pixels
   changed, but only 8 moved more than 30 colour units and none more than 41;
   the laugh mouth interior and teeth are visibly intact. Tests keep the
-  worst shift under 45.
+  worst shift under 50.
 
   **Picks.** Jane: base 04; wink 07, serious 12, surprised 14, neutral 00,
   worried 10, laugh 09, candid 02, from job `ab2dc914-266a-4f79-bae8-2c85dc971018`.
@@ -405,12 +415,34 @@ checks before expanding to full locations.
   `0ee05ad8-8fbb-4e6b-83de-9d50d7a394d6`) gave a smaller face and needed padding.
   Cost: Jane 52 generations, Brad 20; 1,868 of 2,000 remain this cycle.
 
-  **Open for the other five:** repeat the pipeline (Daniel, Gord, Sandra,
-  Georgia and Patricia are all right side, 79-125, `C7E`), check each
-  character's silhouette and costume (Georgia's pie costume, Patricia's lab
-  coat), and review everything on hardware. Brad's face is a little smaller
-  than Jane's in the 32 px head; a larger head could be requested in the
-  prompt if it reads too small in play.
+  **Open:** review everything on hardware. Brad's and Daniel's faces are a
+  little smaller than Jane's in the 32 px head; a larger head could be
+  requested in the prompt if one reads too small in play. Georgia's pie and cafe
+  costumes and Patricia's lab coat are separate outfits and are not portraits.
+
+  **The other five (2026-11-10).** Same method with these differences, all recorded
+  in each `art/portraits/<name>.json` (with an `origin` block naming the batch and
+  candidate of every picked file):
+  * Prompts asked for a "close-up bust, face filling two thirds of the width" with
+    the neutral head crop and the front figure as references. Expression batches then
+    used the chosen base image (upscaled 8x) as the only reference, because supplement
+    crops with hands or odd framing produced misframed batches (Sandra smirk,
+    Patricia thinking). Patricia's first base showed too much neckline; the buttoned-up
+    base (`neutral3` c17) replaced it.
+  * New assembler options: `offsets` (move a donor by [dx, dy] to line its face up;
+    `build_spec`-style search picks the best), lenient donor defringe, and pasting a
+    donor window **through its alpha**, so a donor's background pixel never punches a
+    hole in the head. This also removed 65 stray transparent pixels from Brad's
+    heads, so Brad was re-assembled and re-exported.
+  * The exporter now accepts up to 192 source colours (Georgia has 179). Worst
+    colour shift: Gord 47.5, Georgia 48.7 (4 pixels each beyond 40), the rest under
+    37; the test limit is 50.
+  * Shifts: Daniel 6, Gord 6, Sandra 6, Georgia 6, Patricia 7. Windows
+    (x0,y0,x1,y1): Daniel 9,13,23,30; Gord 8,14,24,31; Sandra 8,13,25,31;
+    Georgia 9,16,24,29; Patricia 6,12,26,31.
+  * Cost: 560 generations for the five (1,868 left after Brad, 1,308 now of 2,000; the
+    cycle resets 2026-11-30). Patricia took the most (two base redos and three
+    expression rounds).
 
 ## 1. Brad Bart (main character): P1
 

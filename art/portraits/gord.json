@@ -1,0 +1,28 @@
+{
+  "candidates": "source/gord",
+  "base": 0,
+  "shift": 6,
+  "window": [8, 14, 24, 31],
+  "defringe": 20,
+  "offsets": {
+    "smile": [0, -1],
+    "angry": [0, -1],
+    "sad": [0, -2]
+  },
+  "expressions": {
+    "neutral": 0,
+    "smile": 1,
+    "surprised": 2,
+    "angry": 3,
+    "worried": 4,
+    "sad": 5
+  },
+  "origin": {
+    "c00": "neutral batch f9edaab6-42cd-49e0-b0f9-934ba75c0022, candidate 17",
+    "c01": "smile batch 5bf4ce4d-daa1-4a56-ae2c-339fce480d45, candidate 11",
+    "c02": "surprised batch 2e6ae092-cf1f-492d-b191-27880489ff88, candidate 20",
+    "c03": "angry batch 30c2add6-965c-4a37-a324-b026be7d3119, candidate 22",
+    "c04": "worried batch 5ef1daad-ce77-49c7-bd0b-2aac2d6d2278, candidate 03",
+    "c05": "sad batch 8540d737-5791-4fbe-9907-83bcec15e8fa, candidate 18"
+  }
+}

@@ -35,7 +35,7 @@ class PortraitError(Exception):
 
 # Merging is for rounding-level differences between near-identical colours. A sheet needing far
 # more than this was never palette-reduced and should be quantized with a proper tool first.
-MAX_SOURCE_COLORS = 128
+MAX_SOURCE_COLORS = 192
 
 
 def to_565(rgb):

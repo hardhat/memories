@@ -2,7 +2,12 @@
   "_doc": "Art manifest. Paths are relative to this file. An entry gives either 'gif' (a gif2zeal file name with flags, e.g. 'portraits/jane__B8C7E.gif') or 'zts' + 'ztp' (+ 'ztm'). Portrait GIFs are baked: made by script/tools/export_portrait.py with every colour at its final palette index. Run 'memo_dat.py build --convert' to run gif2zeal.py on new or changed GIFs. See compiler-spec.md section 5.7.",
   "portraits": {
     "brad": { "gif": "portraits/brad__B8C4F.gif" },
-    "jane": { "gif": "portraits/jane__B8C7E.gif" }
+    "daniel": { "gif": "portraits/daniel__B8C7E.gif" },
+    "georgia": { "gif": "portraits/georgia__B8C7E.gif" },
+    "gord": { "gif": "portraits/gord__B8C7E.gif" },
+    "jane": { "gif": "portraits/jane__B8C7E.gif" },
+    "patricia": { "gif": "portraits/patricia__B8C7E.gif" },
+    "sandra": { "gif": "portraits/sandra__B8C7E.gif" }
   },
   "cgs": {
     "CG-01": { "gif": "../../art/cg-placeholders/CG-01__B8C80.gif", "bpp": 8 },

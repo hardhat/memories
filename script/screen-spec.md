@@ -87,8 +87,8 @@ mode. A CG must be quantized to 127 colours plus black.
 baked and checked by the compiler** (index 0 or the side's range, palette slice stored
 as `first`..`last`; compiler-spec.md section 5.7). Two tools produce them:
 `script/tools/assemble_portrait.py` (candidates to `art/portraits/<name>.png`) and
-`script/tools/export_portrait.py` (sheet to the baked GIF). Brad (left) and Jane
-(right) are done and in `memo.dat`; the other five are right-side. Their tile counts
+`script/tools/export_portrait.py` (sheet to the baked GIF). All seven portrait characters
+(Brad on the left, the other six on the right) are done and in `memo.dat`. Their tile counts
 are Daniel 20, Gord 28, Sandra 36, Georgia 36, Patricia 40, Jane 36, Brad 44, so
 each fits its 50-slot region.
 CGs, the farm atlas and sprites are **planned**: `convert_cgs.py` and

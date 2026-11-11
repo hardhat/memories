@@ -1,0 +1,50 @@
+{
+  "candidates": "source/sandra",
+  "base": 0,
+  "shift": 6,
+  "window": [
+    8,
+    13,
+    25,
+    31
+  ],
+  "defringe": 20,
+  "offsets": {
+    "slight_smile": [
+      -1,
+      0
+    ],
+    "annoyed": [
+      0,
+      2
+    ],
+    "smirk": [
+      0,
+      1
+    ],
+    "smile": [
+      -1,
+      -1
+    ]
+  },
+  "expressions": {
+    "neutral": 0,
+    "slight_smile": 1,
+    "annoyed": 2,
+    "surprised": 3,
+    "mortified": 4,
+    "smirk": 5,
+    "deadpan": 6,
+    "smile": 7
+  },
+  "origin": {
+    "c00": "neutral: batch 'neutral3' candidate 20",
+    "c01": "slight_smile: batch 'slight_smile' candidate 04",
+    "c02": "annoyed: batch 'annoyed' candidate 16",
+    "c03": "surprised: batch 'surprised2' candidate 03",
+    "c04": "mortified: batch 'mortified2' candidate 02",
+    "c05": "smirk: batch 'smirk2' candidate 20",
+    "c06": "deadpan: batch 'deadpan' candidate 00",
+    "c07": "smile: batch 'smile' candidate 02"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "candidates": "source/daniel",
+  "base": 0,
+  "shift": 6,
+  "window": [9, 13, 23, 30],
+  "defringe": 20,
+  "expressions": {
+    "neutral": 0,
+    "smile": 1,
+    "sheepish": 2,
+    "serious": 3
+  },
+  "origin": {
+    "c00": "neutral batch 7d1a247c-1394-4d62-bfc7-94f7f5f05eb1, candidate 12",
+    "c01": "smile batch ffff0dd6-8b67-4f8d-9c8b-4e358b7d5b95, candidate 07",
+    "c02": "sheepish batch c0dc02df-6511-4b94-9805-ee6d654c4e60, candidate 23",
+    "c03": "serious batch 2d70a63c-b4f0-4cca-a9ff-4d081840a3a2, candidate 03"
+  }
+}

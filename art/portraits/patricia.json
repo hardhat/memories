@@ -1,0 +1,60 @@
+{
+  "candidates": "source/patricia",
+  "base": 0,
+  "shift": 7,
+  "window": [
+    6,
+    12,
+    26,
+    31
+  ],
+  "defringe": 20,
+  "offsets": {
+    "smile": [
+      0,
+      1
+    ],
+    "serious": [
+      0,
+      1
+    ],
+    "thinking": [
+      1,
+      1
+    ],
+    "flustered": [
+      0,
+      1
+    ],
+    "frustrated": [
+      0,
+      1
+    ],
+    "cold": [
+      1,
+      2
+    ]
+  },
+  "expressions": {
+    "neutral": 0,
+    "smile": 1,
+    "serious": 2,
+    "thinking": 3,
+    "flustered": 4,
+    "frustrated": 5,
+    "scared": 6,
+    "cold": 7,
+    "candid": 8
+  },
+  "origin": {
+    "c00": "neutral: batch 'neutral3' candidate 17",
+    "c01": "smile: batch 'smile3' candidate 05",
+    "c02": "serious: batch 'serious3' candidate 07",
+    "c03": "thinking: batch 'thinking3' candidate 10",
+    "c04": "flustered: batch 'flustered3' candidate 07",
+    "c05": "frustrated: batch 'frustrated3' candidate 01",
+    "c06": "scared: batch 'scared3' candidate 09",
+    "c07": "cold: batch 'cold3' candidate 05",
+    "c08": "candid: batch 'candid3' candidate 00"
+  }
+}
