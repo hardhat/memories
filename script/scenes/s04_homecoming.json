@@ -169,10 +169,14 @@
           {"op": "say", "who": "narrator", "text": "She laughs, but her eyes say she wanted a real answer."}
         ]}
       ]},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-04a"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "Jane rests her head on Brad's shoulder. The bonfire roars. The gold pumpkin gleams."},
       {"op": "say", "who": "jane", "expr": "smile", "text": "Thanks for coming with me today."},
-      {"op": "cg_off"}
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400}
     ],
 
     "C_s": [
@@ -209,11 +213,15 @@
         ]}
       ]},
       {"op": "map", "id": "M12", "spawn": "roof", "time": "dusk"},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-04b"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "From the tavern roof, the bonfire glows across the rooftops. Sandra sits beside Brad, hood down."},
       {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Best seat in town. No marching band. No mascot. Just fire from far away."},
       {"op": "say", "who": "brad", "expr": "smile", "text": "I like Homecoming better from here."},
-      {"op": "cg_off"}
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400}
     ],
 
     "C_g": [
@@ -248,10 +256,14 @@
           {"op": "say", "who": "georgia", "expr": "smile", "text": "It's okay. I needed a laugh more than a talk."}
         ]}
       ]},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-04c"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "Georgia leans back on the grass, the raven head in her lap. The bonfire crackles."},
       {"op": "say", "who": "georgia", "expr": "wink", "text": "I'm planning something big for next week. A dessert. Top secret. You'll be the first taster."},
-      {"op": "cg_off"}
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400}
     ],
 
     "C_p": [
@@ -280,10 +292,14 @@
         ]}
       ]},
       {"op": "map", "id": "M06", "spawn": "bonfire", "time": "dusk"},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-04d"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "They stand at the edge of the firelight. Patricia's glasses catch the flames."},
       {"op": "say", "who": "patricia", "expr": "smile", "text": "It is, in its way, a lovely evening."},
-      {"op": "cg_off"}
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400}
     ],
 
     "D_close": [

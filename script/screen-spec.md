@@ -259,6 +259,15 @@ Entries 0-31, the dialog palette, are never touched.
   repeated addition each time the level changes, because a Z80 multiply is slow: 221 colours
   cost roughly 6 ms (estimated; measure) and one to four palette writes of at most 64 colours.
   Black is exactly black and level 256 is exactly the art.
+* **Where the fade is visible (2026-11-11).** It scales whatever is on screen, so it shows only over a picture:
+  * **The title.** `title_fade_out` (called from `initialize_game` when a key is pressed) scales the title's own
+    palette, entries 0-127, to black over 24 frames (0.4 s at 60 Hz) before the host starts.
+  * **CGs.** The story scripts fade explicitly: `fade black` (400 ms), `cg X`, `fade clear` (400 ms), the lines,
+    then `fade black`, `cg_off`, `fade clear` (a scene's own closing `fade black` replaces that last pair, and
+    two CGs in a row share one black between them). The CG streams in while the screen is black, so the load
+    never shows. The compiler does not insert these; a script that cuts to a CG still cuts.
+  * **Maps.** Not yet: the map is not bound (Phase 5), so a `fade` between scenes runs over an empty
+    screen. The first `fade clear` of each scene is a plain wait on an already clear screen.
 * The host takes the dialog box and portraits down when a fade starts (as it does for any
   other timed step), so only the picture fades. A fade that should carry the box and a portrait with it would
   need those to stay up during `HOST_TIMER`; not done.

@@ -265,6 +265,7 @@ class TitleScreen(unittest.TestCase):
                                     timeout=10, cwd=work)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("layer1 0", result.stdout)
+            self.assertIn("title fade ok", result.stdout)
             with Image.open(work / "title.ppm") as image:
                 shot = image.convert("RGB")
         with Image.open(gif) as image:

@@ -301,14 +301,16 @@
       {"op": "sfx", "id": "caw"},
       {"op": "say", "who": "narrator", "text": "The crow lands on the windowsill."},
       {"op": "say", "who": "brad", "expr": "laugh", "text": "Goodnight, Inspector."},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-01"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "Far across the dark fields, something glows faintly orange."},
       {"op": "say", "who": "brad", "expr": "surprised", "text": "That's not a porch light."},
       {"op": "say", "who": "narrator", "text": "It pulses once. Twice. Then it fades."},
       {"op": "say", "who": "brad", "expr": "worried", "text": "...Probably nothing."},
       {"op": "say", "who": "brad", "expr": "determined", "text": "Probably."},
-      {"op": "cg_off"},
       {"op": "fade", "to": "black", "ms": 800},
+      {"op": "cg_off"},
       {"op": "set", "var": "scene", "n": 2},
       {"op": "end"}
     ]

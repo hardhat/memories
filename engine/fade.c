@@ -22,12 +22,12 @@ static uint8_t  lut6[64];
 static uint16_t lut_level;
 static bool     lut_valid;
 
-static void build_tables(void)
+static void build_tables(uint16_t scale)
 {
     uint16_t acc = 0;
     uint8_t v;
 
-    if (lut_valid && lut_level == level) {
+    if (lut_valid && lut_level == scale) {
         return;
     }
     for (v = 0; v < 64; v++) {
@@ -35,37 +35,43 @@ static void build_tables(void)
             lut5[v] = (uint8_t)(acc >> 8);
         }
         lut6[v] = (uint8_t)(acc >> 8);
-        acc += level;
+        acc += scale;
     }
-    lut_level = level;
+    lut_level = scale;
     lut_valid = true;
+}
+
+void fade_scale(uint16_t *dst, const uint16_t *src, uint8_t count, uint16_t scale)
+{
+    uint8_t i;
+    uint16_t c;
+
+    build_tables(scale);
+    for (i = 0; i < count; i++) {
+        c = src[i];
+        dst[i] = (uint16_t)(((uint16_t)lut5[c >> 11] << 11) | ((uint16_t)lut6[(c >> 5) & 63] << 5)
+                            | lut5[c & 31]);
+    }
 }
 
 /* Show entries first..first+count-1 (all inside FADE_FIRST..FADE_LAST) at the current brightness. */
 static void show(uint8_t first, uint8_t count)
 {
     uint16_t out[CHUNK];
-    uint8_t i, n;
-    uint16_t c;
+    uint8_t n;
 
     if (level >= FADE_FULL) {
         load_palette(&shadow[first - FADE_FIRST], first, count);
         return;
     }
-    build_tables();
     while (count) {
         n = count < CHUNK ? count : CHUNK;
-        for (i = 0; i < n; i++) {
-            c = shadow[first - FADE_FIRST + i];
-            out[i] = (uint16_t)(((uint16_t)lut5[c >> 11] << 11) | ((uint16_t)lut6[(c >> 5) & 63] << 5)
-                                | lut5[c & 31]);
-        }
+        fade_scale(out, &shadow[first - FADE_FIRST], n, level);
         load_palette(out, first, n);
         first += n;
         count -= n;
     }
 }
-
 void fade_init(void)
 {
     memset(shadow, 0, sizeof shadow);

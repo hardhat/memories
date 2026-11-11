@@ -57,7 +57,9 @@
       {"op": "sfx", "id": "alarm"},
       {"op": "say", "who": "narrator", "text": "The alarm shrieks. The sprinklers burst on. Glowing foam meets water. There is more foam."},
       {"op": "say", "who": "georgia", "expr": "surprised", "text": "Tradition!"},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-03"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "In ten seconds the lab is drowned in glowing orange foam. Four goggled silhouettes stand in it."},
       {"op": "say", "who": "patricia", "expr": "frustrated", "text": "Ravens! A raven did this!"},
       {"op": "say", "who": "jane", "expr": "laugh", "text": "Professor, we're on the third floor. The windows are closed."},
@@ -65,7 +67,9 @@
       {"op": "say", "who": "sandra", "expr": "smirk", "text": "I'm calling it. Raven."},
       {"op": "say", "who": "georgia", "expr": "laugh", "text": "I think it smells delicious!"},
       {"op": "say", "who": "narrator", "text": "Everyone laughs, nervously. Outside, a crow lands a moment too late, and caws in disappointment."},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "patricia", "expr": "serious", "text": "Mr. Bart. You were closest to the dish."},
       {"op": "choice", "id": "c3_confess", "prompt": "Everyone is looking at Brad. His boots are dripping with foam.", "options": [
         {"text": "Confess: it might be my boots", "do": [

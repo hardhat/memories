@@ -13,4 +13,9 @@
 /* Load and draw the title. Returns false, with nothing drawn, if memo.dat or the art is missing. */
 bool title_show(void);
 
+/* Fade the title to black over 24 frames (0.4 s at 60 Hz), calling wait_frame() before each step (the
+ * caller waits for vertical blank there). Scales its own palette, entries 0-127, so it must run
+ * before memo_host_initialize() loads the dialog palette. Does nothing if memo.dat cannot be read. */
+void title_fade_out(void (*wait_frame)(void));
+
 #endif /* TITLE_H */

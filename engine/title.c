@@ -6,6 +6,7 @@
 #include "layout.h"
 #include "memo_dat.h"
 #include "stream.h"
+#include "fade.h"
 #include "title.h"
 
 #define TITLE_TILES        240          /* 20 x 12 tiles */
@@ -15,6 +16,7 @@
 #define TILE_BYTES         256u
 #define TILESET_HEADER     4            /* bpp, comp, u16 tile count (compiler-spec.md 5.7) */
 #define PALETTE_HEADER     2            /* first, last */
+#define TITLE_FADE_FRAMES  24           /* 0.4 s at 60 Hz */
 
 /* The palette entry closest to black, used for the rows below the picture. */
 static uint8_t darkest(const uint16_t *palette)
@@ -93,4 +95,38 @@ bool title_show(void)
         draw_bg(cells, 0, row, SCREEN_COLS, 1);
     }
     return true;
+}
+
+/* Read the title palette back from memo.dat (title_show keeps no copy, to save RAM). */
+static bool read_palette(uint16_t *palette)
+{
+    uint16_t ids[3];
+
+    if (dat_open("memo.dat", MEMO_CONTENT_CRC) != DAT_OK && dat_open("h:/memo.dat", MEMO_CONTENT_CRC) != DAT_OK) {
+        return false;
+    }
+    ids[2] = 0;
+    if (!dat_index_get(DAT_TABLE_CGS, CG_TITLE, ids) || ids[2] == 0
+        || !dat_read_block(ids[2], PALETTE_HEADER, palette, TITLE_COLORS * 2)) {
+        dat_close();
+        return false;
+    }
+    dat_close();
+    return true;
+}
+
+void title_fade_out(void (*wait_frame)(void))
+{
+    uint16_t palette[TITLE_COLORS], scaled[TITLE_COLORS];
+    uint8_t step;
+
+    if (!read_palette(palette)) {
+        return;
+    }
+    for (step = 1; step <= TITLE_FADE_FRAMES; step++) {
+        wait_frame();
+        /* 171 / 16 = 10.6875 steps of brightness per frame: 256 after exactly 24 frames */
+        fade_scale(scaled, palette, TITLE_COLORS, (uint16_t)(256 - ((step * 171u) >> 4)));
+        load_palette(scaled, 0, TITLE_COLORS);
+    }
 }

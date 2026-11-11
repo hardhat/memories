@@ -52,7 +52,9 @@
       {"op": "say", "who": "daniel", "expr": "neutral", "text": "No, I did."},
       {"op": "say", "who": "gord", "expr": "angry", "text": "You didn't. I did. You were busy staring at a girl."},
       {"op": "say", "who": "daniel", "expr": "sheepish", "text": "...That part's true."},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-11"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "The Great Hall, twenty-five years ago. A full moon, a glowing punch bowl, and the program banner."},
       {"op": "say", "who": "daniel", "expr": "serious", "text": "The whole student body went candid at once. Forty-one fights. Nine proposals. A casserole brawl."},
       {"op": "say", "who": "gord", "expr": "neutral", "text": "The casserole survived."},
@@ -61,7 +63,9 @@
       {"op": "say", "who": "daniel", "expr": "smile", "text": "She said: 'I know. You've been staring at me for a year.'"},
       {"op": "say", "who": "gord", "expr": "smile", "text": "Very loud. The whole hall heard."},
       {"op": "say", "who": "daniel", "expr": "smile", "text": "Best night of my life. Worst night of the program."},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "daniel", "expr": "serious", "text": "The college shut it down. Eleanor took all the blame. She sealed the samples and resigned."},
       {"op": "say", "who": "gord", "expr": "sad", "text": "We promised to bury it. To protect her name. It was the only thing we could give her."},
       {"op": "say", "who": "daniel", "expr": "serious", "text": "The pumpkins bloom when a full moon falls on Halloween. It happened then. It happened this year."},
@@ -160,14 +164,22 @@
         {"op": "say", "who": "jane", "expr": "smile", "text": "And I'd like you here."},
         {"op": "say", "who": "narrator", "text": "She presses a key into his hand. It's cold and heavy."},
         {"op": "say", "who": "jane", "expr": "wink", "text": "Barn key. Dad had it made. He says it means you're staff."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10a"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "Under the lumpy snow pumpkin, in the quiet snow, Jane kisses him."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ], "else": [
         {"op": "say", "who": "jane", "expr": "smile", "text": "Ask me again after the harvest."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10a-sweet"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "They lean against the snow pumpkin and watch the sun set over the white field."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ]}
     ],
 
@@ -187,14 +199,22 @@
       {"op": "if", "test": {"var": "ending", "cmp": "eq", "n": 1}, "then": [
         {"op": "say", "who": "narrator", "text": "Behind the bar, the old photo of three researchers now hangs beside a new one: Brad and Sandra."},
         {"op": "say", "who": "sandra", "expr": "smile", "text": "Don't let it go to your head. It's a small frame."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10b"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "Sandra takes his hand under the table. For once, nobody bets against it."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ], "else": [
         {"op": "say", "who": "sandra", "expr": "slight_smile", "text": "Come back next week. Bring brains."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10b-sweet"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "She leans on the table next to him. It's close, but not quite touching. For now."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ]}
     ],
 
@@ -216,14 +236,22 @@
         {"op": "say", "who": "narrator", "text": "She sets a brass key on the counter, next to a tart."},
         {"op": "say", "who": "brad", "expr": "smile", "text": "A key to the cafe?"},
         {"op": "say", "who": "georgia", "expr": "wink", "text": "And I'm coming home every weekend. You'd better be waiting. With coffee."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10c"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "Across the counter, Georgia leans in and kisses him. The tart goes untouched, for once."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ], "else": [
         {"op": "say", "who": "georgia", "expr": "smile", "text": "Help me plan the city trip? Maps, bakeries, snacks. You carry the snacks."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10c-sweet"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "They spend the morning drawing a map of the best bakeries in a city neither of them has seen."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ]}
     ],
 
@@ -242,15 +270,23 @@
         {"op": "say", "who": "narrator", "text": "She pulls a pair of safety goggles from her coat and puts them on."},
         {"op": "say", "who": "brad", "expr": "laugh", "text": "Goggles?"},
         {"op": "say", "who": "patricia", "expr": "flustered", "text": "I don't know what happens when I'm this happy."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10d"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "Snow falls on the porch. In the doorway, Brad and Patricia share a very cautious, very warm kiss."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ], "else": [
         {"op": "say", "who": "patricia", "expr": "thinking", "text": "I would rather wait for spring. I'd like to do this properly."},
         {"op": "say", "who": "brad", "expr": "smile", "text": "Spring it is."},
+        {"op": "fade", "to": "black", "ms": 400},
         {"op": "cg", "id": "CG-10d-sweet"},
+        {"op": "fade", "to": "clear", "ms": 400},
         {"op": "say", "who": "narrator", "text": "She hands him the thermos. Cocoa, with a little cinnamon. For her, it is a declaration."},
-        {"op": "cg_off"}
+        {"op": "fade", "to": "black", "ms": 400},
+        {"op": "cg_off"},
+        {"op": "fade", "to": "clear", "ms": 400}
       ]}
     ],
 
@@ -274,10 +310,14 @@
         ]}
       ]},
       {"op": "sfx", "id": "camera_click"},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-13"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "Brad, Jane, Sandra, Georgia, Patricia, and Gord on the steps. In the corner, the crow photobombs."},
       {"op": "say", "who": "brad", "expr": "smile", "text": "A good year. Kind of a weird one. But a good one."},
-      {"op": "cg_off"}
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400}
     ],
 
     "v_farm": [
@@ -311,10 +351,14 @@
       {"op": "say", "who": "brad", "expr": "smile", "text": "Legacy."},
       {"op": "say", "who": "gord", "expr": "smile", "text": "Good name."},
       {"op": "say", "who": "narrator", "text": "That night Gord slips a folded paper into Brad's pocket. Block capitals. A tiny pumpkin doodle."},
+      {"op": "fade", "to": "black", "ms": 400},
       {"op": "cg", "id": "CG-12"},
+      {"op": "fade", "to": "clear", "ms": 400},
       {"op": "say", "who": "narrator", "text": "WELCOME HOME."},
       {"op": "say", "who": "narrator", "text": "On the porch rail, the crow looks on. Between Brad and Gord, a carved pumpkin glows in the snow."},
-      {"op": "cg_off"}
+      {"op": "fade", "to": "black", "ms": 400},
+      {"op": "cg_off"},
+      {"op": "fade", "to": "clear", "ms": 400}
     ],
 
     "D_credits": [

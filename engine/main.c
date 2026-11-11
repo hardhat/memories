@@ -121,6 +121,11 @@ static bool title_key_pressed(void)
     return pressed;
 }
 
+static void wait_frame(void)
+{
+    gfx_wait_vblank(&ctx);
+}
+
 void initialize_game()
 {
     // The graphics context must exist before the host initializes: the host's screen
@@ -137,6 +142,7 @@ void initialize_game()
             gfx_wait_vblank(&ctx);
         }
         if(quit) return;
+        title_fade_out(wait_frame);
     }
     debug_log("Initializing memo host");
     memo_host_initialize();

@@ -33,6 +33,10 @@ void fade_draw(void);
  * shown at the current brightness. A range outside 32-252 is written as it is. */
 void fade_palette(uint8_t first, const uint16_t *colors, uint8_t count);
 
+/* Scale count RGB565 colours by brightness 0-256 (each channel alue * scale >> 8, rounding down).
+ * A building block for anything that fades a palette of its own (the title screen). */
+void fade_scale(uint16_t *dst, const uint16_t *src, uint8_t count, uint16_t scale);
+
 /* The brightness, 0-256. */
 uint16_t fade_level(void);
 
