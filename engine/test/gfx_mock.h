@@ -14,6 +14,8 @@ extern uint16_t mock_palette[256];
 
 extern unsigned mock_upload_calls;   /* render_text_buffer calls since the last reset */
 extern unsigned mock_upload_bytes;
+extern unsigned mock_palette_calls;   /* load_palette calls and colours written since the last reset */
+extern unsigned mock_palette_colors;
 extern unsigned mock_log_count;
 extern char     mock_last_log[256];
 extern void   (*mock_log_hook)(const char *message);   /* optional, called for every debug_log */

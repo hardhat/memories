@@ -11,6 +11,7 @@
 #include "memo_dat.h"
 #include "screen.h"
 #include "stream.h"
+#include "fade.h"
 #include "cg.h"
 #include "gfx_mock.h"
 
@@ -155,6 +156,7 @@ int main(int argc, char **argv)
     mock_reset_video();
     screen_init();
     cg_init();
+    fade_init();
     memcpy(dialog_palette, mock_palette, sizeof dialog_palette);
 
     assert(!cg_active() && cg_ready());
@@ -176,6 +178,27 @@ int main(int argc, char **argv)
     assert(settle() == 0);
     dump("a");
 
+    /* A fade scales the picture's palette and leaves the dialog palette alone: at brightness 128 every
+     * colour channel is halved, the box (shown now) keeps its own colours, and black is black. */
+    fade_start(false, 512);
+    fade_update(256);
+    fade_draw();
+    assert(fade_level() == 128);
+    assert(memcmp(mock_palette, dialog_palette, sizeof dialog_palette) == 0);
+    dump("fade128");
+    screen_text_show("Brad", text, 0);
+    run_until_text_ready();
+    dump("fade128-box");
+    screen_text_hide();
+    settle();
+    fade_update(256);
+    fade_draw();
+    assert(fade_level() == 0 && memcmp(mock_palette, dialog_palette, sizeof dialog_palette) == 0);
+    dump("fade0");
+    fade_start(true, 0);
+    fade_draw();
+    assert(settle() == 0);
+    dump("fade-back");
     /* The box goes over the bottom three rows and replaces them. */
     screen_text_show("Brad", text, 0);
     run_until_text_ready();

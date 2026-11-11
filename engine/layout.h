@@ -58,4 +58,10 @@
 #define PAL_WORLD          126    /* 126-252: map, sprites, effects or CG */
 #define PAL_WORLD_LAST     252
 
+/* The palette range a fade scales: everything except the shared 0 and the dialog entries, so the
+ * text box stays readable while the picture fades (engine/fade.h). */
+#define FADE_FIRST         PAL_PORTRAIT_LEFT
+#define FADE_LAST          PAL_WORLD_LAST
+#define FADE_COUNT         (FADE_LAST - FADE_FIRST + 1)
+
 #endif

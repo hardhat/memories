@@ -564,8 +564,8 @@ are 16 ms each and fade units are 10 ms each.
 text are drawn in the dialog box by `screen.c`, with the speaker's name from
 `dat_load_char`. Choice menus and the placeholder trigger picker use the same box
 (a highlighted selection, a scrolling list; [screen-spec.md](screen-spec.md) section 4).
-Map, fade, sprite and audio output are logged as not bound. Portraits and baked CGs are drawn
-([screen-spec.md](screen-spec.md) sections 4a and 4b). Exploration movement is not implemented yet.
+Map, sprite and audio output are logged as not bound. Portraits, baked CGs and palette fades are drawn
+([screen-spec.md](screen-spec.md) sections 4a, 4b and 4c). Exploration movement is not implemented yet.
 
 **What the "resident code buffer" is.** It is not application paging. The scene bytecode is just *data*: about 1.2-1.7 KB per scene that the script VM (part of the normal program) interprets. "Resident" means the whole scene's bytecode is read once into a fixed RAM array when the scene starts, so jumps and calls are plain array indexing. The alternative, closer to Wyvern, is to keep only the current block in RAM (at most 320 bytes today) and re-read the caller's block after each `call`. That would save about 3.5 KB of RAM at the cost of more reads, and is a reasonable fallback if RAM turns out tight. The spec keeps the resident buffer as the default because it is simpler and the cost is tiny; `limits.code_buf` in `config.json` (it becomes `CODE_BUF_SIZE` in `memo_ids.h`) can be lowered to 2048 (the largest scene is 1,764 bytes).
 

@@ -289,7 +289,7 @@ int main(void)
     };
     static const uint8_t cg_say[] = {OP_CG, 0, OP_SAY, 1, 0, 0, 0, OP_CG_OFF, OP_SAY, 1, 2, 0, 0, OP_END};
     static const uint8_t cg_bad[] = {OP_CG, 5, OP_SET, 0, 7, OP_END};
-    static const uint8_t transition[] = {OP_SET, VAR_SCENE, 2, OP_END};
+    static const uint8_t fade_cg[] = {OP_FADE, 1, 4, OP_CG, 0, OP_FADE, 0, 4, OP_SET, 0, 5, OP_END};    static const uint8_t transition[] = {OP_SET, VAR_SCENE, 2, OP_END};
     static const uint8_t jane_say[] = {OP_SAY, 1, 2, 0, 0, OP_END};
     static const uint8_t jane_twice[] = {OP_SAY, 1, 0, 0, 0, OP_SAY, 1, 2, 0, 0, OP_END};
     static const uint8_t jane_menu[] = {
@@ -483,6 +483,24 @@ int main(void)
     game_update(16);
     assert(ends == 1);
 
+    /* A fade to black hides a CG change: the picture loads while the screen is black and the fade in
+     * brings it up. The script waits for each step; the palette is scaled and ends exactly. */
+    begin(fade_cg, sizeof fade_cg);
+    mock_palette[PAL_WORLD] = 0x1F1F;
+    for (i = 0; i < 4; i++) {
+        checked_frame();
+    }
+    assert(mock_palette[PAL_WORLD] == 0 && memo_vars[0] == 0 && !cg_up());
+    for (i = 0; i < 80 && !cg_up(); i++) {
+        checked_frame();
+        assert(mock_palette[PAL_WORLD] == 0);              /* nothing of the old or new picture shows */
+    }
+    assert(cg_up() && mock_palette[PAL_WORLD] == 0 && memo_vars[0] == 0);
+    for (i = 0; i < 10 && memo_vars[0] == 0; i++) {
+        checked_frame();
+    }
+    assert(memo_vars[0] == 5 && ends == 1);                /* the script ran on once the fade in was done */
+    assert(mock_palette[PAL_WORLD] == 0x1F1F && mock_palette[PAL_WORLD + 4] == 0x1F1F && mock_palette[PAL_WORLD + 5] == 0);
     /* A CG that cannot be shown is skipped and the script goes on. */
     begin(cg_bad, sizeof cg_bad);
     game_update(16);

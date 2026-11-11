@@ -6,6 +6,7 @@
 #include "screen.h"
 #include "portrait.h"
 #include "cg.h"
+#include "fade.h"
 
 enum {
     HOST_IDLE, HOST_DIALOG, HOST_TUTORIAL, HOST_TIMER, HOST_CHOICE, HOST_EXPLORE, HOST_CG_LOAD
@@ -40,6 +41,7 @@ void memo_host_initialize(void)
     screen_init();
     portrait_init();
     cg_init();
+    fade_init();
     game_initialize();
 }
 
@@ -51,6 +53,7 @@ bool host_busy(void)
 void game_host_update(uint16_t elapsed)
 {
     screen_update(elapsed);
+    fade_update(elapsed);
     if (state == HOST_CG_LOAD && cg_ready()) {
         state = HOST_IDLE;     /* the script resumes once the picture is on screen */
     }
@@ -98,6 +101,9 @@ void game_host_draw(void)
     bool text = state == HOST_DIALOG || state == HOST_TUTORIAL;
     bool up, portraits_up;
 
+    /* The brightness first: whatever else changes this frame appears at the right level. */
+    fade_draw();
+
     /* The box stays up while anything waits for the player, and across back-to-back
      * lines: the VM replaces the content in the same frame the previous one is dismissed. */
     if (!text && state != HOST_CHOICE && state != HOST_EXPLORE) {
@@ -142,7 +148,7 @@ void host_map(uint8_t map, uint8_t spawn, uint8_t time_of_day)
 
 void host_fade(uint8_t mode, uint8_t t10ms)
 {
-    debug_logf("Fade %u, %u x10ms (renderer not bound)", mode, t10ms);
+    fade_start(mode == 0, (uint16_t)t10ms * 10);
     ms_left = (uint16_t)t10ms * 10;
     state = ms_left ? HOST_TIMER : HOST_IDLE;
 }

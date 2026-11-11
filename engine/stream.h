@@ -16,7 +16,7 @@
 bool stream_tiles(uint16_t block, uint16_t first, uint8_t n, uint16_t slot);
 
 /* Load the entries stored in PALETTE block `block` (first, last, then RGB565 words) at their own
- * indices. Refuses, writing nothing, unless first and last lie inside lo..hi. */
+ * indices, through the fade (fade.h), so they show at the current brightness. Refuses, writing nothing, unless first and last lie inside lo..hi. */
 bool stream_palette(uint16_t block, uint8_t lo, uint8_t hi);
 
 #endif

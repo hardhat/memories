@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "memo_dat.h"
+#include "fade.h"
 #include "stream.h"
 
 #define TILE_BYTES    256u
@@ -37,6 +38,6 @@ bool stream_palette(uint16_t block, uint8_t lo, uint8_t hi)
     if (n > sizeof buffer.words / 2 || !dat_read_block(block, 2, buffer.words, n * 2)) {
         return false;
     }
-    load_palette(buffer.words, head[0], (uint8_t)n);
+    fade_palette(head[0], buffer.words, (uint8_t)n);
     return true;
 }

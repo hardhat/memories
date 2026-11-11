@@ -166,7 +166,7 @@ class ZealBuild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
             (d / "memo_ids.h").write_text(header, encoding="utf-8")
-            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "portrait", "cg", "stream", "title"):
+            for name in ("memo_dat", "memo_vm", "dat_io_zos", "game", "host", "screen", "portrait", "cg", "stream", "fade", "title"):
                 src = ctrace.ENGINE / f"{name}.c"
                 r = subprocess.run(["sdcc", "-mz80", "--std-c2x", "-c", "-I", str(ctrace.ENGINE), "-I", str(d),
                                     "-I", str(self.ZOS), "--codeseg", "TEXT", "-o", str(d / f"{name}.rel"), str(src)],
@@ -196,7 +196,7 @@ class FrameLoop(unittest.TestCase):
         data, _ = build_dat(p, codes)
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "portrait.c", "cg.c", "stream.c", "test/gfx_mock.c",
+            exe = build_c(work, ("memo_vm.c", "game.c", "host.c", "screen.c", "portrait.c", "cg.c", "stream.c", "fade.c", "test/gfx_mock.c",
                                  "test/frame_main.c"), "frame_test.exe", ids_header(p, data, codes))
             result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -231,6 +231,22 @@ class ScreenModel(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_CC, "no C compiler")
+class FadeModel(unittest.TestCase):
+    """The palette fade against the video model: scaling, timing, protected dialog palette."""
+
+    def test_fade(self):
+        p = mini([scene({"A": [{"op": "end"}]})])
+        codes = compile_project(p)
+        data, _ = build_dat(p, codes)
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            exe = build_c(work, ("fade.c", "test/gfx_mock.c", "test/fade_main.c"), "fade_test.exe",
+                          ids_header(p, data, codes))
+            result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=20)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("fade tests passed", result.stdout)
+
+@unittest.skipUnless(HAVE_CC, "no C compiler")
 class TitleScreen(unittest.TestCase):
     """The startup title picture against a software model of the video board."""
 
@@ -242,7 +258,7 @@ class TitleScreen(unittest.TestCase):
         gif = gif if gif.is_absolute() else Path(__file__).resolve().parents[2] / gif
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            exe = build_c(work, ("title.c", "memo_dat.c", "dat_io_stdio.c", "stream.c", "test/gfx_mock.c",
+            exe = build_c(work, ("title.c", "memo_dat.c", "dat_io_stdio.c", "stream.c", "fade.c", "test/gfx_mock.c",
                                  "test/title_main.c"), "title_test.exe", header)
             (work / "memo.dat").write_bytes(data)
             result = subprocess.run([str(exe), str(work / "title.ppm")], capture_output=True, text=True,
@@ -310,7 +326,7 @@ class PortraitDisplay(unittest.TestCase):
                 "daniel": {"gif": "daniel__B8C7E.gif"}}}))
             p, data, header = full_game(work / "manifest.json", convert=True)
             ids = {c["name"]: i for i, c in enumerate(Dat(data).chars)}
-            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "portrait.c", "stream.c", "test/gfx_mock.c",
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "portrait.c", "stream.c", "fade.c", "test/gfx_mock.c",
                                  "test/portrait_main.c"), "portrait_test.exe", header)
             (work / "memo.dat").write_bytes(data)
             args = [str(exe), str(work / "memo.dat"), str(ids["Brad"]), str(ids["Jane"]), str(ids["Dad"]),
@@ -340,14 +356,15 @@ class CgDisplay(unittest.TestCase):
     """CG mode against the video model, with synthetic baked CGs built through the real compiler."""
 
     @staticmethod
-    def rgb565(palette, i):
+    def rgb565(palette, i, level=256):
         if i == 0:
             return (0, 0, 0)
         r, g, b = palette[i * 3:i * 3 + 3]
-        return ((r >> 3) * 255 // 31, (g >> 2) * 255 // 63, (b >> 3) * 255 // 31)
+        return (((r >> 3) * level // 256) * 255 // 31, ((g >> 2) * level // 256) * 255 // 63,
+                ((b >> 3) * level // 256) * 255 // 31)
 
-    def picture(self, gif):
-        """The 320x240 screen showing the CG (index 0 is black) above three black rows."""
+    def picture(self, gif, level=256):
+        """The 320x240 screen showing the CG (index 0 is black) above three black rows, at a fade brightness."""
         from PIL import Image
 
         shot = Image.new("RGB", (320, 240), (0, 0, 0))
@@ -356,7 +373,7 @@ class CgDisplay(unittest.TestCase):
         palette, pixels = sheet.getpalette(), sheet.load()
         for y in range(192):
             for x in range(320):
-                shot.putpixel((x, y), self.rgb565(palette, pixels[x, y]))
+                shot.putpixel((x, y), self.rgb565(palette, pixels[x, y], level))
         return shot
 
     def test_stream_show_and_text_over_the_cg(self):
@@ -378,7 +395,7 @@ class CgDisplay(unittest.TestCase):
             palette = dat.palette(dat.index["cgs"][0][2])
             self.assertEqual(palette[0], 126)                       # only the baked slice is stored
             self.assertEqual(dat.palette(dat.index["cgs"][2][2])[0], 0)
-            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "screen.c", "cg.c", "stream.c",
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "screen.c", "cg.c", "stream.c", "fade.c",
                                  "test/gfx_mock.c", "test/cg_main.c"), "cg_test.exe", header)
             (work / "memo.dat").write_bytes(data)
             names = p.cg_names
@@ -493,7 +510,7 @@ class RealCgs(unittest.TestCase):
         p, data, header = full_game(self.MANIFEST)
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
-            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "screen.c", "cg.c", "stream.c",
+            exe = build_c(work, ("memo_dat.c", "dat_io_stdio.c", "screen.c", "cg.c", "stream.c", "fade.c",
                                  "test/gfx_mock.c", "test/cg_main.c"), "cg_test.exe", header)
             (work / "memo.dat").write_bytes(data)
             n = p.cg_names
@@ -507,6 +524,20 @@ class RealCgs(unittest.TestCase):
                     got = image.convert("RGB")
                 want = self.picture(self.ROOT / p.cgs[name]["file"])
                 self.assertEqual(got.tobytes(), want.tobytes(), name)
+            # A fade scales the real picture: at brightness 128 each RGB565 channel is halved (rounding down),
+            # the dialog box keeps its colours, and fully faded is black.
+            half = self.picture(self.ROOT / p.cgs["CG-01"]["file"], 128)
+            for name, want in (("fade128", half), ("fade-back", self.picture(self.ROOT / p.cgs["CG-01"]["file"]))):
+                with Image.open(work / f"cg-{name}.ppm") as image:
+                    self.assertEqual(image.convert("RGB").tobytes(), want.tobytes(), name)
+            with Image.open(work / "cg-fade0.ppm") as image:
+                self.assertEqual(set(image.convert("RGB").crop((0, 0, 320, 192)).get_flattened_data()), {(0, 0, 0)})
+            with Image.open(work / "cg-fade128-box.ppm") as image:
+                box = image.convert("RGB").crop((0, 144, 320, 192))
+            box_colour = ((16 >> 3) * 255 // 31, (20 >> 2) * 255 // 63, (48 >> 3) * 255 // 31)   # dialog palette 1
+            text_colour = ((240 >> 3) * 255 // 31, (240 >> 2) * 255 // 63, (224 >> 3) * 255 // 31)   # palette 3
+            self.assertIn(box_colour, box.get_flattened_data())
+            self.assertIn(text_colour, box.get_flattened_data())
 
 
 @unittest.skipUnless(HAVE_CC, "no C compiler")

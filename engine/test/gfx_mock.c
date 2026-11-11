@@ -14,6 +14,8 @@ uint16_t mock_palette[256];
 
 unsigned mock_upload_calls;
 unsigned mock_upload_bytes;
+unsigned mock_palette_calls;
+unsigned mock_palette_colors;
 unsigned mock_log_count;
 char     mock_last_log[256];
 void   (*mock_log_hook)(const char *message);
@@ -30,6 +32,8 @@ void mock_reset_counters(void)
 {
     mock_upload_calls = 0;
     mock_upload_bytes = 0;
+    mock_palette_calls = 0;
+    mock_palette_colors = 0;
 }
 
 void mock_reset_video(void)
@@ -165,6 +169,8 @@ void load_palette(const uint16_t *palette, uint8_t offset, uint8_t count)
         fail("palette write outside 256 colours");
     }
     memcpy(&mock_palette[offset], palette, (size_t)count * 2);
+    mock_palette_calls++;
+    mock_palette_colors += count;
 }
 
 void load_tileset(const uint8_t *tileset, uint16_t offset, uint16_t size, uint8_t palette_base)

@@ -28,7 +28,8 @@ on hardware yet; timing figures are estimates until measured.
 | D13 | **Who is shown (2026-11-10).** A speaker's portrait appears on their `CHARS` side and **stays up while the other side speaks**, so a conversation shows both partners. A line by a character with no side (the narrator) takes both down, as do tutorials, waits and the trigger picker; a choice keeps what was showing. The box and the portraits go away together. |
 | D14 | **Portraits yield the frame to the box.** The text box has first call on the frame's one upload; portrait streaming uses the frames the box leaves free. A portrait appears as soon as the tiles its expression needs are resident and goes on streaming the rest in the background. |
 | D15 | **Never rewrite what is visible.** A different character on a side is blanked, then streamed, then revealed. An expression whose head is not resident yet waits, and the previous expression stays up. A character's tiles and palette stay resident when hidden, so coming back costs only tilemap writes. |
-| D16 | **CG (2026-11-10).** `cg X` makes the script wait until the picture is on screen (about half a second), so text after it never appears over the old screen. A CG is invisible while it streams and appears in one frame. A baked CG (palette 126-252) is required; anything else is refused and skipped. The box sits over the CG's bottom rows and wipes in and out; a replaced CG cuts through black. See section 4b. |
+| D16 | **CG (2026-11-10).** `cg X` makes the script wait until the picture is on screen (about half a second), so text after it never appears over the old screen. A CG is invisible while it streams and appears in one frame. A baked CG (palette 126-252) is required; anything else is refused and skipped. The box sits over the CG's bottom rows and wipes in and out; a replaced CG cuts through black unless the script fades (D17). See section 4b. |
+| D17 | **Fade (2026-11-11).** `fade black` / `fade clear` scale the palette entries 32-252 (portraits, map, sprites, CG) and never the dialog palette 0-31, so the box stays readable. The fade state persists: after `fade black` the screen stays black, and art loaded meanwhile (a CG, a map) stays hidden until `fade clear`. All palette loads in 32-252 go through `fade_palette` so they honour the level. The script waits for a fade as before. See section 4c. |
 
 ### Why the CG and the box overlap (D5)
 
@@ -190,7 +191,7 @@ Cost: Brad (44 tiles) is the palette frame plus six chunk frames, and is on scre
 second (base tiles in); a head late in the file appears when its chunk lands. Everything
 after that is tilemap writes. All art streaming (title, portraits, CGs) shares the single
 2 KB buffer in `stream.c`, which is only used inside one call; the program's data now ends
-near 0xE7EC, leaving about 6 KB for the stack (measure on hardware). `portrait_forget()`
+near 0xEEC4, leaving about 4.4 KB for the stack (measure on hardware; the fade's 442 byte shadow palette is the latest addition). `portrait_forget()`
 drops what is resident when a CG is about to overwrite the portrait slots.
 
 **Validation.** The descriptor is checked before any VRAM write: a 2x4 base, a 2-wide head
@@ -235,6 +236,32 @@ stay resident. A baked CG is one whose pixels are 0 (black, shared) or 126-252: 
 range and stores just the used slice. All 23 story CGs are baked (section 3); only CG-title is not,
 and the engine refuses it in CG mode because `title.c` shows it at startup.
 
+## 4c. Palette fade (done)
+
+`fade.c` keeps a **shadow copy** of palette entries 32-252 (442 bytes) and writes them to the video
+board scaled by a brightness from 0 (black) to 256 (the art's own colours, copied without scaling).
+Entries 0-31, the dialog palette, are never touched.
+
+* `host_fade(mode, t)` (the `fade` op) calls `fade_start(clear, ms)`; `fade_update` runs in
+  `game_update` and sets the brightness linearly from where it is now to the target; `fade_draw`
+  is the first thing in `game_draw`, so whatever else changes in the frame appears at the right
+  level. The script waits for the fade as before (the host's timer), and both end in the same frame.
+* The state persists. After `fade black` the picture stays black until `fade clear`, so the
+  scripts' usual pattern, `fade black`, change the CG or map, `fade clear`, never shows the
+  old picture, the new picture loading, or the cells being blanked.
+* **Everything that loads a palette in 32-252 goes through `fade_palette`** (`stream_palette` does for
+  portraits and CGs; the map loader in Phase 5 must too). It remembers the colours and shows them at the
+  current brightness, so art loaded while black stays black.
+* A fade to where the screen already is does nothing (the first scene's `fade clear` on an
+  already clear screen only waits). Reversing a fade in the middle continues from the brightness
+  it had reached. `ms = 0` jumps.
+* Scaling is per RGB565 channel, `value * level >> 8` (rounding down), through two lookup tables built by
+  repeated addition each time the level changes, because a Z80 multiply is slow: 221 colours
+  cost roughly 6 ms (estimated; measure) and one to four palette writes of at most 64 colours.
+  Black is exactly black and level 256 is exactly the art.
+* The host takes the dialog box and portraits down when a fade starts (as it does for any
+  other timed step), so only the picture fades. A fade that should carry the box and a portrait with it would
+  need those to stay up during `HOST_TIMER`; not done.
 ## 5. Frame protocol (done for the box and portraits)
 
 Main loop order: input, `gfx_wait_end_vblank`, `game_update` (VM and host), `gfx_wait_vblank`,
@@ -295,8 +322,9 @@ CG, no portrait over it, and the box and portraits return after `cg_off`. The mo
   batch (re-quantize the shared set to leave room if needed).
 * **Title screen.** CG-title uses palette 0-127 at startup. If it should also be shown by `cg_show`
   (for example on returning to the title), it needs a baked twin.
-* Fade: palette fading needs a 512-byte staging copy; for now a fade is only a timer.
+* Measure the fade on hardware: the scale-and-write of 221 colours is estimated at about 6 ms of the frame (computed in game_draw; it could move to the update phase into a 442 byte staging buffer if it tears or the frame is tight).
+* A fade out takes the dialog box and any portrait down at once (the host hides them when a fade starts); only the picture fades.
 * Measure the streaming chunk (file read plus 2 KB upload) against the frame, how long a CG really
-  takes (estimated 31 frames), and the stack headroom above the 0xE7EC end of the program's data.
-* A CG replaced by another cuts through black for the load time. A fade (palette) could hide it.
+  takes (estimated 31 frames), and the stack headroom above the 0xEEC4 end of the program's data (about 4.4 KB).
+* A script that replaces a CG without `fade black` first still cuts through black for the load time; the story scripts all fade between scenes.
 * The map (`host_map`) is not bound, so `host_cg_off` leaves layer 0 black.

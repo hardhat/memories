@@ -11,6 +11,7 @@
 #include "memo_dat.h"
 #include "portrait.h"
 #include "stream.h"
+#include "fade.h"
 #include "gfx_mock.h"
 
 #define LEFT_COL  COL_PORTRAIT_LEFT
@@ -114,6 +115,7 @@ int main(int argc, char **argv)
         return 2;
     }
     mock_reset_video();
+    fade_init();
     portrait_init();
 
     /* Nothing is drawn until something is asked for. */
